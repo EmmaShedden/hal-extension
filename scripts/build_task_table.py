@@ -65,7 +65,7 @@ def main(out_runs, out_tasks, *src_dirs):
                 if succ is not None and fail is not None and isinstance(rep, (int, float)) and U:
                     listed = set(succ) | set(fail)
                     missing = sorted(U - listed)
-                    if missing and abs(rep - len(succ) / len(U)) < abs(rep - len(succ) / max(len(listed), 1)):
+                    if missing and abs(rep - len(succ) / len(U)) <= abs(rep - len(succ) / max(len(listed), 1)):
                         fail = fail + missing
                         filled = len(missing)
                 lat = res.get("latencies") or {}
