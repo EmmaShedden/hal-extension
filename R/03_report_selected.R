@@ -1,12 +1,13 @@
 # Part 1b: quality of fit of the selected model (DESIGN.md "Quality-of-fit report").
-# Usage: Rscript R/03_report_selected.R [n_cores]
+# Usage: ./run_R.sh R/03_report_selected.R [n_cores] [variant: main | reduced]
 source("R/common.R"); source("R/metrics.R")
 suppressPackageStartupMessages({library(parallel); library(performance); library(DHARMa)})
 args <- commandArgs(TRUE); ncores <- if (length(args)) as.integer(args[1]) else 16
+variant <- if (length(args) >= 2) args[2] else "main"
 set.seed(42)
 L <- load_analysis_data("paper", scaling = readRDS(path("results/scaling.Rds"))); d <- L$d
-m <- readRDS(path("fits/selected_model.Rds"))
-out <- path("results/part1"); dir.create(out, showWarnings = FALSE, recursive = TRUE)
+m <- readRDS(path(if (variant == "main") "fits/selected_model.Rds" else sprintf("fits/selected_model_%s.Rds", variant)))
+out <- path(if (variant == "main") "results/part1" else sprintf("results/part1_%s", variant)); dir.create(out, showWarnings = FALSE, recursive = TRUE)
 sink(file.path(out, "summary_selected.txt")); print(summary(m)); sink()
 
 # fixed effects: estimates, Wald CIs, odds ratios
@@ -17,10 +18,12 @@ fwrite(fe, file.path(out, "fixed_effects.csv"))
 
 # LRT for each fixed-effect term (TMS: anova(m0, m1) on the model without that term)
 tl <- attr(terms(lme4::nobars(formula(m))), "term.labels")
+# a main effect is tested jointly with the interactions that contain it (marginality); otherwise R just reparametrizes
 lrt <- mclapply(tl, function(t) {
-  m1 <- update(m, as.formula(paste(". ~ . -", t)))
+  drop <- tl[vapply(strsplit(tl, ":", fixed = TRUE), function(p) t %in% p || identical(paste(p, collapse = ":"), t), TRUE)]
+  m1 <- update(m, as.formula(paste(". ~ . -", paste(drop, collapse = " - "))))
   a <- anova(m1, m)
-  data.frame(term = t, Chisq = a$Chisq[2], Df = a$Df[2], p = a$`Pr(>Chisq)`[2], dAIC = AIC(m1) - AIC(m))
+  data.frame(term = t, dropped = paste(drop, collapse = " + "), Chisq = a$Chisq[2], Df = a$Df[2], p = a$`Pr(>Chisq)`[2], dAIC = AIC(m1) - AIC(m))
 }, mc.cores = min(ncores, length(tl)))
 fwrite(do.call(rbind, lrt), file.path(out, "lrt_fixed_terms.csv"))
 

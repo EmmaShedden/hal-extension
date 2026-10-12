@@ -1,0 +1,45 @@
+Linear mixed model fit by maximum likelihood  ['lmerMod']
+Formula: log(latency_s) ~ provider + reasoning_model + release_years_z +  
+    effort + generalist + benchmark + domain:release_years_z +  
+    (1 | task) + (1 | model) + (1 | scaffold) + (1 | model:effort)
+   Data: d
+
+      AIC       BIC    logLik -2*log(L)  df.resid 
+  19256.0   19426.3   -9603.0   19206.0      6697 
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-6.1947 -0.4834 -0.0399  0.4662  6.7590 
+
+Random effects:
+ Groups       Name        Variance Std.Dev.
+ task         (Intercept) 0.477649 0.69112 
+ model:effort (Intercept) 0.006902 0.08308 
+ model        (Intercept) 0.011734 0.10832 
+ scaffold     (Intercept) 2.212582 1.48748 
+ Residual                 0.827902 0.90989 
+Number of obs: 6722, groups:  
+task, 854; model:effort, 21; model, 15; scaffold, 10
+
+Fixed effects:
+                                       Estimate Std. Error t value
+(Intercept)                             2.71406    0.67982   3.992
+providerAnthropic                       0.09213    0.14320   0.643
+providerGoogle                         -0.15464    0.17498  -0.884
+providerDeepSeek                        0.80955    0.14661   5.522
+reasoning_modelTRUE                     0.61624    0.17834   3.455
+release_years_z                         0.11927    0.12501   0.954
+effortdefault                           0.27030    0.15829   1.708
+effortlow                              -0.35760    0.14417  -2.481
+efforthigh                              0.22738    0.06979   3.258
+generalistTRUE                          1.02247    1.63009   0.627
+benchmarkCORE-Bench Hard                1.31167    0.16425   7.986
+benchmarkOnline Mind2Web                2.42165    1.24795   1.941
+benchmarkSciCode                        0.81993    1.27353   0.644
+benchmarkScienceAgentBench              1.10448    0.15570   7.093
+benchmarkSWE-bench Verified Mini        1.15519    0.16089   7.180
+benchmarkTAU-bench Airline              0.76241    0.14335   5.318
+benchmarkUSACO                          0.93543    0.13885   6.737
+release_years_z:domaincustomer_service  0.27834    0.14601   1.906
+release_years_z:domainscience          -0.55969    0.09867  -5.673
+release_years_z:domainweb               0.27955    0.06345   4.406

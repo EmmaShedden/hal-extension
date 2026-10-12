@@ -1,0 +1,16 @@
+feature,loading_pc1
+atypicality,0.34543945014834
+codebase_scale,-0.0966449703197376
+codebase_scope,0.273697662947697
+debugging_complexity,0.347592743144725
+domain_knowledge_required,0.312361246891803
+error_specificity,-0.117067865061798
+fix_localization,-0.19460851724949
+implementation_language_complexity,0.175218899400831
+logical_reasoning_required,0.344906363225144
+side_effect_risk,0.28577318272736
+similar_issue_likelihood,-0.247225557633092
+solution_complexity,0.308738142766512
+solution_hint,-0.232361578530412
+test_edge_case_coverage,0.0120301147036035
+verification_difficulty,0.290772391361073

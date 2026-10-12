@@ -139,4 +139,18 @@ calibration (predicted vs observed run accuracy: MAE, correlation); DHARMa simul
    scaffold ability, task difficulty distribution), with interpretation.
 
 ## Post-fit design changes
-(none yet)
+### PF-1 (2026-10-12, after the 64-candidate fit, `results/candidate_metrics.csv`): singular-fit rule
+*Observation.* 50/64 candidates were singular; in every inspected case the zero component is the **core**
+`(1|model)` term (SD ~1e-5), because the model-level fixed effects (provider, reasoning, release date,
+domain x release) plus `model:scaffold` / `model:benchmark` / `model:effort` absorb all between-model variance
+(15 models). The pre-registered justification for excluding singular fits ("the same model without that
+component is in the candidate set") is therefore false for these fits: the core terms were never optional.
+*Decision.* The **pre-registered rule is kept as the primary analysis** (selected: `c027`, lowest-AIC non-singular,
+dAIC = +48 vs the best singular fit). Because the rule's stated intent was "simplify only the components the data
+cannot support", a **sensitivity analysis** implements that intent literally: every singular candidate is refit
+with its zero-variance components (SD < 1e-3) removed, the reduced fits join the pool, and the lowest-AIC
+non-singular fit of the pool is selected (`R/02b_reduce_singular.R`, `results/reduced/`). Both designs go through
+Part 2 with the same holdout seeds; results for both are reported, the primary is not swapped after seeing holdout results.
+*Compute note (not a design change).* The first launch was killed after 10 min with no completed fits: OpenBLAS
+was spawning 96 threads in each of 64 workers (load ~1300). All R scripts are now run via `run_R.sh`, which
+sets single-threaded BLAS. Part 1 candidate fitting then took 4.2 min.

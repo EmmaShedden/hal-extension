@@ -1,0 +1,51 @@
+Generalized linear mixed model fit by maximum likelihood (Laplace
+  Approximation) [glmerMod]
+ Family: binomial  ( logit )
+Formula: success ~ provider + reasoning_model + release_years_z + effort +  
+    generalist + benchmark + domain:release_years_z + (1 | task) +  
+    (1 | model) + (1 | scaffold) + (1 | model:scaffold) + (1 |  
+    model:effort)
+   Data: d
+Control: CTRL
+
+      AIC       BIC    logLik -2*log(L)  df.resid 
+  18854.0   19053.2   -9402.0   18804.0     21308 
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-5.4025 -0.4539 -0.1803  0.3985 12.0589 
+
+Random effects:
+ Groups         Name        Variance  Std.Dev.
+ task           (Intercept) 4.467e+00 2.113482
+ model:scaffold (Intercept) 4.149e-01 0.644165
+ model:effort   (Intercept) 5.463e-02 0.233728
+ model          (Intercept) 3.003e-07 0.000548
+ scaffold       (Intercept) 3.168e-01 0.562828
+Number of obs: 21333, groups:  
+task, 1084; model:scaffold, 95; model:effort, 21; model, 15; scaffold, 10
+
+Fixed effects:
+                                       Estimate Std. Error z value Pr(>|z|)    
+(Intercept)                             1.01688    0.42439   2.396 0.016571 *  
+providerAnthropic                       0.31026    0.33732   0.920 0.357695    
+providerGoogle                         -1.11338    0.41252  -2.699 0.006955 ** 
+providerDeepSeek                       -1.08825    0.33501  -3.248 0.001160 ** 
+reasoning_modelTRUE                    -0.32316    0.40910  -0.790 0.429571    
+release_years_z                         0.99719    0.32545   3.064 0.002184 ** 
+effortdefault                           0.13665    0.34822   0.392 0.694745    
+effortlow                              -0.08557    0.38043  -0.225 0.822037    
+efforthigh                              0.24046    0.17874   1.345 0.178524    
+generalistTRUE                         -1.18473    0.65845  -1.799 0.071974 .  
+benchmarkCORE-Bench Hard               -2.14506    0.40751  -5.264 1.41e-07 ***
+benchmarkOnline Mind2Web               -1.99229    0.55836  -3.568 0.000360 ***
+benchmarkSciCode                       -6.41463    0.69286  -9.258  < 2e-16 ***
+benchmarkScienceAgentBench             -3.09622    0.33528  -9.235  < 2e-16 ***
+benchmarkSWE-bench Verified Mini       -2.65615    0.39103  -6.793 1.10e-11 ***
+benchmarkTAU-bench Airline             -1.13544    0.37637  -3.017 0.002555 ** 
+benchmarkUSACO                         -1.45328    0.30776  -4.722 2.33e-06 ***
+release_years_z:domaincustomer_service -1.14455    0.31848  -3.594 0.000326 ***
+release_years_z:domainscience          -0.73825    0.28777  -2.565 0.010305 *  
+release_years_z:domainweb              -1.42244    0.30377  -4.683 2.83e-06 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1

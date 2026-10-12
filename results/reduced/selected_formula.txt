@@ -1,0 +1,2 @@
+r032
+success ~ provider + reasoning_model + release_years_z + effort + generalist + benchmark + (1 | task) + (1 | model:benchmark) + (1 | scaffold:benchmark) + (1 | model:scaffold) + (1 | model:effort) + release_years_z:domain

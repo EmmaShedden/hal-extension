@@ -1,13 +1,14 @@
 # Part 2: cell-holdout refits with the fixed (selected) design. DESIGN.md "Part 2".
-# Usage: Rscript R/04_holdout.R [n_cores] [variant]   variant: "main" (default) or "judge_both" etc. (Ext. 3)
+# Usage: ./run_R.sh R/04_holdout.R [n_cores] [variant]   variant: main (default) | reduced (PF-1 sensitivity) |
+#        judge_both | judge_any | manual (Ext. 3; selected formula refit on judge-corrected data)
 source("R/common.R"); source("R/metrics.R")
 suppressPackageStartupMessages(library(parallel))
 args <- commandArgs(TRUE)
 ncores <- if (length(args) >= 1) as.integer(args[1]) else 60
 variant <- if (length(args) >= 2) args[2] else "main"
 L <- load_analysis_data("paper", scaling = readRDS(path("results/scaling.Rds"))); d <- L$d
-if (variant != "main") { source("R/judge.R"); d <- apply_judge_correction(d, variant) }
-f <- as.formula(readLines(path("results/selected_formula.txt"))[2])
+if (startsWith(variant, "judge") || variant == "manual") { source("R/judge.R"); d <- apply_judge_correction(d, variant) }
+f <- as.formula(readLines(path(if (variant == "reduced") "results/reduced/selected_formula.txt" else "results/selected_formula.txt"))[2])
 full <- if (variant == "main") readRDS(path("fits/selected_model.Rds")) else readRDS(path(sprintf("fits/selected_model_%s.Rds", variant)))
 d$p_full <- predict(full, newdata = d, type = "response", allow.new.levels = TRUE)
 outdir <- path("results/part2", variant); dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
