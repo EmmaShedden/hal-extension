@@ -13,6 +13,11 @@ All coefficients below are on the logit scale for the primary model `c027` unles
    * **For scale:** HAL run accuracies range from 0 % to 70 % (SD 17 pp), and a run typically sits 10.2 pp from its benchmark's average. The refit removes about a quarter of that.
    * The gain is concentrated on SWE-bench, CORE-Bench, ScienceAgentBench and SciCode (45–25 % less error than guessing the benchmark mean).
    * On GAIA, TAU-bench, USACO and Online Mind2Web it is no better than that guess. See REPORT.md §4b and `results/figures/`.
+   * **Task-level holdout:** Filling in missing task scores is much easier than predicting whole runs, but the GLMM adds little there.
+     * The model was also refit with 10–50 % of *individual task scores* held out. The run's observed tasks are combined with GLMM predictions for the missing ones.
+     * This recovers full-benchmark run accuracy to **1.0 / 1.7 / 2.9 pp**, against 7–8 pp for predicting whole runs.
+     * But just reporting the accuracy on the tasks that were run gives 1.1 / 1.9 / 3.3 pp. A covariate-free run + task additive logit matches the GLMM.
+     * On a run's held-out tasks alone the error is 6–10 pp, mostly binomial sampling noise: about 4 pp is systematic. See REPORT.md §4c.
 2. **Extrapolating to new models is much weaker.**
    * Runs on models released after the paper (the Claude 4.5 series, Gemini 3 Pro) are predicted to 11.8 pp MAE.
    * Known models on new scaffolds are predicted to 5.8 pp.
