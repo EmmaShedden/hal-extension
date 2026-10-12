@@ -1,0 +1,156 @@
+For OpenAI models, if no further clarification was provided, we assume that the model tested was the  default medium level of reasoning effort (e.g., references to o4-mini would be interpreted as o4-mini Medium, GPT-5 as GPT-5 Medium, etc.). For Anthropic's Claude models, unless otherwise specified, we assume that the mode without extended thinking was tested (e.g., Claude-3.7 Sonnet).
+
+For leaderboard situations in which multiple versions of the same scaffold were tested, we condensed their presentation into one single entry on the table below. Additionally, the presence of multiple `test` submissions were condensed and noted (in particular for the GAIA leaderboard). Citations and descriptions of the scaffolds were not always available on leaderboards, hence some entries contain only a citation to the leaderboard itself. 
+
+We included evaluations utilizing SWE-bench and SWE-bench Verified, since SWE-bench Verified Mini is a subset of both benchmarks.
+
+\begin{longtable}{p{2cm}p{3cm}p{5cm}p{3cm}}
+\toprule
+Benchmark & Model & Scaffold & Reference \\
+\midrule
+\endfirsthead
+
+\multicolumn{4}{c}{\tablename\ \thetable\ -- \textit{Continued from previous page}} \\
+\toprule
+Benchmark & Model & Scaffold & Reference \\
+\midrule
+\endhead
+
+\midrule
+\multicolumn{4}{r}{\textit{Continued on next page}} \\
+\endfoot
+
+\bottomrule
+\endlastfoot
+  GAIA & Claude-3.7 Sonnet & 2 submissions marked test & \cite{mialon_gaia_2023} \\
+  GAIA & Claude 3.7 Sonnet & ShawnAgent & \cite{mialon_gaia_2023} \\
+  GAIA & Claude-3.7 Sonnet & agent\_0704 & \cite{mialon_gaia_2023} \\
+  GAIA & Claude-3.7 Sonnet & Agent\_LD\_v0.1 & \cite{mialon_gaia_2023} \\
+  GAIA & Claude-3.7 Sonnet & AgentOrchestra & \cite{zhang_agentorchestra_2025} \\
+  GAIA & Claude-3.7 Sonnet & AgentZ\_v0.10 & \cite{mialon_gaia_2023} \\
+  GAIA & Claude-3.7 Sonnet & AGI Tiny & \cite{mialon_gaia_2023} \\
+  GAIA & Claude-3.7 Sonnet & AWorld & \cite{mialon_gaia_2023,yu_aworld_2025} \\
+  GAIA & Claude-3.7 Sonnet & csy\_v0.2 & \cite{mialon_gaia_2023} \\
+  GAIA & Claude-3.7 Sonnet & dev1ce & \cite{mialon_gaia_2023} \\
+  GAIA & Claude-3.7 Sonnet & h2oGPTe Agent & \cite{mialon_gaia_2023,noauthor_enterprise_nodate} \\
+  GAIA & Claude-3.7 Sonnet & Inspect AI ReAct Agent & \cite{lab_frontier_2025,yao_react_2023,noauthor_react_nodate} \\
+  GAIA & Claude-3.7 Sonnet & Miami Nano & \cite{mialon_gaia_2023} \\
+  GAIA & Claude-3.7 Sonnet & mt\_0831 & \cite{mialon_gaia_2023} \\
+  GAIA & Claude-3.7 Sonnet & mt\_agent & \cite{mialon_gaia_2023} \\
+  GAIA & Claude-3.7 Sonnet & OpenHands v0.28.1 & \cite{mialon_gaia_2023} \\
+  GAIA & Claude-3.7 Sonnet & playplay0622 & \cite{mialon_gaia_2023} \\
+  GAIA & Claude-3.7 Sonnet & s1mple & \cite{mialon_gaia_2023} \\
+  GAIA & Claude-3.7 Sonnet & Skywork Deep Research Agent v2 & \cite{mialon_gaia_2023,zhang_agentorchestra_2025} \\
+  GAIA & Claude-3.7 Sonnet & TapeAgents BrowserGym & \cite{mialon_gaia_2023,bahdanau_tapeagents_2024} \\
+  GAIA & Claude-3.7 Sonnet & xManus & \cite{mialon_gaia_2023,adyuter_adyuterxmanus_2025} \\
+  GAIA & Claude-3.7 Sonnet & xyant & \cite{mialon_gaia_2023} \\
+  GAIA & Claude-3.7 Sonnet & xyant-131 & \cite{mialon_gaia_2023} \\
+  GAIA & Claude-3.7 Sonnet & ZywOo & \cite{mialon_gaia_2023} \\
+  GAIA & Claude-3.7 Sonnet  & Ormind & \cite{mialon_gaia_2023,noauthor_ormind_nodate} \\
+  GAIA & Claude-3.7 Sonnet (with GPT-4o) & Alita & \cite{mialon_gaia_2023,qiu_alita_2025} \\
+  GAIA & DeepSeek R1 & a1 & \cite{mialon_gaia_2023} \\
+  GAIA & DeepSeek R1 & Architect 0 & \cite{mialon_gaia_2023} \\
+  GAIA & DeepSeek R1 & Architect 1 & \cite{mialon_gaia_2023} \\
+  GAIA & DeepSeek R1 & gun & \cite{mialon_gaia_2023} \\
+  GAIA & DeepSeek R1 & h2oGPTe Agent v1.6.27 (Open Weights) & \cite{mialon_gaia_2023} \\
+  GAIA & DeepSeek R1 & Inspect AI ReAct Agent & \cite{lab_frontier_2025,yao_react_2023,noauthor_react_nodate} \\
+  GAIA & DeepSeek R1 & ork & \cite{mialon_gaia_2023} \\
+  GAIA & DeepSeek R1 & T.T & \cite{mialon_gaia_2023} \\
+  GAIA & DeepSeek R1 & wto-agent & \cite{mialon_gaia_2023} \\
+  GAIA & DeepSeek R1  & Invoker & \cite{mialon_gaia_2023} \\
+  GAIA & DeepSeek V3 & AWorld & \cite{mialon_gaia_2023,yu_aworld_2025} \\
+  GAIA & DeepSeek V3 & AWorld & \cite{mialon_gaia_2023,yu_aworld_2025} \\
+  GAIA & DeepSeek V3 & Inspect AI ReAct Agent & \cite{lab_frontier_2025,yao_react_2023,noauthor_react_nodate} \\
+  GAIA & DeepSeek V3 & Invoker & \cite{mialon_gaia_2023} \\
+  GAIA & DeepSeek V3 & JoinAI & \cite{mialon_gaia_2023} \\
+  GAIA & DeepSeek V3 & qc-agent & \cite{mialon_gaia_2023} \\
+  GAIA & DeepSeek V3 & Yet Another Agent & \cite{mialon_gaia_2023} \\
+  GAIA & Gemini 2.0 Flash & gemini-cot & \cite{mialon_gaia_2023} \\
+  GAIA & GPT-4.1 & 19 submissions marked test & \cite{mialon_gaia_2023} \\
+  GAIA & GPT-4.1 & agent\_0718 & \cite{mialon_gaia_2023} \\
+  GAIA & GPT-4.1 & agent\_0823\_full41 & \cite{mialon_gaia_2023} \\
+  GAIA & GPT-4.1 & agent\_66 & \cite{mialon_gaia_2023} \\
+  GAIA & GPT-4.1 & agent\_7337 & \cite{mialon_gaia_2023} \\
+  GAIA & GPT-4.1 & agent\_rev1 & \cite{mialon_gaia_2023} \\
+  GAIA & GPT-4.1 & Agent\_v0\_test & \cite{mialon_gaia_2023,noah_maccallum_gpt-41_2025} \\
+  GAIA & GPT-4.1 & Agent\_v0.0.1-v0.1.4 & \cite{mialon_gaia_2023} \\
+  GAIA & GPT-4.1 & Agent2030 & \cite{mialon_gaia_2023} \\
+  GAIA & GPT-4.1 & agent333 & \cite{mialon_gaia_2023} \\
+  GAIA & GPT-4.1 & AGIent & \cite{mialon_gaia_2023} \\
+  GAIA & GPT-4.1 & agnetx & \cite{mialon_gaia_2023} \\
+  GAIA & GPT-4.1 & desearch & \cite{mialon_gaia_2023} \\
+  GAIA & GPT-4.1 & HomerAgent & \cite{mialon_gaia_2023} \\
+  GAIA & GPT-4.1 & Hugging Face OpenDeepResearch & \cite{deshpande_trail_2025} \\
+  GAIA & GPT-4.1 & Mario Beta 1-3 & \cite{mialon_gaia_2023} \\
+  GAIA & GPT-4.1 & myagent\_h0 & \cite{mialon_gaia_2023} \\
+  GAIA & GPT-4.1 & Ormind & \cite{mialon_gaia_2023,noauthor_ormind_nodate} \\
+  GAIA & GPT-4.1 & OWL++ & \cite{mialon_gaia_2023} \\
+  GAIA & GPT-4.1 & Phoenix-Agent-v2.0 & \cite{mialon_gaia_2023} \\
+  GAIA & GPT-4.1 & ShawnAgent & \cite{mialon_gaia_2023} \\
+  GAIA & GPT-4.1 & Skywork Deep Research Agent v2 & \cite{mialon_gaia_2023,zhang_agentorchestra_2025} \\
+  GAIA & GPT-4.1 & WelfareWise & \cite{mialon_gaia_2023,noauthor_introducing_2025} \\
+  GAIA & GPT-5 & Arjeplog & \cite{mialon_gaia_2023} \\
+  GAIA & GPT-5 & dyme\_agent\_0819\_test & \cite{mialon_gaia_2023} \\
+  GAIA & GPT-5 & dyme\_agent\_0827 & \cite{mialon_gaia_2023} \\
+  GAIA & GPT-5 & halcyon-0z & \cite{mialon_gaia_2023} \\
+  GAIA & GPT-5 & OpenHands Versa & \cite{mialon_gaia_2023} \\
+  GAIA & GPT-5 & peregrine-0z & \cite{mialon_gaia_2023} \\
+  GAIA & GPT-5 & ShawnAgent & \cite{mialon_gaia_2023} \\
+  GAIA & GPT-5 & Test & \cite{mialon_gaia_2023} \\
+  GAIA & GPT-5 & xiaoyao & \cite{mialon_gaia_2023} \\
+  GAIA & GPT-5 & Yet Another Agent & \cite{mialon_gaia_2023} \\
+  GAIA & GPT-5 (Multiple Models) & MiroFlow & \cite{mialon_gaia_2023,team_miroflow_2025} \\
+  GAIA & o3 & agent\_0711 & \cite{mialon_gaia_2023} \\
+  GAIA & o3 & Agent2030 & \cite{mialon_gaia_2023} \\
+  GAIA & o3 & MetaAgent & \cite{mialon_gaia_2023} \\
+  GAIA & o3 & ShawnAgent & \cite{mialon_gaia_2023} \\
+  GAIA & o3 & Test\_agent\_part2 & \cite{mialon_gaia_2023} \\
+  GAIA & o3 & XL-V0 & \cite{mialon_gaia_2023} \\
+  Online Mind2Web & Claude-3.7 Sonnet & Claude Computer Use 3.7 (w/o thinking) & \cite{xue_illusion_2025, deng_mind2web_2023} \\
+  Online Mind2Web & Claude-3.7 Sonnet High & None specified & \cite{xue_illusion_2025, deng_mind2web_2023, guo_seed15-vl_2025} \\
+  Online Mind2Web & o3 Medium & ACT-1-20250703 & \cite{xue_illusion_2025, deng_mind2web_2023, noauthor_enhans_2025} \\
+  SciCode & Claude Opus 4.1 & None specified & \cite{noauthor_artificial_2025} \\
+  SciCode & Claude Opus 4.1 High & None specified & \cite{noauthor_artificial_2025} \\
+  SciCode & Claude-3.7 Sonnet & None specified & \cite{noauthor_artificial_2025} \\
+  SciCode & Claude-3.7 Sonnet High & None specified & \cite{noauthor_artificial_2025} \\
+  SciCode & DeepSeek R1 & None specified & \cite{noauthor_artificial_2025} \\
+  SciCode & DeepSeek R1 & None specified & \cite{glm-45_team_glm-45_2025} \\
+  SciCode & DeepSeek R1 & None specified & \cite{tian_scicode_2024} \\
+  SciCode & DeepSeek V3 & None specified & \cite{noauthor_artificial_2025} \\
+  SciCode & DeepSeek V3 & None specified & \cite{tian_scicode_2024} \\
+  SciCode & Gemini 2.0 Flash & None specified & \cite{noauthor_artificial_2025} \\
+  SciCode & GPT-4.1 & None specified & \cite{noauthor_artificial_2025} \\
+  SciCode & GPT-5 Medium & None specified & \cite{noauthor_artificial_2025} \\
+  SciCode & o3 & None specified & \cite{glm-45_team_glm-45_2025} \\
+  SciCode & o3 Medium & None specified & \cite{noauthor_artificial_2025} \\
+  SciCode & o4-mini High & None specified & \cite{noauthor_artificial_2025} \\
+  SWE-Bench & Claude-3.7 Sonnet & SWE-agent 1.0 & \cite{jimenez_swe-bench_2023} \\
+  SWE-Bench Verified & Claude Opus 4.1 & Bash tool, file editing tool & \cite{noauthor_claude_2025-1} \\
+  SWE-Bench Verified & Claude-3.7 Sonnet & Bash tool, file editing tool, and 'planning tool' & \cite{noauthor_claude_2025} \\
+  SWE-Bench Verified & DeepSeek R1 & Agentless framework & \cite{deepseek-ai_deepseek-r1_2025,xia_agentless_2024} \\
+  SWE-Bench Verified & DeepSeek R1 & OpenHands v0.34.0 & \cite{glm-45_team_glm-45_2025,wang_openhands_2025} \\
+  SWE-Bench Verified & DeepSeek V3 & Agentless framework & \cite{deepseek-ai_deepseek-v3_2024,xia_agentless_2024} \\
+  SWE-Bench Verified & Gemini 2.0 Flash & mini-SWE-agent & \cite{jimenez_swe-bench_2023,chowdhury_neil_introducing_2024} \\
+  SWE-Bench Verified & GPT-4.1 & Custom setup & \cite{noauthor_introducing_2025,noah_maccallum_gpt-41_2025} \\
+  SWE-Bench Verified & GPT-4.1 & mini-SWE-agent & \cite{jimenez_swe-bench_2023,chowdhury_neil_introducing_2024} \\
+  SWE-Bench Verified & GPT-4.1 & OpenHands v0.34.0 & \cite{glm-45_team_glm-45_2025,wang_openhands_2025} \\
+  SWE-Bench Verified & GPT-5 Medium & mini-SWE-agent & \cite{jimenez_swe-bench_2023,chowdhury_neil_introducing_2024} \\
+  SWE-Bench Verified & o3 & without building a custom model-specific scaffold & \cite{openai_o3_2025} \\
+  SWE-Bench Verified & o3 & mini-SWE-agent  & \cite{jimenez_swe-bench_2023,chowdhury_neil_introducing_2024} \\
+  SWE-Bench Verified & o3 & OpenHands v0.34.0 & \cite{glm-45_team_glm-45_2025,wang_openhands_2025} \\
+  SWE-Bench Verified & o4-mini High & OpenHands v0.34.0 & \cite{glm-45_team_glm-45_2025,wang_openhands_2025} \\
+  TauBench Airline & Claude Opus 4.1 High & Prompt addendum to Airline Agent Policy instructing Claude to better leverage its reasoning abilities while using extended thinking with tool use. & \cite{noauthor_claude_2025-1} \\
+  TauBench Airline & Claude-3.7 Sonnet & Prompt addendum to the Airline Agent Policy instructing Claude to better utilize a 'planning' tool & \cite{noauthor_claude_2025} \\
+  TauBench Airline & DeepSeek R1 & None specified & \cite{deepseek-ai_deepseek-r1_2025} \\
+  TauBench Airline & GPT-4.1 & Optimized user simulator & \cite{glm-45_team_glm-45_2025} \\
+  TauBench Airline & o3  & Optimized user simulator & \cite{glm-45_team_glm-45_2025} \\
+  TauBench Airline & o4-mini High & Optimized user simulator & \cite{glm-45_team_glm-45_2025} \\
+  TauBench Airline & o4-mini High & Run without any custom tools or prompting & \cite{openai_o3_2025} \\
+  USACO & Claude-3.7 Sonnet & Inspect AI ReAct Agent & \cite{lab_frontier_2025,yao_react_2023,noauthor_react_nodate} \\
+  USACO & DeepSeek R1 & Inspect AI ReAct Agent & \cite{lab_frontier_2025,yao_react_2023,noauthor_react_nodate} \\
+  USACO & DeepSeek R1 & None specified & \cite{wang_aethercode_2025} \\
+  USACO & DeepSeek V3 & Inspect AI ReAct Agent & \cite{lab_frontier_2025,yao_react_2023,noauthor_react_nodate} \\
+  USACO & DeepSeek V3 & None specified & \cite{wang_aethercode_2025} \\
+  USACO & GPT-4.1 & None specified & \cite{wang_aethercode_2025} \\
+  USACO & o4-mini High & None specified & \cite{wang_aethercode_2025} \\
+\end{longtable}

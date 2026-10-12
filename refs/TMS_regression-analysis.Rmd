@@ -1,0 +1,1012 @@
+---
+title: "R Notebook : codeTMS data analysis"
+output: html_notebook
+bibliography: citations.bib
+---
+
+# Multi-level linear regression analysis
+
+This notebook is organized according to the dependent variable and underlying data of the fitted models, rather than by research question. RQs and paper sections connected to each section of this notebook are as follows:
+
+-   Notebook section 4 (selection of dependent variables) and 5 (specification of candidate predictor structures)
+
+    -   Paper sections 4.2.2-4.2.3 (model specification strategy for all RQs)
+
+-   Notebook section 6 (models of log-transformed response times, fit to programming questions data) and 8 (models of raw response times, fit to programming questions data)
+
+    -   Paper section 5.3 (RQ3 - TMS effect on programming question response times)
+    -   Paper section 5.1 (RQ1 - systematic effects), to a lesser extent
+
+-   Notebook section 6, subsection "Learning/training effect"
+
+    -   Paper section 7 (Threats to validity), $p$-value for observed learning effect
+
+-   Notebook section 7 (models of log-transformed response times, fit to mental rotation questions data) and 9 (models of raw response times, fit to mental rotation questions data)
+
+    -   Paper section 5.2 (RQ2 - TMS effect on mental rotation response times)
+
+-   Notebook section 10 (skew in response times and fitted model residuals)
+
+    -   Paper sections 4.2.3, 5.1, 5.2, and 5.3 as relates to the choice to log-transform response times
+
+-   Notebook section 11 (imbalance in data)
+
+    -   Paper section 4.2.1 (suitability of multi-level linear regression analysis)
+
+## 0. Table of contents
+
+[1. Notebook configurable settings]
+
+[2. Miscellaneous code setup]
+
+[3. Data processing]
+
+[4. Select independent variables]
+
+[5. Specify candidate predictor structures for mixed model formulas]
+
+[6. log(response_time) on programming questions data](#sec-6-log-time-programming)
+
+[7. log(response_time) on positive control (MR) data](#sec-7-log-time-mr)
+
+[8. response_time on programming questions data](#sec-8-time-programming)
+
+[9. response_time on positive control (MR) data](#sec-9-time-mr)
+
+[10. Visualize & quantify data skewness](#visualize-quantify-data-skewness)
+
+[11. Imbalance in data]
+
+## 1. Notebook configurable settings
+
+```{r}
+# name the directories to read data from and write output to
+input_version = 1
+output_version = 1
+
+# flags for whether to re-fit candidate models
+fit_programming_log_response_times = TRUE
+fit_pos_ctrl_log_response_times = TRUE
+fit_programming_response_times = TRUE
+fit_pos_ctrl_response_times = TRUE
+
+# flags for whether to re-run profile likelihood analysis
+profile_programming_log_response_times = TRUE
+
+# flag for whether to save logs of the dropped outliers
+save_outliers = TRUE
+
+# flag for whether to insert a breakpoint before doing the actual analysis
+setup_only = FALSE
+
+# flag for whether the stimuli have been re-indexed
+reindexed = TRUE
+
+# flag to set the random seed manually (for exact replication of bootstrap results in the paper)
+set_random_seed = TRUE
+```
+
+## 2. Miscellaneous code setup
+
+```{r}
+# import packages
+library(lme4)     # mixed models
+library(dplyr)    # dataframe manipulation
+library(readr)    # reading in the data
+library(emmeans)  # likelihood ratio testing
+library(purrr)    # for map()
+library(lattice)  # for xyplot()
+library(TAF)      # setting up output file directory structure during model fitting
+library(moments)  # skewness for selecting between additive and multiplicative models of response times
+```
+
+```{r}
+# useful global variables, constants, helper functions, etc.
+domains = LETTERS[1:5]
+conditions = LETTERS[24:26]
+
+# make an overall output directory (model summaries, stats, etc. will all go here)
+outputdir = sprintf("%s/regression-models-%d", getwd(), output_version)
+mkdir(outputdir)
+
+# fix a random seed so that numbers are consistent with the paper
+if (set_random_seed) {
+  set.seed(42)
+}
+```
+
+## 3. Data processing
+
+### Read in the data
+
+```{r}
+fin = sprintf("processed-data-%d/tms-functional-data-v%d.csv", input_version, input_version)
+da = read_csv(fin)
+
+if (reindexed) {
+  da = rename(da, stimulus=adjusted_stimulus)
+}
+```
+
+### Drop rows with missing data
+
+The participant didn't see/get to the given test question.
+
+```{r}
+# Drop rows with no data (11 rows)
+da = da[!is.na(da$response_time),]
+
+dim(da)
+```
+
+### Drop sleepy participant outliers
+
+One participant was observed by research staff to be falling asleep intermittently throughout their two sessions; we remove any of their responses which are more than two standard deviations away from the mean time of all other participants for the corresponding question, on the assumption that they fell asleep while responding to it.
+
+```{r}
+# calculate basline information about each question
+stimuli = da %>%
+  filter(id != "19391") %>% 
+  group_by(original_stimulus) %>%
+  summarise(response_time.stimulus.mean = mean(response_time), 
+            response_time.stimulus.std_dev = sd(response_time))
+
+stimuli
+```
+
+```{r}
+outliers = merge(da, stimuli, by = "original_stimulus") %>%
+  filter(id == "19391" & 
+         abs(response_time - response_time.stimulus.mean) 
+           > 2 * response_time.stimulus.std_dev)
+
+outliers = outliers[, c("original_stimulus", 
+                        "response_time", 
+                        "response_time.stimulus.mean", 
+                        "response_time.stimulus.std_dev")] %>% 
+  rename(stimulus = original_stimulus)
+
+outliers
+```
+
+```{r}
+# log outliers to file (29 of them)
+if (save_outliers) {
+  fout = sprintf("%s/outliers.csv", outputdir)
+  write.csv(outliers, file = fout, row.names=FALSE)
+}
+```
+
+```{r}
+# reverse the logic above to get non-outliers
+non_outliers = merge(da, stimuli, by = "original_stimulus") %>%
+  filter(id != "19391" | abs(response_time - response_time.stimulus.mean) <= 2 * response_time.stimulus.std_dev)
+
+non_outliers
+```
+
+```{r}
+# from now on, these are the data
+da = non_outliers
+```
+
+## 4. Select independent variables
+
+1.  `id` (person) : random intercept
+    -   People are drawn from an underlying distribution; we aren't interested in learning coefficients specific to the members of our sample, but rather in what they tell us about that underlying population. Random effects tell us about the distribution rather than the elements observed.
+
+    -   This variable is used to model person-specific attributes, such as a "skill," translating to overall faster or slower response times, that can be different for each person, or even different for each person and content domain. In Wilkinson notation [@wilkinson1973symbolic], these can be represented by `(1|id)` and `(1|id:domain)` respectively.
+2.  `stimulus` (question prompt) : random intercept
+    -   The underlying distribution of stimuli is a little less clear than that of participants; however, we aren't interested in learning coefficients specific to our stimuli, but rather in what they tell us about their "underlying population," that is the set of similarly-structured question prompts in each domain. Random effects tell us about that distribution.
+
+    -   This variable can be thought of as modeling the dispersion of question-specific difficulties. If a well-fit model of the data includes `(1|stimulus)` with a large variance estimate, that means our questions have widely varying difficulties; if the variance is small and/or insignificant, then our questions are very consistently calibrated.
+3.  `condition` (TMS treatment condition, i.e. brain region stimulated) : fixed & random intercepts
+    -   Based on previous literature, we hypothesize that the brain region stimulated may have an effect that is systematic (i.e. very consistent between people, topics, etc.), quantitatively heterogeneous (i.e. directionally consistent, but widely varying in magnitude), or even a qualitatively heterogeneous (i.e. varying in direction, possibly in conjunction with magnitude). Therefore, we assess the goodness of fit for candidate models containing `condition` as a fixed effect, random effect, both, or neither, in order to test this hypothesis.
+
+    -   Some examples:
+
+        -   `(1|id:condition)` models a TMS effect that is qualitatively heterogeneous between people and brain regions, and is equally likely to improve or impair performance.
+
+        -   `condition + (1|id:condition)` models a TMS effect that may be quantitatively or qualitatively heterogeneous between people and brain regions, depending on the associated parameter estimates for the fixed and random effects.
+
+        -   `condition * domain` models a TMS effect that is systematic per content domain (question topic) and brain region.
+
+        -   `(1|id:condition:domain)` models a TMS effect that is qualitatively heterogeneous between person-domain-brain regions, and is equally likely to improve or impair performance. In other words, even for a given person and brain region targeted, the direction of the effect varies unpredictably between question categories; however, it is consistent once the person, brain region, and question domain are all fixed.
+4.  `domain` (content domain, i.e. topic of the question prompt) : fixed & random intercepts
+    -   Examples are given under `condition` above; we are primarily interested in how `domain` may interact with `condition`, so wherever `condition` goes, `domain` may go too.
+5.  `session_num` (chronological numbering of the session, per participant) : fixed intercept
+    -   This is used to account for learning/training effect, i.e. participants getting better at test-taking under our specific test instrument over the course of the study. For example, they may become more familiar with the question structure, or become better at recalling old material as they do more practice questions. We expect this to be systematic (uniformly decreasing response time), so we model it as a fixed effect.
+
+## 5. Specify candidate predictor structures for mixed model formulas
+
+Fixed effect structures are enumerated by brute force. However, we remove TMS condition by session number interactions, because we have no prior findings that would lead us to hypothesize a TMS effect that operates *on* learning effect. Further, there are 6 ways to map conditions to sessions for each person, and we have 14 people, so there would be 2 people per ordering; this is not enough to give a meaningful signal.
+
+By contrast, a person sees every domain under every TMS condition and session number, so it makes sense to interact domain with session number or TMS condition.
+
+```{r}
+fixed_effects = c(# no fixed effects
+                  "", 
+                  
+                  # no interactions
+                  "condition", 
+                  "domain", 
+                  "session_num",
+                  "condition + domain", 
+                  "domain + session_num", 
+                  "condition + session_num", 
+                  "condition + domain + session_num",
+                  
+                  # 2-way interactions
+                  "condition * domain", 
+                  "domain * session_num", 
+                  #"condition * session_num", 
+                  
+                  # 1- and 2-way interactions
+                  "condition * domain + session_num", 
+                  "domain * session_num + condition", 
+                  #"condition * session_num + domain", 
+                  
+                  # multiple 2-way interactions
+                  "condition * domain + domain * session_num" #,
+                  #"condition * domain + condition * session_num",
+                  #"domain * session_num + condition * session_num",
+                  #"condition * domain + domain * session_num + condition * session_num",
+                  # 3-way interactions
+                  #"condition * domain * session_num"
+                  )
+```
+
+When fixed effects are interacted above, the "main effects" of each individual variable are automatically included. Technically, it is also possible to model only interactions of the fixed effects, without also including main effects. However, the principle of heredity in mixed modeling states that in general, main effects should be included when the fixed effects are. We will therefore exclude this option here.
+
+Random effects are also initially enumerated by brute force. Then, we remove those that are redundant to fixed effects or otherwise not feasible to model. Reasoning is provided below (corresponding to code comments in the next cell):
+
+1.  We don't actually lose anything by excluding this option. If there are no true random effects in the sample data, then `lme4` will estimate very small variance values for the random effects in the best-fit model, and profile likelihood confidence bounds will show that their contribution is not significant.
+2.  We don't have a good reason to assume an underlying probability distribution of `domain`s. We also would only have 5 domains drawn from this distribution, making it unlikely that we could confidently estimate its variance. Further, if there is a significant difference in domains, we want to understand the specific contrasts between them. Since we've already included this as a candidate fixed effect, we wouldn't gain anything by including it as a random effect. Analogous reasoning applies to `condition` and interactions between the two.
+3.  These groups have size 1 or 0 (each person sees each question once or not at all). This provides insufficient information for `lme4` to give reasonable parameter estimates.
+4.  Stimuli are *nested* within content domains, so many of these groups would have size 0. Therefore, we exclude this interaction. In general, interacted variables must have a *crossed* structure, inherited from the experimental design, for random effects to be able to model them.
+
+```{r}
+random_effects = c(#"",                               # (1)
+                   "id", 
+                   "stimulus",
+                   #"domain",                         # (2)
+                   #"condition",                      # (2)
+                   #"id:stimulus",                    # (3)
+                   "id:domain",
+                   "id:condition",
+                   #"stimulus:domain",                # (4)
+                   "stimulus:condition",
+                   #"domain:condition",               # (2)
+                   #"id:stimulus:domain",             # (3), (4)
+                   #"id:stimulus:condition",          # (3)
+                   "id:domain:condition"
+                   #"stimulus:domain:condition",      # (2), (4)
+                   #"id:stimulus:domain:condition"    # (2), (3), (4)
+                   )
+```
+
+Overall, we err on the side of removing options where possible due to practicality: models take time to fit, and we performed this analysis on accuracy data as well as response times. This used generalized linear mixed-effects regression models, which are much slower to fit than linear mixed models, so cutting down where possible was extremely useful.
+
+The breakpoint in the cell below is inserted to make it easier to "run all chunks" of the boiler plate code and then manually run the specific types of models that you're interested in.
+
+```{r}
+if (setup_only) {
+  stop(":)")
+}
+```
+
+## 6. `log(response_time)` on programming questions data {#sec-6-log-time-programming}
+
+The response variable is log-transformed response time.
+
+### More data processing
+
+Get only the programming questions ("list/array," "tree," and "code").
+
+```{r}
+prog_da = da %>% filter(is_programming)
+prog_da
+```
+
+### Specify model formulas
+
+These will be re-used for the positive control models (Section 7). The fixed effect structures and the random effects were both listed in Section 5, so now we build up the random effect structures and combine everything into full formulas with the response variable included.
+
+There are a total of 819 models specified, via brute-force enumeration of the fixed and random effect structures generated in Section 5 above.
+
+In this first cell, we enumerate random effect structures by taking all combinations of the random effects specified in Section 5.
+
+```{r}
+random_effects = map(random_effects, function (s) sprintf("(1|%s)", s))
+
+random_exprs = c()
+N_random = length(random_effects)
+for (k in 1:N_random) {
+  iii = combn(1:N_random, k, simplify=FALSE)
+  for (ii in iii) {
+    expr = paste(random_effects[ii], collapse = " + ")
+    random_exprs = append(random_exprs, expr)
+  }
+}
+```
+
+Now, we combine the response variable, fixed effects, and random effects together to generate our candidate model structures.
+
+```{r}
+loglinear_formulae = c()
+for (fe in fixed_effects) {
+  for (re in random_exprs) {
+    f = ""
+    if (fe == "") {
+      f = sprintf("log(response_time) ~ %s", re)
+    } else {
+      f = sprintf("log(response_time) ~ %s + %s", fe, re)
+    }
+    loglinear_formulae = append(loglinear_formulae, f)
+  }
+}
+
+print(length(loglinear_formulae))
+```
+
+### Model fitting (\~2 minutes)
+
+Here, we fit all the models. Of note, we use MLE rather than REML for compatibility with the AIC model selection strategy.
+
+We also store BIC (an alternative model selection criterion) in addition to AIC here. The two have different theoretical properties, both of which may be useful. Both describe the log likelihood of a fitted model, with a penalty for model complexity. The penalty in BIC is higher than that for AIC, so optimal-BIC models tend to be smaller (with fewer parameters) than optimal-AIC models. We have done our analysis relying on AIC, but we provide BIC-based model selection here in case the reader is interested.
+
+```{r}
+if (fit_programming_log_response_times) {
+  # make an output directory for the output of all the candidate linear models
+  logtime_outputdir = 
+    sprintf("%s/programming_log_time_model_summaries", outputdir)
+  mkdir(logtime_outputdir)
+  
+  # make an output file for the AIC and BIC of each model
+  metricsfile = sprintf("%s/metrics.csv", logtime_outputdir)
+  file.create(metricsfile)
+  
+  sink(file = metricsfile,
+       append = FALSE,
+       type = "output",
+       split = FALSE
+       )
+  
+  cat("formula,AIC,BIC\n")
+  
+  sink()
+  
+  for (f in loglinear_formulae) {
+    # make an output directory for the output of this specific candidate model
+    f_outputdir = sprintf("%s/%s", logtime_outputdir, gsub(" ", "", f, fixed = TRUE))
+    mkdir(f_outputdir)
+    
+    # make the individual output file
+    summaryfile = sprintf("%s/summary.txt", f_outputdir)
+    
+    file.create(summaryfile)
+    
+    # print a delimiter for console output
+    cat(sprintf("\n---------------------------------------------\n%s\n", f))
+    
+    # fit the model
+    m = lmer(f, data=prog_da, REML=FALSE)
+    
+    # send the model summary to the summary file
+    sink(file = summaryfile,
+         append = FALSE,
+         type = "output",
+         split = FALSE
+         )
+    
+    print(summary(m))
+    
+    sink()
+    
+    # send the AIC and BIC to the metrics file
+    metrics = sprintf("%s,%f,%f\n", f, AIC(m), BIC(m))
+    
+    sink(file = metricsfile,
+         append = TRUE,
+         type = "output",
+         split = FALSE)
+    
+    cat(metrics)
+    
+    sink()
+  }
+}
+```
+
+### Model selection
+
+```{r}
+# read in the AIC/BIC data
+fin = sprintf("%s/programming_log_time_model_summaries/metrics.csv", outputdir)
+log_time_models_da = read_csv(fin)
+```
+
+```{r}
+head(log_time_models_da[order(log_time_models_da$AIC),], n = 10)
+```
+
+```{r}
+head(log_time_models_da[order(log_time_models_da$BIC),], n = 10)
+```
+
+AIC and BIC largely agree about the optimal model structure.
+
+The only difference is that BIC does not select the `domain` fixed effect (domains exhibiting different baseline difficulties *and* different rates of learning effect) while AIC does. From the AIC-selected model, we still observe that domain `D` (lists/arrays) has a statistically significant contrast with both domains `B` (code comprehension) and `E` (trees). See below for details.
+
+The `id:condition` random effect is present in all of the best 10 model structures under both criteria, which gives us confidence that its contribution is significant. We will confirm this with profile likelihood analysis (see below).
+
+The `session_num` fixed effect is selected very consistently by AIC. We will see below that it is significant with a negative coefficient, which means that we have strong evidence for the presence of training effect over the course of the 3 sessions. Of note, mixed models in `lme4` don't support ordinal data, so we've let it be quantitative.
+
+### Optimal AIC
+
+```{r}
+f0 = log_time_models_da[order(log_time_models_da$AIC),]$formula[[1]]
+cat(f0)
+```
+
+The variance point estimates shown here feed directly into the PVE below.
+
+```{r}
+m0 = lmer(f0, data=prog_da, REML=FALSE)
+summary(m0)
+```
+
+### Profile likelihood (\~1 minute)
+
+Now we want to assign statistical significance to the person-condition random effect (corresponding to $\sigma_3 =$ `.sig03` below - the numbering follows the order in which the model summary lists the random effects).
+
+The graphs produced by `xyplot` are provided here in case the reader is interested, but the confidence intervals in the next cell will usually provide sufficient information.
+
+```{r}
+if (profile_programming_log_response_times) {
+  pp0 = profile(m0)
+}
+```
+
+```{r}
+xyplot(pp0)
+```
+
+```{r}
+confint(pp0)
+```
+
+So, the `id:condition` (person-condition) random effect is statistically significant, with a 95% confidence interval of (0.0663, 0.143) on its standard deviation, which is represented by $\sigma_3 =$ `.sig03`.
+
+### Point estimate PVE
+
+The person-condition random effect explains 2.2% of the variance in the data, according to the point estimates.
+
+```{r}
+get_pve = function(m, effect) {
+  random_effects = as.data.frame(VarCorr(m)) %>% 
+    rename(Groups = grp, Name = var1, Variance = vcov, Std.Dev. = sdcor) %>% 
+    select(-var2)
+  
+  num = (random_effects %>% filter(Groups == effect))$Variance
+  
+  denom = sum(random_effects$Variance)
+  
+  return (c(num / denom))
+}
+
+
+get_pve(m0, "id:condition")
+```
+
+### PVE confidence interval (\~5 minutes)
+
+```{r}
+if (profile_programming_log_response_times) {
+  b0 = bootMer(m0, 
+               FUN = function (m) {return(get_pve(m, "id:condition"))}, 
+               nsim = 1000,
+               .progress = "txt")
+}
+```
+
+```{r}
+quantile(b0$t, c(0.025, 0.975))
+```
+
+So the PVE has point estimate 2.2%, with 95% confidence interval (0.7%, 4.0%)
+
+### Pairwise contrasts of domain "difficulty"
+
+This does not relate directly to any of our research questions, but helps inform us about our data.
+
+```{r}
+e0 = emmeans(m0, pairwise ~ domain)
+pairs(e0, adjust="BH")
+```
+
+### Residuals
+
+These look relatively normal, and their skew coefficient (0.105) is low. We will use this for comparison later (see Section 8).
+
+```{r}
+r0 = log(prog_da$response_time) - predict(m0)
+hist(r0)
+```
+
+`skewness` calculates the standard moment coefficient of skew.
+
+```{r}
+skewness(r0)
+```
+
+### Learning/training effect
+
+Here, we apply likelihood ratio testing to the `session_num` fixed effect. This is not directly related to our RQs, but helps us better understand our data.
+
+Learning effect has a significant contribution with $p=0.001$; the effect size of $-0.065$ seconds comes from the summary of the fitted model `m0` above.
+
+```{r}
+f1 = log_time_models_da[order(log_time_models_da$BIC),]$formula[[8]]
+f1
+```
+
+```{r}
+m1 = lmer(f1, data=prog_da, REML=FALSE)
+summary(m1)
+```
+
+```{r}
+anova(m0, m1)
+```
+
+## 7. `log(response_time)` on positive control (MR) data {#sec-7-log-time-mr}
+
+Now we look at only the spatial reasoning questions ("Shepard-Metzler" and "PSVT:R II").
+
+```{r}
+pos_ctrl_da = da %>% filter(isMR)
+pos_ctrl_da
+```
+
+### Model fitting (\~2 minutes)
+
+```{r}
+if (fit_pos_ctrl_log_response_times) {
+  # make an output directory for the output of all the candidate linear models
+  posctrl_logtime_outputdir = 
+    sprintf("%s/positive_control_log_time_model_summaries", outputdir)
+  mkdir(posctrl_logtime_outputdir)
+  
+  # make an output file for the AIC and BIC of each model
+  metricsfile = sprintf("%s/metrics.csv", posctrl_logtime_outputdir)
+  file.create(metricsfile)
+  
+  sink(file = metricsfile,
+       append = FALSE,
+       type = "output",
+       split = FALSE
+       )
+  
+  cat("formula,AIC,BIC\n")
+  
+  sink()
+  
+  for (f in loglinear_formulae) {
+    # make an output directory for the output of this specific candidate model
+    f_outputdir = sprintf("%s/%s", 
+                          posctrl_logtime_outputdir, 
+                          gsub(" ", "", f, fixed = TRUE))
+    mkdir(f_outputdir)
+    
+    # make the individual output files
+    summaryfile = sprintf("%s/summary.txt", f_outputdir)
+    
+    file.create(summaryfile)
+    
+    # print a delimiter for console output
+    cat(sprintf("\n---------------------------------------------\n%s\n", f))
+    
+    # fit the model
+    m = lmer(f, data=pos_ctrl_da, REML=FALSE)
+    
+    # send the model summary to the summary file
+    sink(file = summaryfile,
+         append = FALSE,
+         type = "output",
+         split = FALSE
+         )
+    
+    print(summary(m))
+    
+    sink()
+    
+    # send the AIC and BIC to the metrics file
+    metrics = sprintf("%s,%f,%f\n", f, AIC(m), BIC(m))
+    
+    sink(file = metricsfile,
+         append = TRUE,
+         type = "output",
+         split = FALSE)
+    
+    cat(metrics)
+    
+    sink()
+  }
+}
+```
+
+### Model selection
+
+```{r}
+# read in the AIC/BIC data
+fin = sprintf("%s/positive_control_log_time_model_summaries/metrics.csv", outputdir)
+posctrl_log_time_models_da = read_csv(fin)
+```
+
+```{r}
+head(posctrl_log_time_models_da[order(posctrl_log_time_models_da$AIC),], n = 10)
+```
+
+```{r}
+head(posctrl_log_time_models_da[order(posctrl_log_time_models_da$BIC),], n = 10)
+```
+
+Note that `domain` is included consistently as a random effect. This agrees with our visualizations, which show that "Shepard-Metzler" is one of the easiest (fastest) question types while "PSVT:R II" is one of the hardest (slowest). Also, training effect appears to be important, as it was in Section 6 (programming questions). Also also, inter-person variance is generally excluded. However, AIC and BIC strongly disagree on whether to include `condition` as a fixed effect. We will address this question with likelihood ratio testing.
+
+We have previously noted that AIC tends to choose more complex models. This may lead skeptical readers to hypothesize that our selected models are overfit to spurious correlations which don't exist in the underlying population. We refer skeptical readers to [@barr2013random].
+
+### Optimal AIC
+
+```{r}
+f2 = posctrl_log_time_models_da[order(posctrl_log_time_models_da$AIC),]$formula[[1]]
+cat(f2)
+```
+
+```{r}
+m2 = lmer(f2, data=pos_ctrl_da, REML=FALSE)
+summary(m2)
+```
+
+### Likelihood ratios
+
+Here's the same model structure, but without the `condition` fixed effect.
+
+```{r}
+f3 = posctrl_log_time_models_da[order(posctrl_log_time_models_da$BIC),]$formula[[2]]
+cat(f3)
+```
+
+```{r}
+m3 = lmer(f3, data=pos_ctrl_da, REML=FALSE)
+summary(m3)
+```
+
+```{r}
+anova(m2, m3)
+```
+
+$p = 0.018$, so the contribution of the `condition` fixed effect is statistically significant. The next step is to pinpoint the source of this positive result via pairwise contrasts with adjustment for multiple comparisons.
+
+### Pairwise contrasts
+
+There is a statistically significant difference between TMS conditions `X` (vertex) and `Y` (SMA), within the positive control questions, with $p = 0.01$.
+
+```{r}
+e2 = emmeans(m2, ~ condition)
+pairs(e2, adjust="BH")
+```
+
+### Residuals
+
+Skew is slightly worse than in the previous section (0.594), but we will see in Section 9 that it is much less than it would be without log-transformation.
+
+```{r}
+r2 = log(pos_ctrl_da$response_time) - predict(m2)
+hist(r2)
+```
+
+```{r}
+skewness(r2)
+```
+
+## 8. `response_time` on programming questions data {#sec-8-time-programming}
+
+In this section, we attempt the same strategy as in Section 6, but without log-transforming the response times. Later, we will compare skewness in the data and the fitted model residuals (which are supposed to by symmetric) to decide which strategy best represents the data. This section is part of the model selection process for RQs 1 and 3, but we ultimately reject it in favor of the result in Section 6.
+
+### Specify model formulae
+
+Same as in Section 6, just with a different response variable.
+
+```{r}
+linear_formulae = c()
+for (fe in fixed_effects) {
+  for (re in random_exprs) {
+    f = ""
+    if (fe == "") {
+      f = sprintf("response_time ~ %s", re)
+    } else {
+      f = sprintf("response_time ~ %s + %s", fe, re)
+    }
+    linear_formulae = append(linear_formulae, f)
+  }
+}
+
+print(length(linear_formulae))
+```
+
+### Model fitting (\~2 minutes)
+
+```{r}
+if (fit_programming_response_times) {
+  # make an output directory for the output of all the candidate linear models
+  time_outputdir = 
+    sprintf("%s/programming_time_model_summaries", outputdir)
+  mkdir(time_outputdir)
+  
+  # make an output file for the AIC and BIC of each model
+  metricsfile = sprintf("%s/metrics.csv", time_outputdir)
+  file.create(metricsfile)
+  
+  sink(file = metricsfile,
+       append = FALSE,
+       type = "output",
+       split = FALSE
+       )
+  
+  cat("formula,AIC,BIC\n")
+  
+  sink()
+  
+  for (f in linear_formulae) {
+    # make an output directory for the output of this specific candidate model
+    f_outputdir = sprintf("%s/%s", time_outputdir, gsub(" ", "", f, fixed = TRUE))
+    mkdir(f_outputdir)
+    
+    # make the individual output files
+    summaryfile = sprintf("%s/summary.txt", f_outputdir)
+    
+    file.create(summaryfile)
+    
+    # print a delimiter for console output
+    cat(sprintf("\n---------------------------------------------\n%s\n", f))
+    
+    # fit the model
+    m = lmer(f, data=prog_da, REML=FALSE)
+    
+    # send the model summary to the summary file
+    sink(file = summaryfile,
+         append = FALSE,
+         type = "output",
+         split = FALSE
+         )
+    
+    print(summary(m))
+    
+    sink()
+    
+    # send the AIC and BIC to the metrics file
+    metrics = sprintf("%s,%f,%f\n", f, AIC(m), BIC(m))
+    
+    sink(file = metricsfile,
+         append = TRUE,
+         type = "output",
+         split = FALSE)
+    
+    cat(metrics)
+    
+    sink()
+  }
+}
+```
+
+### Model selection
+
+```{r}
+# read in the AIC/BIC data
+fin = sprintf("%s/programming_time_model_summaries/metrics.csv", outputdir)
+time_models_da = read_csv(fin)
+```
+
+```{r}
+head(time_models_da[order(time_models_da$AIC),], n = 10)
+```
+
+```{r}
+head(time_models_da[order(time_models_da$BIC),], n = 10)
+```
+
+### Optimal AIC
+
+```{r}
+f4 = time_models_da[order(time_models_da$AIC),]$formula[[1]]
+cat(f4)
+```
+
+```{r}
+m4 = lmer(f4, data=prog_da, REML=FALSE)
+summary(m4)
+```
+
+### Residuals
+
+Skew here is clearly much worse than in Section 7 just by visualization, but we quantify it anyway.
+
+```{r}
+r4 = prog_da$response_time - predict(m4)
+hist(r4)
+```
+
+```{r}
+skewness(r4)
+```
+
+## 9. `response_time` on positive control (MR) data {#sec-9-time-mr}
+
+Model structures are the same as in Section 8, but now we fit them to MR questions data only.
+
+### Model fitting (\~2 minutes)
+
+```{r}
+if (fit_pos_ctrl_response_times) {
+  # make an output directory for the output of all the candidate linear models
+  posctrl_time_outputdir = 
+    sprintf("%s/positive_control_time_model_summaries", outputdir)
+  mkdir(posctrl_time_outputdir)
+  
+  # make an output file for the AIC and BIC of each model
+  metricsfile = sprintf("%s/metrics.csv", posctrl_time_outputdir)
+  file.create(metricsfile)
+  
+  sink(file = metricsfile,
+       append = FALSE,
+       type = "output",
+       split = FALSE
+       )
+  
+  cat("formula,AIC,BIC\n")
+  
+  sink()
+  
+  for (f in linear_formulae) {
+    # make an output directory for the output of this specific candidate model
+    f_outputdir = sprintf("%s/%s", posctrl_time_outputdir, gsub(" ", "", f, fixed = TRUE))
+    mkdir(f_outputdir)
+    
+    # make the individual output files
+    summaryfile = sprintf("%s/summary.txt", f_outputdir)
+    
+    file.create(summaryfile)
+    
+    # print a delimiter for console output
+    cat(sprintf("\n---------------------------------------------\n%s\n", f))
+    
+    # fit the model
+    m = lmer(f, data=pos_ctrl_da, REML=FALSE)
+    
+    # send the model summary to the summary file
+    sink(file = summaryfile,
+         append = FALSE,
+         type = "output",
+         split = FALSE
+         )
+    
+    print(summary(m))
+    
+    sink()
+    
+    # send the AIC and BIC to the metrics file
+    metrics = sprintf("%s,%f,%f\n", f, AIC(m), BIC(m))
+    
+    sink(file = metricsfile,
+         append = TRUE,
+         type = "output",
+         split = FALSE)
+    
+    cat(metrics)
+    
+    sink()
+  }
+}
+```
+
+### Model selection
+
+```{r}
+# read in the AIC/BIC data
+fin = sprintf("%s/positive_control_time_model_summaries/metrics.csv", outputdir)
+posctrl_time_models_da = read_csv(fin)
+```
+
+```{r}
+head(posctrl_time_models_da[order(posctrl_time_models_da$AIC),], n = 10)
+```
+
+```{r}
+head(posctrl_time_models_da[order(posctrl_time_models_da$BIC),], n = 10)
+```
+
+### Optimal AIC
+
+```{r}
+f5 = posctrl_time_models_da[order(posctrl_time_models_da$AIC),]$formula[[1]]
+cat(f5)
+```
+
+```{r}
+m5 = lmer(f5, data=pos_ctrl_da, REML=FALSE)
+summary(m5)
+```
+
+### Residuals
+
+```{r}
+r5 = pos_ctrl_da$response_time - predict(m5)
+hist(r5)
+```
+
+```{r}
+skewness(r5)
+```
+
+## 10. Visualize & quantify data skewness {#visualize-quantify-data-skewness}
+
+Our decision to log-transform the response variable is based on skew in the data as well as (leading to) skew in the residuals. We display and quantify that skew here.
+
+```{r}
+hist(prog_da$response_time)
+```
+
+```{r}
+hist(log(prog_da$response_time))
+```
+
+```{r}
+hist(pos_ctrl_da$response_time)
+```
+
+```{r}
+hist(log(pos_ctrl_da$response_time))
+```
+
+In both cases (programming and MR data) log-transformation greatly symmetrizes the data. The numbers below are given in footnotes for each of RQs 2 and 3 (Section 5.2 and 5.3) in the paper submission.
+
+```{r}
+time_skew = skewness(prog_da$response_time)
+log_time_skew = skewness(log(prog_da$response_time))
+
+posctrl_time_skew = skewness(pos_ctrl_da$response_time)
+posctrl_log_time_skew = skewness(log(pos_ctrl_da$response_time))
+
+cat(sprintf("Raw response time skew coefficient (programming) : %f\n", time_skew))
+cat(sprintf("Log response time skew coefficient (programming) : %f\n", log_time_skew))
+cat(sprintf("Raw response time skew coefficient (pos control) : %f\n", posctrl_time_skew))
+cat(sprintf("Log response time skew coefficient (pos control) : %f\n", posctrl_log_time_skew))
+```
+
+We use this as another way to understand data skew, and also as a reference point for the magnitude of various effects.
+
+```{r}
+mean(pos_ctrl_da$response_time)
+median(pos_ctrl_da$response_time)
+```
+
+## 11. Imbalance in data
+
+By chance (some participants did not complete all sessions, or in one case, we did not keep data from all of their responses) we have different numbers of observations for the three TMS treatment conditions. This results in some minor imbalance.
+
+```{r}
+table(da$condition)
+```
+
+Because we included more questions in some domains than others, there is imbalance in this variable as well. Again, we don't consider it to be significant. However, we note that as discussed in 4.2.1 of our paper, the data analytic approach used here is capable of handling such imbalance.
+
+```{r}
+table(da$domain)
+```
+
+## References
+
+Barr, Dale J, Roger Levy, Christoph Scheepers, and Harry J Tily. 2013.\"Random Effects Structure for Confirmatory Hypothesis Testing: Keep It Maximal.\" *Journal of Memory and Language* 68 (3):255--78.
+
+Wilkinson, GN, and CE Rogers. 1973. \"Symbolic Description ofFactorial Models for Analysis of Variance.\" *Journal of the Royal Statistical Society Series C: Applied Statistics* 22 (3):392--99.

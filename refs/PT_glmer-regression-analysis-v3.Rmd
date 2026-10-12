@@ -1,0 +1,2068 @@
+---
+title: "R Notebook : PythonTutor annotations glmer data analysis version 2"
+output: html_notebook
+---
+
+# Generalized multi-level linear regression analysis of annotation counts in PythonTutor data
+
+## Summary
+
+Quantitative results are interleaved with qualitative sections in the main paper. Related components of an RQ are often, but not always, derived from the same regression model. Here I provide the mapping between paper sections, quantitative RQs/sub-RQs, regression models and terms, and sections in this notebook.
+
+The analyses in this notebook are organized by "Codebook version." This refers to the filtering and pooling that we apply to the dataset in order to investigate particular aspects (e.g. Learner questions model is filtered to include only observations of questions asked by Learners, and is pooled across less relevant features to limit data sparsity). The numbering with which the Codebooks are defined is a function of the output format of our qualitative annotation tool (Atlas.ti), and does not reflect an actual ordering on the Codebooks.
+
+### GLMER models
+
+1.  **Outcomes** model (`m1`)
+    -   Negative binomial by AIC minimization
+2.  **Answering** model (`m7`)
+    -   Poisson by computational tractability
+3.  **Questioning** model (`m8`)
+    -   Poisson by computational tractability
+4.  **Learner** questions model (`m5`)
+    -   Poisson by AIC minimization
+5.  **Content** model (`m6`)
+    -   Poisson by computational tractability
+
+### RQ0: What structures describe Python Tutor interactions?
+
+Likelihood ratio test in the Outcomes model section (Codebook 1) is used in the paper to confirm our definition of speaker types.
+
+### RQ1: Why do Learners come to Python Tutor?
+
+1.  What help request types to Learners bring to Python Tutor?
+
+    This is not a glmer analysis – we just count things. See `annotations-data-analysis/counting-things.ipynb`.
+
+2.  What topics do Learners feel that they don't understand?
+
+    In this notebook, section `Analyses using Codebook 3` \> `Learner questions content (RQ 1.1)`, model `m5`. For results, go to subsection `Blups with visualization`. The relevant (random effect) terms in the model are `(1|contentDomain)` and `(1|request:contentDomain)`.
+
+### RQ3: What do people say/learn in Python Tutor chats?
+
+1.  What topics do people focus on? How does this break down across speaker types and help request types?
+
+    In this notebook, section `Analyses using Codebook 2` \> `Content domains overall (RQ 2.1)`, model `m6`. For results, go to subsection `Blups with visualization`. The relevant (random effect) terms in the model are `(1|content)`, `(1|speakerIsLearner:content)`, and `(1|request:content)`.
+
+2.  What strategies do people use to communicate information to each other? How does this break down across speaker types, help request types, and content domains?
+
+    In this notebook, section `Analyses using Codebook 3` \> `Helping strategies (RQ 2.2)`, model `m7`. For results, go to subsection `Blups`.
+
+    Negative binomial model fitting is not tractable for this problem.
+
+3.  What strategies do people use to query for information from each other? How does this break down across speaker types and help request types?
+
+    In this notebook, section `Analyses using Codebook 3` \> `Questioning strategies (RQ 2.3)`, model `m8`. For results, go to subsection `Blups`.
+
+    Negative binomial model fitting is not tractable for this problem.
+
+### RQ5: What characterizes successful interactions on Python Tutor?
+
+1.  Do usage frequencies of particular codes (annotations) correlate with conversation outcomes? How does this break down across speaker types?
+
+    In this notebook, section `Analyses using Codebook 1` \> `Outcomes (RQ 3.3)`, model `m1`. For results, go to subsection `Blups`. The relevant (random effect) terms in the model are `(1|code)`, `(0+numeric_outcome|code)`, `(0+numeric_speakerIsLearner|code)`, and `(0+LS_HF|code)`.
+
+2.  Do the request types have different rates of successful outcomes?
+
+    This is not a glmer analysis – we use Fisher's exact test.
+
+## Setup
+
+```{r}
+# name the directories to read data from and write output to
+input_version = 5
+output_version = 3
+
+# flag to set the random seed manually (for exact replication)
+fixed_random_seed = FALSE
+```
+
+```{r}
+# fix a random seed so that numbers are consistent with the paper
+if (fixed_random_seed) {
+  set.seed(42)
+}
+```
+
+```{r}
+# import packages
+library(lme4)       # mixed models
+library(dplyr)      # dataframe manipulation
+library(readr)      # reading in the data
+library(emmeans)    # likelihood ratio testing
+library(stringr)    # for interacting with strings
+library(purrr)      # for lists and stuff
+library(tidyr)      # more dataframe manipulation
+library(ggplot2)    # for plotting
+library(ggbreak)    # for one very specific aspect of plotting
+```
+
+```{r}
+# make an output directory
+outputparentdir = sprintf("%s/regression-models/1grams/v%d", getwd(), output_version)
+dir.create(outputparentdir)
+```
+
+# Analyses using Codebook 1
+
+This is the "flattened" codebook (all codes are 1-dimensional, no pooling across any dimension — dimensions are simply decoupled) with no data filtering. The only exception is that `Resolve Request` code values (`Success` and `Failure`) are pooled to avoid linear dependence with the \\interaction-level `Outcome` variable.
+
+```{r}
+codebook_version = 1
+
+outputdir = sprintf("%s/codebook%d", outputparentdir, codebook_version)
+dir.create(outputdir)
+```
+
+```{r}
+fin = sprintf("derived-dataframes/regression-data-v%d/codebook%d_conv-annotator-code-speaker_outcome-counts.csv.gz", input_version, codebook_version)
+da = read_csv(fin)
+da
+```
+
+## Make some derived columns (needed for the models)
+
+```{r}
+da["numeric_outcome"] = ifelse(da$outcome == "S", 1, -1)
+da["numeric_speakerIsLearner"] = ifelse(da$speakerIsLearner == TRUE, 1, -1)
+da["LS_HF"] = ifelse(
+  (da$speakerIsLearner & (da$outcome == "S")) | 
+    (!da$speakerIsLearner & (da$outcome == "F")), 1, -1)
+
+da
+```
+
+```{r}
+table(da["LS_HF"])
+```
+
+## Outcomes (RQ 3.3)
+
+```{r}
+f1 = paste("count ~ outcome", 
+           "(1|code) + (1|speakerIsLearner)", 
+           "(1|conversation_sharedID) + (1|conversation_sharedID:code)", 
+           "(1|annotator) + (1|annotator:code)", 
+           "(1|request) + (1|request:code)",
+           "(0+numeric_outcome|code) + (0+numeric_speakerIsLearner|code)", 
+           "(0+LS_HF|code)",
+           sep=" + ")
+
+f1
+```
+
+### Compare Poisson and Negative binomial model families
+
+Poisson and Negative Binomial models are related and often used to model similar types of data-generating processes. Poisson models a linear mean-variance relationship ( $\mu \propto \sigma^2$) while Negative Binomial has that ($\mu \propto \sigma^2 + \sigma^4/k$) where $k$ is a parameter denoting *under-* or *over-dispersion* of the data relative to a Poisson distribution.
+
+```{r}
+# Fits in 6.9 minutes
+
+rds1a = sprintf("%s/m1a-outcomes-poisson.rds", outputdir)
+
+if (FALSE) { # refit the model
+  start.time = Sys.time()
+  
+  m1a = glmer(f1, data=da, family=poisson(link=log), 
+             offset=ln_conversation_length, 
+             nAGQ=0, # faster
+             #nAGQ=1, # slower but necessary for profiling
+             control=glmerControl(optimizer = "nloptwrap"))
+  
+  end.time = Sys.time()
+  print(end.time - start.time)
+  saveRDS(m1a, file=rds1a)
+} else { # read the model
+  m1a = readRDS(rds1a)
+}
+```
+
+```{r}
+print(summary(m1a))
+```
+
+```{r}
+# https://rdrr.io/cran/lme4/man/glmer.nb.html
+# Fits in 12.8 minutes
+
+rds1b = sprintf("%s/m1b-outcomes-nb.rds", outputdir)
+
+if (FALSE) { # refit the model
+  start.time = Sys.time()
+  
+  m1b = glmer.nb(f1, data=da, 
+                 offset=ln_conversation_length, 
+                 nAGQ=0, # faster
+                 #nAGQ=1, # slower but necessary for profiling
+                 #verbose=1, 
+                 control=glmerControl(optimizer = "nloptwrap"))
+  
+  end.time = Sys.time()
+  print(end.time - start.time)
+  saveRDS(m1b, file=rds1b)
+} else { # read the model
+  m1b = readRDS(rds1b)
+}
+```
+
+```{r}
+print(summary(m1b))
+```
+
+#### Diagnostics for comparison
+
+```{r}
+getME(m1b, "glmer.nb.theta")
+```
+
+```{r}
+fv = fitted.values(m1b)
+plot(fv + fv^2 / getME(m1b, "glmer.nb.theta") ~ fv)
+#abline(b=1, col="red")
+lines(c(0, max(fv)), c(0, max(fv)), col="red")
+```
+
+```{r}
+# https://stackoverflow.com/questions/57981995/how-to-extract-scaled-residuals-from-glmer-summary
+#fv = fitted.values(m1a)
+#pr = residuals(m1a, "pearson")
+```
+
+```{r}
+logLik(m1a)
+logLik(m1b)
+```
+
+#### Select the model family (Poisson)
+
+```{r}
+cat(sprintf("Poisson AIC: \t\t%f\nNegative binomial AIC: \t%f\n\n", 
+            AIC(m1a), AIC(m1b)))
+cat(sprintf("Poisson BIC: \t\t%f\nNegative binomial BIC: \t%f", 
+            BIC(m1a), BIC(m1b)))
+```
+
+```{r}
+# Source for the 4: Section 3.3 of https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6962709/
+m1 = if(AIC(m1a) < AIC(m1b) + 4) m1a else m1b
+
+print(abs(AIC(m1a) - AIC(m1b)))
+```
+
+```{r}
+print(summary(m1))
+```
+
+### FIXME Likelihood ratio test the random effects
+
+```{r}
+m1a.LS_HF.h1 = m1a
+```
+
+Test for speaker-stratified outcome-count effect
+
+```{r}
+f1.LS_HF.h0 = paste("count ~ (1|code) + (1|speakerIsLearner)", 
+              "outcome", 
+              "(1|conversation_sharedID) + (1|conversation_sharedID:code)", 
+              "(1|annotator) + (1|annotator:code)", 
+              "(1|request) + (1|request:code)",
+              "(0+numeric_outcome|code) + (0+numeric_speakerIsLearner|code)", 
+              #"(0+LS_HF|code)",
+           sep=" + ")
+
+f1.LS_HF.h0
+```
+
+```{r}
+# runs in <20 minutes, I don't remember exactly
+rds1a.LS_HF.h0 = sprintf("%s/m1a-outcomes-poisson-LS_HF-h0.rds", outputdir)
+
+if (FALSE) { # refit the model
+  start.time = Sys.time()
+  
+  m1a.LS_HF.h0 = glmer(f1.LS_HF.h0, data=da, family=poisson(link=log), 
+                       offset=ln_conversation_length, 
+                       nAGQ=0, # faster
+                       #nAGQ=1, # slower but better approximation
+                       control=glmerControl(optimizer = "nloptwrap"))
+  
+  end.time = Sys.time()
+  print(end.time - start.time)
+  saveRDS(m1a.LS_HF.h0, file=rds1a.LS_HF.h0)
+} else { # read the model
+  m1a.LS_HF.h0 = readRDS(rds1a.LS_HF.h0)
+}
+```
+
+```{r}
+anova(m1a.LS_HF.h1, m1a.LS_HF.h0)
+```
+
+FIXME Test for main outcome-count effect – fit another nested model and ANOVA test them
+
+```{r}
+#m1a.req.h0.2 = glmer(f1.h0.2, data=da, family=poisson(link=log), 
+#                     offset=ln_conversation_length, 
+#                     nAGQ=0, # faster
+#                     #nAGQ=1, # slower but necessary for profiling
+#                     control=glmerControl(optimizer = "nloptwrap"))
+#m1a.req.h0.2 = readRDS("rscripts/outcomes-model/m1a-outcomes-poisson-requestREs-h0.rds")
+#m1a.req.h1.2 = readRDS("rscripts/outcomes-model/m1a-outcomes-poisson-requestREs-h1.rds")
+```
+
+### Blups
+
+```{r}
+# Runs in 8.5 minutes
+rds1r = sprintf("%s/m1-ranef.rds", outputdir)
+
+if (FALSE) { # regenerate the blups
+  start.time = Sys.time()
+
+  r1 = ranef(m1, condVar=TRUE)
+  
+  end.time = Sys.time()
+  print(end.time - start.time)
+  
+  rdf1 = as.data.frame(r1)
+  
+  saveRDS(rdf1, file=rds1r)
+} else { # read the saved blups
+  rdf1 = readRDS(rds1r)
+}
+```
+
+#### Outcome effect by code blups
+
+```{r}
+b1a = rdf1 %>% 
+  filter(grpvar == "code" & term == "numeric_outcome") %>%
+  select(-grpvar) %>%
+  select(-term)
+b1a["PI.low"]  = b1a$condval - 2*b1a$condsd
+b1a["PI.high"] = b1a$condval + 2*b1a$condsd
+
+b1a %>% 
+  filter(abs(condval) > 2*condsd)
+
+```
+
+Here we present these with a forest plot (but there probably isn't space in the paper).
+
+```{r}
+# special code name mappings
+change.from = 
+  c("Attitude, tone, or mood > expressPositivity > expressSatisfactionOrGratitude", 
+    "Attitude, tone, or mood > expressPositivity > expressSupportingWords", 
+    "Attitude, tone, or mood > expressPositivity > beingWrong", 
+    "General message attributes > contentDomain > personalInfo", 
+    "Questions > question > content")
+change.to = 
+  c("satisfactionOrGratitude", 
+    "supportingWords", 
+    "acknowledgeBeingWrong", 
+    "personalInformation", 
+    "contentQuestion")
+```
+
+```{r}
+tmp = b1a %>% 
+  arrange(condval) %>%                     # First sort by condval. This sort the 
+                                           # dataframe but NOT the factor levels
+  mutate(grp=factor(grp, levels=grp)) %>%  # This trick update the factor levels
+  filter(abs(condval) > condsd)            # otherwise there are too many
+
+lab = lapply(tmp$grp, stringi::stri_replace_all_fixed, 
+             change.from, change.to, vectorize=F)
+lab = gsub(".* > (.*)", "\\1", lab) # get the leaf node codes
+lab = tools::toTitleCase(gsub("([A-Z]){1}", " \\1", lab)) # get the spacing
+
+pp1a = 
+  tmp %>%
+  ggplot(aes(y = grp)) + 
+  theme_classic() +
+  geom_point(aes(x=condval), shape=15, size=3) +
+  geom_linerange(aes(xmin=PI.low, xmax=PI.high)) +
+  geom_vline(xintercept = 0, linetype="dashed") +
+  labs(x="Predicted Poisson rate difference", y="Code (flattened)") +
+  ggtitle("Correlations between codes and issue outcomes \n(statistically significant results and trends)") +
+  scale_y_discrete(labels = lab) +
+  coord_cartesian(ylim=c(1, 21)) +                  # , xlim=c(-4, 4)
+  annotate("text", x = -0.4, y = 21, label = "Failure") +
+  annotate("text", x = 0.45, y = 21, label = "Success")
+pp1a
+```
+
+#### Speaker effect by code blups
+
+This code block isn't part of the analysis (it has nothing to do with outcome, so even though differences in speaker types' behavior are of interest in several RQs, we will answer them with other models).
+
+```{r}
+rdf1 %>% 
+  filter(grpvar == "code" & term == "numeric_speakerIsLearner") %>% 
+  filter(abs(condval) > 2*condsd) %>% 
+  select(-grpvar) %>% 
+  select(-term)
+```
+
+#### Diff in diff: Non-additive outcome-speaker effect by code blups
+
+First get the significant diff-in-diffs:
+
+```{r}
+b1b = rdf1 %>% 
+  filter(grpvar == "code" & term == "LS_HF") %>%
+  select(-grpvar) %>%
+  select(-term)
+
+b1b["PI.low"]  = b1b$condval - 2*b1b$condsd
+b1b["PI.high"] = b1b$condval + 2*b1b$condsd
+
+b1b %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+```{r}
+# I have a bug in rstudio where it won't show me the last page of the tibble
+print.data.frame((b1b %>% filter(abs(condval) > 2*condsd))[c(11, 12),])
+```
+
+```{r}
+# special code name mappings
+change.from = 
+  c("Questions > question > personal", 
+    "Attitude, tone, or mood > expressPositivity > expressSatisfactionOrGratitude")
+change.to = 
+  c("personalQuestion", 
+    "satisfactionOrGratitude")
+```
+
+```{r}
+tmp = b1b %>%
+  arrange(condval) %>%                              # First sort by condval. This sort the
+                                                    # dataframe but NOT the factor levels
+  mutate(grp=factor(grp, levels=grp)) %>%           # This trick update the factor levels
+  filter(abs(condval) > condsd)
+
+lab = lapply(tmp$grp, stringi::stri_replace_all_fixed, 
+             change.from, change.to, vectorize=F)
+lab = gsub(".* > (.*)", "\\1", lab) # get the leaf node codes
+lab = tools::toTitleCase(gsub("([A-Z]){1}", " \\1", lab)) # get the spacing
+
+pp1b <- 
+  tmp %>%
+  ggplot(aes(y = grp)) + 
+  theme_classic() +
+  geom_point(aes(x=condval), shape=15, size=3) +
+  geom_linerange(aes(xmin=PI.low, xmax=PI.high)) +
+  geom_vline(xintercept = 0, linetype="dashed") +
+  labs(x="Predicted Poisson rate difference in differences", y="Code") +
+  ggtitle("Speaker-stratified correlations between codes and issue outcome \n(statistically significant results and trends)") +
+  scale_y_discrete(labels = lab) #+
+  #coord_cartesian(ylim=c(1, 21), xlim=c(-0.5, 0.5)) +
+  #annotate("text", x = -0.25, y = 22, label = "Success: Helper") +
+  #annotate("text", x = 0.15, y = 22, label = "Learner") +
+  #annotate("text", x = -0.25, y = 21, label = "Failure: Learner") +
+  #annotate("text", x = 0.15, y = 21, label = "Helper")
+  #annotate("point", x = 0.45, y = c(1, 2, 3, 6, 8, 9, 11, 14, 17, 18, 19, 20), shape = 8, colour = "red") + 
+  #annotate("text", x = 0.45, y = 21, label = "Significant?", colour = "red")
+pp1b
+```
+
+Now, explain them more:
+
+```{r}
+b1c = rdf1 %>%
+  filter(grpvar == "code") %>%
+  select(-grpvar)
+
+b1c["trend"] = (b1c$condsd < abs(b1c$condval) 
+               & abs(b1c$condval) <= 2*b1c$condsd)
+
+b1c["significant"] = abs(b1c$condval) > 2*b1c$condsd
+
+b1c["term"] = case_match(b1c$term, 
+                         "(Intercept)" ~ "baseline", 
+                         "numeric_speakerIsLearner" ~ "isLearner", 
+                         "numeric_outcome" ~ "isSuccess", 
+                         "LS_HF" ~ "isLSorHF", 
+                         .default = b1c$term)
+
+b1c = b1c %>% pivot_wider(
+  names_from = c(term), 
+  values_from = c(condval, condsd, trend, significant))
+
+names(b1c)[names(b1c) == "grp"] = "code"
+
+# learner/success
+b1c["LS_sigval"] = 
+  ifelse(b1c$significant_baseline,  b1c$condval_baseline,  0) +
+  ifelse(b1c$significant_isLearner, b1c$condval_isLearner, 0) +
+  ifelse(b1c$significant_isSuccess, b1c$condval_isSuccess, 0) + 
+  ifelse(b1c$significant_isLSorHF,  b1c$condval_isLSorHF,  0) + 
+  ifelse(sqrt(diag(vcov(m1))[["outcomeS"]]) < 0.05, fixef(m1)[["outcomeS"]], 0)
+
+# learner/failure
+b1c["LF_sigval"] = 
+  ifelse(b1c$significant_baseline,   b1c$condval_baseline,  0) +
+  ifelse(b1c$significant_isLearner,  b1c$condval_isLearner, 0) +
+  ifelse(b1c$significant_isSuccess, -b1c$condval_isSuccess, 0) + 
+  ifelse(b1c$significant_isLSorHF,  -b1c$condval_isLSorHF,  0)
+
+# helper/success
+b1c["HS_sigval"] = 
+  ifelse(b1c$significant_baseline,   b1c$condval_baseline,  0) +
+  ifelse(b1c$significant_isLearner, -b1c$condval_isLearner, 0) +
+  ifelse(b1c$significant_isSuccess,  b1c$condval_isSuccess, 0) + 
+  ifelse(b1c$significant_isLSorHF,  -b1c$condval_isLSorHF,  0) + 
+  ifelse(sqrt(diag(vcov(m1))[["outcomeS"]]) < 0.05, fixef(m1)[["outcomeS"]], 0)
+
+# helper/failure
+b1c["HF_sigval"] = 
+  ifelse(b1c$significant_baseline,   b1c$condval_baseline,  0) +
+  ifelse(b1c$significant_isLearner, -b1c$condval_isLearner, 0) +
+  ifelse(b1c$significant_isSuccess, -b1c$condval_isSuccess, 0) + 
+  ifelse(b1c$significant_isLSorHF,   b1c$condval_isLSorHF,  0)
+
+b1c["LHdif_success"] = b1c$LS_sigval - b1c$HS_sigval
+b1c["LHdif_failure"] = b1c$LF_sigval - b1c$HF_sigval
+b1c["SFdif_learner"] = b1c$LS_sigval - b1c$LF_sigval
+b1c["SFdif_helper"]  = b1c$HS_sigval - b1c$HF_sigval
+
+b1c["SF_difInDif"] = b1c$LHdif_success - b1c$LHdif_failure
+b1c["LH_difInDif"] = b1c$SFdif_learner - b1c$SFdif_helper
+
+b1c["abs_SF_difInDif"] = abs(b1c$LHdif_success - b1c$LHdif_failure)
+b1c["abs_LH_difInDif"] = abs(b1c$SFdif_learner - b1c$SFdif_helper)
+
+b1c
+```
+
+##### Positive SF diff in positive LH diffs
+
+```{r}
+tmp = b1c %>% 
+  filter(LHdif_success > LHdif_failure & LHdif_failure > 0) %>%
+  arrange(desc(abs_SF_difInDif)) %>%
+  select(c(code, LHdif_success, LHdif_failure, SF_difInDif, 
+           LS_sigval, HS_sigval, LF_sigval, HF_sigval, 
+           condval_baseline, condsd_baseline, significant_baseline, 
+           condval_isLearner, condsd_isLearner, significant_isLearner, 
+           condval_isSuccess, condsd_isSuccess, significant_isSuccess, 
+           condval_isLSorHF, condsd_isLSorHF, significant_isLSorHF))
+
+tmp
+```
+
+```{r}
+prettyprint = function(x) {
+  fmt = "%.3f"
+  s1 = sprintf("%.3f more by Learners than Helpers in Successful conversations", 
+               as.numeric(x["LHdif_success"]))
+  s2 = sprintf("%.3f vs %.3f", 
+               as.numeric(x["LS_sigval"]), as.numeric(x["HS_sigval"]))
+  f1 = sprintf("%.3f more by Learners than Helpers in Failed conversations", 
+               as.numeric(x["LHdif_failure"]))
+  f2 = sprintf("%.3f vs %.3f", 
+               as.numeric(x["LF_sigval"]), as.numeric(x["HF_sigval"]))
+  cat(sprintf("\"%s\" is used \n   %s (%s) but only \n   %s (%s).\n\n", x["code"], s1, s2, f1, f2))
+}
+
+apply(tmp[,names(tmp)], 1, prettyprint)
+```
+
+##### Positive SF diff in negative LH diffs
+
+```{r}
+tmp = b1c %>% 
+  filter(LHdif_success > LHdif_failure & LHdif_success < 0) %>%
+  arrange(desc(abs_SF_difInDif)) %>%
+  select(c(code, LHdif_success, LHdif_failure, SF_difInDif, 
+           LS_sigval, HS_sigval, LF_sigval, HF_sigval, 
+           condval_baseline, condsd_baseline, significant_baseline, 
+           condval_isLearner, condsd_isLearner, significant_isLearner, 
+           condval_isSuccess, condsd_isSuccess, significant_isSuccess, 
+           condval_isLSorHF, condsd_isLSorHF, significant_isLSorHF))
+
+tmp
+```
+
+```{r}
+prettyprint = function(x) {
+  fmt = "%.3f"
+  s1 = sprintf("%.3f less by Learners than Helpers in Successful conversations", 
+               -as.numeric(x["LHdif_success"]))
+  s2 = sprintf("%.3f vs %.3f", 
+               as.numeric(x["LS_sigval"]), as.numeric(x["HS_sigval"]))
+  f1 = sprintf("%.3f less by Learners than Helpers in Failed conversations", 
+               -as.numeric(x["LHdif_failure"]))
+  f2 = sprintf("%.3f vs %.3f", 
+               as.numeric(x["LF_sigval"]), as.numeric(x["HF_sigval"]))
+  cat(sprintf("\"%s\" is used only \n   %s (%s) but \n   %s (%s).\n\n", x["code"], s1, s2, f1, f2))
+}
+
+apply(tmp[,names(tmp)], 1, prettyprint)
+```
+
+##### \*Positive SF diff in mixed LH diffs
+
+```{r}
+tmp = b1c %>% 
+  filter(LHdif_success > LHdif_failure & LHdif_success >= 0 & LHdif_failure <= 0) %>%
+  arrange(desc(abs_SF_difInDif)) %>%
+  select(c(code, LHdif_success, LHdif_failure, SF_difInDif, 
+           LS_sigval, HS_sigval, LF_sigval, HF_sigval, 
+           condval_baseline, condsd_baseline, significant_baseline, 
+           condval_isLearner, condsd_isLearner, significant_isLearner, 
+           condval_isSuccess, condsd_isSuccess, significant_isSuccess, 
+           condval_isLSorHF, condsd_isLSorHF, significant_isLSorHF))
+
+tmp
+```
+
+```{r}
+prettyprint = function(x) {
+  fmt = "%.3f"
+  s1 = sprintf("%.3f more by Learners than Helpers in Successful conversations", 
+               as.numeric(x["LHdif_success"]))
+  s2 = sprintf("%.3f vs %.3f", 
+               as.numeric(x["LS_sigval"]), as.numeric(x["HS_sigval"]))
+  f1 = sprintf("%.3f less by Learners than Helpers in Failed conversations", 
+               -as.numeric(x["LHdif_failure"]))
+  f2 = sprintf("%.3f vs %.3f", 
+               as.numeric(x["LF_sigval"]), as.numeric(x["HF_sigval"]))
+  cat(sprintf("\"%s\" is used \n   %s (%s) but \n   %s (%s).\n\n", x["code"], s1, s2, f1, f2))
+}
+
+apply(tmp[,names(tmp)], 1, prettyprint)
+```
+
+##### Negative SF diff in positive LH diffs
+
+```{r}
+tmp = b1c %>% 
+  filter(LHdif_success < LHdif_failure & LHdif_success > 0) %>%
+  arrange(desc(abs_SF_difInDif)) %>%
+  select(c(code, LHdif_success, LHdif_failure, SF_difInDif, 
+           LS_sigval, HS_sigval, LF_sigval, HF_sigval, 
+           condval_baseline, condsd_baseline, significant_baseline, 
+           condval_isLearner, condsd_isLearner, significant_isLearner, 
+           condval_isSuccess, condsd_isSuccess, significant_isSuccess, 
+           condval_isLSorHF, condsd_isLSorHF, significant_isLSorHF))
+
+tmp
+```
+
+```{r}
+prettyprint = function(x) {
+  fmt = "%.3f"
+  s1 = sprintf("%.3f more by Learners than Helpers in Successful conversations", 
+               as.numeric(x["LHdif_success"]))
+  s2 = sprintf("%.3f vs %.3f", 
+               as.numeric(x["LS_sigval"]), as.numeric(x["HS_sigval"]))
+  f1 = sprintf("%.3f more by Learners than Helpers in Failed conversations", 
+               as.numeric(x["LHdif_failure"]))
+  f2 = sprintf("%.3f vs %.3f", 
+               as.numeric(x["LF_sigval"]), as.numeric(x["HF_sigval"]))
+  cat(sprintf("\"%s\" is used only \n   %s (%s) but \n   %s (%s).\n\n", x["code"], s1, s2, f1, f2))
+}
+
+apply(tmp[,names(tmp)], 1, prettyprint)
+```
+
+##### Negative SF diff in negative LH diffs
+
+```{r}
+tmp = b1c %>% 
+  filter(LHdif_success < LHdif_failure & LHdif_failure < 0) %>%
+  arrange(desc(abs_SF_difInDif)) %>%
+  select(c(code, LHdif_success, LHdif_failure, SF_difInDif, 
+           LS_sigval, HS_sigval, LF_sigval, HF_sigval, 
+           condval_baseline, condsd_baseline, significant_baseline, 
+           condval_isLearner, condsd_isLearner, significant_isLearner, 
+           condval_isSuccess, condsd_isSuccess, significant_isSuccess, 
+           condval_isLSorHF, condsd_isLSorHF, significant_isLSorHF))
+
+tmp
+```
+
+```{r}
+prettyprint = function(x) {
+  fmt = "%.3f"
+  s1 = sprintf("%.3f less by Learners than Helpers in Successful conversations", 
+               -as.numeric(x["LHdif_success"]))
+  s2 = sprintf("%.3f vs %.3f", 
+               as.numeric(x["LS_sigval"]), as.numeric(x["HS_sigval"]))
+  f1 = sprintf("%.3f less by Learners than Helpers in Failed conversations", 
+               -as.numeric(x["LHdif_failure"]))
+  f2 = sprintf("%.3f vs %.3f", 
+               as.numeric(x["LF_sigval"]), as.numeric(x["HF_sigval"]))
+  cat(sprintf("\"%s\" is used \n   %s (%s) but only \n   %s (%s).\n\n", x["code"], s1, s2, f1, f2))
+}
+
+apply(tmp[,names(tmp)], 1, prettyprint)
+```
+
+##### \*Negative SF diff in mixed LH diffs
+
+```{r}
+tmp = b1c %>% 
+  filter(LHdif_success < LHdif_failure & LHdif_success <= 0 & LHdif_failure >= 0) %>%
+  arrange(desc(abs_SF_difInDif)) %>%
+  select(c(code, LHdif_success, LHdif_failure, SF_difInDif, 
+           LS_sigval, HS_sigval, LF_sigval, HF_sigval, 
+           condval_baseline, condsd_baseline, significant_baseline, 
+           condval_isLearner, condsd_isLearner, significant_isLearner, 
+           condval_isSuccess, condsd_isSuccess, significant_isSuccess, 
+           condval_isLSorHF, condsd_isLSorHF, significant_isLSorHF))
+
+tmp
+```
+
+```{r}
+prettyprint = function(x) {
+  fmt = "%.3f"
+  s1 = sprintf("%.3f less by Learners than Helpers in Successful conversations", 
+               -as.numeric(x["LHdif_success"]))
+  s2 = sprintf("%.3f vs %.3f", 
+               as.numeric(x["LS_sigval"]), as.numeric(x["HS_sigval"]))
+  f1 = sprintf("%.3f more by Learners than Helpers in Failed conversations", 
+               as.numeric(x["LHdif_failure"]))
+  f2 = sprintf("%.3f vs %.3f", 
+               as.numeric(x["LF_sigval"]), as.numeric(x["HF_sigval"]))
+  cat(sprintf("\"%s\" is used \n   %s (%s) but \n   %s (%s).\n\n", x["code"], s1, s2, f1, f2))
+}
+
+apply(tmp[,names(tmp)], 1, prettyprint)
+```
+
+#### Request type by code effect blups
+
+```{r}
+rdf1 %>% 
+  filter(grpvar == "request:code)" & term == "(Intercept)") %>% 
+  filter(abs(condval) > 2*condsd) %>% 
+  select(-grpvar) %>% 
+  select(-term)
+```
+
+### Likelihood ratio test for speaker identification
+
+Note: here we are comparing two negative binomial models, based on the result in the model family comparison above.
+
+FIXME do this without outcome
+
+```{r}
+f1ns = paste("count ~ outcome", 
+             "(1|code)", 
+             "(1|conversation_sharedID) + (1|conversation_sharedID:code)", 
+             "(1|annotator) + (1|annotator:code)", 
+             "(1|request) + (1|request:code)",
+             "(0+numeric_outcome|code)",
+             sep=" + ")
+```
+
+```{r}
+# Fits in 7.5 minutes
+# make sure to compare against a model with matching nAGQ setting
+
+rds1ns = sprintf("%s/m1ns-nested-no-speaker-nb.rds", outputdir)
+
+if (FALSE) { # refit the model
+  start.time = Sys.time()
+  
+  m1ns = glmer.nb(f1ns, data=da, 
+                  offset=ln_conversation_length, 
+                  nAGQ=0, # faster
+                  #nAGQ=1, # slower but necessary for profiling
+                  #verbose=1, 
+                  control=glmerControl(optimizer = "nloptwrap"))
+  
+  end.time = Sys.time()
+  print(end.time - start.time)
+  saveRDS(m1ns, file=rds1ns)
+} else { # read the model
+  m1ns = readRDS(rds1ns)
+}
+```
+
+```{r}
+print(summary(m1ns))
+```
+
+```{r}
+anova(m1, m1ns)
+```
+
+## Fisher's exact test for independence of request types and outcomes
+
+Note, this is NOT a GLMER analysis.
+
+```{r}
+tmp = da %>%
+  group_by(conversation_sharedID) %>%
+  filter(row_number()==1) %>%
+  ungroup() %>%
+  select("request", "outcome")
+
+tmp = table(tmp)
+tmp
+
+fisher.test(tmp, hybrid=FALSE)
+```
+
+## FIXME Fisher's exact test for independence of [using SE best practices] and outcomes
+
+```{r}
+#tmp = matrix(c(), ncol=2, byrow=TRUE)
+#colnames(tmp) = c("F", "S")
+#rownames(tmp) = c("SE.neg", "SE.pos")
+#fisher.test(tmp)
+```
+
+# Analyses using Codebook 2
+
+Use this to answer questions about fine-grained codes in certain contexts (e.g., just looking at Questioning or Helping)
+
+```{r}
+codebook_version = 2
+
+outputdir = sprintf("%s/codebook%d", outputparentdir, codebook_version)
+dir.create(outputdir)
+```
+
+```{r}
+fin = sprintf("derived-dataframes/regression-data-v%d/codebook%d_conv-annotator-code-speaker_outcome-counts.csv.gz", input_version, codebook_version)
+da = read_csv(fin)
+
+da
+```
+
+## Answering strategies (RQ 2.2)
+
+Data management: split each "code" into its components.
+
+```{r}
+da7 = da %>% filter(str_starts(da$code, "Helping > "))
+da7["code"] = substring(da7$code, 
+                        first=nchar("Helping > ") + 2, 
+                        last=nchar(da7$code)-1)
+newcols = str_split_fixed(da7$code, ", ", 4)
+da7[c("commMech", "certainty", "content", "specificity")] = newcols
+da7["specificity"] = ifelse(da7$specificity == "", "unknown", da7$specificity)
+
+da7
+```
+
+```{r}
+f7 = paste("count ~ request + speakerIsLearner", 
+           # code
+           "(1|content) + (1|commMech) + (1|certainty) + (1|specificity)", 
+           "(1|content:commMech) + (1|content:certainty) + (1|content:specificity)", 
+           "(1|commMech:certainty) + (1|commMech:specificity) + (1|certainty:specificity)", # strategy
+           "(1|content:commMech:certainty) + (1|content:commMech:specificity)", 
+           "(1|content:certainty:specificity) + (1|commMech:certainty:specificity)", 
+           # conversation, conversation : code
+           "(1|conversation_sharedID)", 
+           "(1|conversation_sharedID:content) + (1|conversation_sharedID:commMech)", 
+           "(1|conversation_sharedID:certainty) + (1|conversation_sharedID:specificity)", 
+           "(1|conversation_sharedID:content:commMech)", 
+           "(1|conversation_sharedID:content:certainty)", 
+           "(1|conversation_sharedID:content:specificity)", 
+           "(1|conversation_sharedID:commMech:certainty)", 
+           "(1|conversation_sharedID:commMech:specificity)", 
+           "(1|conversation_sharedID:certainty:specificity)", 
+           # skip higher-order interactions
+           # annotator, annotator : code
+           "(1|annotator)", 
+           "(1|annotator:content) + (1|annotator:commMech)", 
+           "(1|annotator:certainty) + (1|annotator:specificity)", 
+           "(1|annotator:content:commMech)", 
+           "(1|annotator:content:certainty)", 
+           "(1|annotator:content:specificity)", 
+           "(1|annotator:commMech:certainty)", 
+           "(1|annotator:commMech:specificity)", 
+           "(1|annotator:certainty:specificity)", 
+           # skip higher-order interactions
+           # 2-way between request, speaker, and code
+           "(1|request:speakerIsLearner)", 
+           # request : code
+           "(1|request)", 
+           "(1|request:content) + (1|request:commMech)", 
+           "(1|request:certainty) + (1|request:specificity)", 
+           "(1|request:content:commMech) + (1|request:content:certainty)", 
+           "(1|request:content:specificity) + (1|request:commMech:certainty)", 
+           "(1|request:commMech:specificity) + (1|request:certainty:specificity)", 
+           # skip higher-order interactions
+           # speaker : code
+           "(1|speakerIsLearner)", 
+           "(1|speakerIsLearner:content) + (1|speakerIsLearner:commMech)", 
+           "(1|speakerIsLearner:certainty) + (1|speakerIsLearner:specificity)", 
+           "(1|speakerIsLearner:content:commMech) + (1|speakerIsLearner:content:certainty)", 
+           "(1|speakerIsLearner:content:specificity) + (1|speakerIsLearner:commMech:certainty)", 
+           "(1|speakerIsLearner:commMech:specificity) + (1|speakerIsLearner:certainty:specificity)", 
+           # skip higher-order interactions
+           # 3-way between request, speaker, and code
+           "(1|request:speakerIsLearner)", 
+           "(1|request:speakerIsLearner:content) + (1|request:speakerIsLearner:commMech)", 
+           "(1|request:speakerIsLearner:certainty) + (1|request:speakerIsLearner:specificity)", 
+           # skip higher-order interactions
+           sep=" + ")
+```
+
+### Fit the model
+
+Negative binomial modeling was not tractable for this specification (given \>1 week).
+
+```{r}
+# Fits in about a week
+rds7a = sprintf("%s/m7a-helping-poisson.rds", outputdir)
+
+if (FALSE) { # refit the model
+  start.time = Sys.time()
+  
+  m7a = glmer(f7, data=da7, family=poisson(link=log), 
+             offset=ln_conversation_length, 
+             nAGQ=0, # faster
+             #nAGQ=1, # slower but better approximation
+             control=glmerControl(optimizer = "nloptwrap"))
+  
+  end.time = Sys.time()
+  print(end.time - start.time)
+  saveRDS(m7a, file=rds7a)
+} else { # read the model
+  m7a = readRDS(rds7a)
+}
+```
+
+```{r}
+m7 = m7a
+```
+
+```{r}
+print(summary(m7))
+```
+
+### FIXME Likelihood ratio test the random effects
+
+```{r}
+# FIXME
+```
+
+### Blups
+
+```{r}
+rds7r = sprintf("%s/m7-ranef.rds", outputdir)
+
+# takes ~2hrs
+if (FALSE) { # Generate the blups
+  start.time = Sys.time()
+  
+  r7 = ranef(m7, condVar=TRUE)
+  
+  end.time = Sys.time()
+  print(end.time - start.time)
+  
+  saveRDS(r7, file=rds7r)
+} else { # read the saved blups
+  r7 = readRDS(rds7r)
+}
+```
+
+```{r}
+rdf7 = as.data.frame(r7) # this errors, not sure why
+
+# error in as.data.frame call: 
+# Error in `levels<-`(`*tmp*`, value = as.character(levels)) : 
+#   factor level [2] is duplicated
+rdf7
+```
+
+```{r}
+# this is the easy way
+blupstoda <- function(blups, g, t = "(Intercept)") {
+  b = blups %>% 
+    filter(grpvar == g & term == t) %>%
+    select(-grpvar) %>%
+    select(-term)
+  b["PI.low"]  = b$condval - 2*b$condsd
+  b["PI.high"] = b$condval + 2*b$condsd
+  return(b)
+}
+```
+
+```{r}
+blupstoda <- function(blups, g, t = "(Intercept)") {
+  b = blups[[g]]
+  names(b)[names(b) == t] = "condval"
+  
+  b["condvar"] = attr(blups[[g]], "postVar")[,,]
+  b["condsd"]  = sqrt(b$condvar)
+  
+  b["PI.low"]  = b$condval - 2*b$condsd
+  b["PI.high"] = b$condval + 2*b$condsd
+  
+  b = cbind(rownames(b), data.frame(b, row.names=NULL))
+  colnames(b)[1] <- "grp"
+  return(b)
+}
+```
+
+#### RQ 2.2.a: Communication strategies overall
+
+##### Comm mech blups
+
+```{r}
+b7a = blupstoda(r7, "commMech")
+b7a %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+Forest plot:
+
+```{r}
+pp7a <- 
+  b7a %>%
+  arrange(condval) %>%                              # First sort by condval. This sorts the dataframe but NOT the factor levels
+  mutate(grp=factor(grp, levels=grp)) %>%           # This trick updates the factor levels
+  #filter(abs(condval) > condsd) |>
+  ggplot(aes(y = grp)) + 
+  theme_classic() +
+  geom_point(aes(x=condval), shape=15, size=3) +
+  geom_linerange(aes(xmin=PI.low, xmax=PI.high)) +
+  geom_vline(xintercept = 0, linetype="dashed") +
+  labs(x="Predicted Poisson rate difference", y="Communication mechanism")
+pp7a
+```
+
+##### Certainty blups
+
+```{r}
+b7b = blupstoda(r7, "certainty")
+b7b %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+Forest plot:
+
+```{r}
+pp7b <- 
+  b7b %>%
+  arrange(condval) %>%                              # First sort by condval. This sorts the dataframe but NOT the factor levels
+  mutate(grp=factor(grp, levels=grp)) %>%           # This trick updates the factor levels
+  #filter(abs(condval) > condsd) |>
+  ggplot(aes(y = grp)) + 
+  theme_classic() +
+  geom_point(aes(x=condval), shape=15, size=3) +
+  geom_linerange(aes(xmin=PI.low, xmax=PI.high)) +
+  geom_vline(xintercept = 0, linetype="dashed") +
+  labs(x="Predicted Poisson rate difference", y="Certainty")
+pp7b
+```
+
+##### Specificity blups
+
+```{r}
+blupstoda(r7, "specificity") %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+##### Communication mechanism - certainty
+
+```{r}
+blupstoda(r7, "commMech:certainty") %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+##### Communication
+
+```{r}
+blupstoda(r7, "commMech:specificity") %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+##### Certainty - specificity
+
+```{r}
+b7c = blupstoda(r7, "certainty:specificity") # all zeros, not sure why
+
+b7c %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+##### Communication mechanism - certainty - specificity
+
+```{r}
+blupstoda(r7, "commMech:certainty:specificity") %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+#### RQ 2.2.b Communication strategies by speaker
+
+```{r}
+blupstoda(r7, "speakerIsLearner:commMech") %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+```{r}
+blupstoda(r7, "speakerIsLearner:certainty") %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+```{r}
+blupstoda(r7, "speakerIsLearner:specificity") %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+```{r}
+blupstoda(r7, "speakerIsLearner:commMech:certainty") %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+```{r}
+blupstoda(r7, "speakerIsLearner:commMech:specificity") %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+```{r}
+blupstoda(r7, "speakerIsLearner:certainty:specificity") %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+#### RQ 2.2.c Communication strategies by request type
+
+```{r}
+blupstoda(r7, "request:commMech") %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+```{r}
+blupstoda(r7, "request:certainty") %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+```{r}
+blupstoda(r7, "request:specificity") %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+```{r}
+blupstoda(r7, "request:commMech:certainty") %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+```{r}
+blupstoda(r7, "request:commMech:specificity") %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+```{r}
+blupstoda(r7, "request:certainty:specificity") %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+#### RQ 2.2.d Communication strategies by content domain
+
+Note: This cell would answer RQ 2.1.1, but we're using a different model fit on Codebook 3 for that -- however, it's encouraging that we recover the same significant effects.
+
+```{r}
+b7d = blupstoda(r7, "content")
+
+b7d %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+```{r}
+pp7d <- 
+  b7d %>%
+  arrange(condval) %>%                              # First sort by condval. This sorts the dataframe but NOT the factor levels
+  mutate(grp=factor(grp, levels=grp)) %>%           # This trick updates the factor levels
+  #filter(abs(condval) > condsd) |>
+  ggplot(aes(y = grp)) + 
+  theme_classic() +
+  geom_point(aes(x=condval), shape=15, size=3) +
+  geom_linerange(aes(xmin=PI.low, xmax=PI.high)) +
+  geom_vline(xintercept = 0, linetype="dashed") +
+  labs(x="Predicted Poisson rate difference", y="Content domain")
+pp7d
+```
+
+```{r}
+b7e = blupstoda(r7, "content:commMech")
+
+b7e["rate.ratio"] = exp(b7e$condval)
+
+b7e %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+```{r}
+pp7e <- 
+  b7e %>% 
+  filter(abs(condval) > 1.5*condsd) %>%
+  arrange(condval) %>%                              # First sort by condval. This sorts the dataframe but NOT the factor levels
+  mutate(grp=factor(grp, levels=grp)) %>%           # This trick updates the factor levels
+  ggplot(aes(y = grp)) + 
+  theme_classic() +
+  geom_point(aes(x=condval), shape=15, size=3) +
+  geom_linerange(aes(xmin=PI.low, xmax=PI.high)) +
+  geom_vline(xintercept = 0, linetype="dashed") +
+  labs(x="Predicted Poisson rate difference", y="Content domain : Communication mechanism")
+pp7e
+```
+
+```{r}
+blupstoda(r7, "content:certainty") %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+```{r}
+blupstoda(r7, "content:specificity") %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+```{r}
+blupstoda(r7, "content:commMech:certainty") %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+```{r}
+blupstoda(r7, "content:commMech:specificity") %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+```{r}
+blupstoda(r7, "content:certainty:specificity") %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+## Questioning strategies (RQ 2.3)
+
+```{r}
+# data management: just da4 with different names
+da8 = da %>% filter(str_starts(da$code, "Questioning > "))
+da8["code"] = substring(da8$code, 
+                        first=nchar("Questioning > ") + 2, 
+                        last=nchar(da8$code)-1)
+newcols = str_split_fixed(da8$code, ", ", 3)
+da8[c("content", "specificity", "quesType")] = newcols
+da8
+```
+
+```{r}
+# edit: new version generated by commenting out interactions of more than 3 variables
+f8 = paste("count ~ request + speakerIsLearner", 
+           # code
+           "(1|content) + (1|specificity) + (1|quesType)", 
+           "(1|content:specificity) + (1|specificity:quesType) + (1|content:quesType)", 
+           "(1|content:specificity:quesType)", 
+           # conversation, conversation : code
+           "(1|conversation_sharedID) + (1|conversation_sharedID:content)", 
+           "(1|conversation_sharedID:specificity) + (1|conversation_sharedID:quesType)", 
+           "(1|conversation_sharedID:content:specificity)", 
+           "(1|conversation_sharedID:specificity:quesType)", 
+           "(1|conversation_sharedID:content:quesType)", 
+           #"(1|conversation_sharedID:content:specificity:quesType)", 
+           # annotator, annotator : code
+           "(1|annotator)", 
+           "(1|annotator:content) + (1|annotator:specificity) + (1|annotator:quesType)", 
+           "(1|annotator:content:specificity) + (1|annotator:specificity:quesType)", 
+           "(1|annotator:content:quesType)", 
+           #"(1|annotator:content:specificity:quesType)", 
+           # 2-way between request, speaker, and code
+           "(1|request:speakerIsLearner)", 
+           # request : code
+           "(1|request)", 
+           "(1|request:content) + (1|request:specificity) + (1|request:quesType)", 
+           "(1|request:content:specificity) + (1|request:specificity:quesType)", 
+           "(1|request:content:quesType)", 
+           #"(1|request:content:specificity:quesType)", 
+           # speaker : code
+           "(1|speakerIsLearner)", 
+           "(1|speakerIsLearner:content) + (1|speakerIsLearner:specificity)", 
+           "(1|speakerIsLearner:quesType)", 
+           "(1|speakerIsLearner:content:specificity) + (1|speakerIsLearner:specificity:quesType)", 
+           "(1|speakerIsLearner:content:quesType)", 
+           #"(1|speakerIsLearner:content:specificity:quesType)", 
+           # 3-way between request, speaker, and code
+           "(1|request:speakerIsLearner)", 
+           "(1|request:speakerIsLearner:content) + (1|request:speakerIsLearner:specificity)", 
+           "(1|request:speakerIsLearner:quesType)", 
+           #"(1|request:speakerIsLearner:content:specificity)", 
+           #"(1|request:speakerIsLearner:specificity:quesType)", 
+           #"(1|request:speakerIsLearner:content:quesType)", 
+           #"(1|request:speakerIsLearner:content:specificity:quesType)", 
+           sep=" + ")
+```
+
+### Fit the model
+
+Negative binomial modeling was not tractable for this specification.
+
+```{r}
+# Fits in 10.2 hours
+rds8a = sprintf("%s/m8a-questions-poisson.rds", outputdir)
+
+if (FALSE) { # refit the model
+  start.time = Sys.time()
+  
+  m8a = glmer(f8, data=da8, family=poisson(link=log), 
+             offset=ln_conversation_length, 
+             nAGQ=0, # faster
+             #nAGQ=1, # slower but necessary for profiling
+             control=glmerControl(optimizer = "nloptwrap"))
+  
+  end.time = Sys.time()
+  print(end.time - start.time)
+  saveRDS(m8a, file=rds8a)
+} else { # read the model
+  m8a = readRDS(rds8a)
+}
+```
+
+```{r}
+m8 = m8a
+```
+
+```{r}
+print(summary(m8))
+```
+
+### FIXME Likelihood ratio test the random effects
+
+```{r}
+# FIXME
+```
+
+### Blups
+
+```{r}
+# Runs in 25.7 minutes
+rds8r = sprintf("%s/m8-ranef.rds", outputdir)
+
+if (FALSE) { # Generate the blups
+  start.time = Sys.time()
+  
+  r8 = ranef(m8, condVar=TRUE)
+  
+  end.time = Sys.time()
+  print(end.time - start.time)
+  
+  saveRDS(r8, file=rds8r)
+} else { # read the saved blups
+  r8 = readRDS(rds8r)
+}
+```
+
+```{r}
+rdf8 = as.data.frame(r8) # this errors, not sure why
+
+# error in as.data.frame call: 
+# Error in `levels<-`(`*tmp*`, value = as.character(levels)) : 
+#   factor level [2] is duplicated
+```
+
+#### Question type blups
+
+```{r}
+# https://stackoverflow.com/questions/39125896/r-ranefmodel-condvar-attributes-null-but-postvar-show-results-deprecated-w
+
+b8a = r8$quesType
+names(b8a)[names(b8a) == "(Intercept)"] = "condval"
+
+b8a["condvar"] = attr(r8$quesType, "postVar")[,,]   # initial output is 1x1x5
+b8a["condsd"]  = sqrt(b8a$condvar)
+
+b8a["PI.low"]  = b8a$condval - 2*b8a$condsd
+b8a["PI.high"] = b8a$condval + 2*b8a$condsd
+
+b8a
+
+b8a %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+#### Specificity blups
+
+```{r}
+b8b = r8$specificity
+names(b8b)[names(b8b) == "(Intercept)"] = "condval"
+
+b8b["condvar"] = attr(r8$specificity, "postVar")[,,]
+b8b["condsd"]  = sqrt(b8b$condvar)
+
+b8b["PI.low"]  = b8b$condval - 2*b8b$condsd
+b8b["PI.high"] = b8b$condval + 2*b8b$condsd
+
+b8b
+
+b8b %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+#### Question type - Specificity blups
+
+```{r}
+b8c = r8$`specificity:quesType`
+names(b8c)[names(b8c) == "(Intercept)"] = "condval"
+
+b8c["condvar"] = attr(r8$`specificity:quesType`, "postVar")[,,]
+b8c["condsd"]  = sqrt(b8c$condvar)
+
+b8c["PI.low"]  = b8c$condval - 2*b8c$condsd
+b8c["PI.high"] = b8c$condval + 2*b8c$condsd
+
+b8c
+
+b8c %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+#### Speaker - Question type blups
+
+```{r}
+b8d = r8$`speakerIsLearner:quesType`
+names(b8d)[names(b8d) == "(Intercept)"] = "condval"
+
+b8d["condvar"] = attr(r8$`speakerIsLearner:quesType`, "postVar")[,,]
+b8d["condsd"]  = sqrt(b8d$condvar)
+
+b8d["PI.low"]  = b8d$condval - 2*b8d$condsd
+b8d["PI.high"] = b8d$condval + 2*b8d$condsd
+
+b8d
+
+b8d %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+#### Speaker - Specificity blups
+
+```{r}
+b8e = r8$`speakerIsLearner:specificity`
+names(b8e)[names(b8e) == "(Intercept)"] = "condval"
+
+b8e["condvar"] = attr(r8$`speakerIsLearner:specificity`, "postVar")[,,]
+b8e["condsd"]  = sqrt(b8e$condvar)
+
+b8e["PI.low"]  = b8e$condval - 2*b8e$condsd
+b8e["PI.high"] = b8e$condval + 2*b8e$condsd
+
+b8e
+
+b8e %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+#### Speaker - Question type - Specificity blups
+
+```{r}
+b8f = r8$`speakerIsLearner:specificity:quesType`
+names(b8f)[names(b8f) == "(Intercept)"] = "condval"
+
+b8f["condvar"] = attr(r8$`speakerIsLearner:specificity:quesType`, "postVar")[,,]
+b8f["condsd"]  = sqrt(b8f$condvar)
+
+b8f["PI.low"]  = b8f$condval - 2*b8f$condsd
+b8f["PI.high"] = b8f$condval + 2*b8f$condsd
+
+b8f
+
+b8f %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+#### Request type - Question type blups
+
+```{r}
+b8g = r8$`request:quesType`
+names(b8g)[names(b8g) == "(Intercept)"] = "condval"
+
+b8g["condvar"] = attr(r8$`request:quesType`, "postVar")[,,]
+b8g["condsd"]  = sqrt(b8g$condvar)
+
+b8g["PI.low"]  = b8g$condval - 2*b8g$condsd
+b8g["PI.high"] = b8g$condval + 2*b8g$condsd
+
+b8g
+
+b8g %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+#### Request type - Specificity blups
+
+```{r}
+b8h = r8$`request:specificity`
+names(b8h)[names(b8h) == "(Intercept)"] = "condval"
+
+b8h["condvar"] = attr(r8$`request:specificity`, "postVar")[,,]
+b8h["condsd"]  = sqrt(b8h$condvar)
+
+b8h["PI.low"]  = b8h$condval - 2*b8h$condsd
+b8h["PI.high"] = b8h$condval + 2*b8h$condsd
+
+b8h
+
+b8h %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+#### Request type - Question type - Specificity blups
+
+```{r}
+b8i = r8$`request:specificity:quesType`
+names(b8i)[names(b8i) == "(Intercept)"] = "condval"
+
+b8i["condvar"] = attr(r8$`request:specificity:quesType`, "postVar")[,,]
+b8i["condsd"]  = sqrt(b8i$condvar)
+
+b8i["PI.low"]  = b8i$condval - 2*b8i$condsd
+b8i["PI.high"] = b8i$condval + 2*b8i$condsd
+
+b8i
+
+b8i %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+#### Content - Question type blups
+
+```{r}
+b8j = r8$`content:quesType`
+names(b8j)[names(b8j) == "(Intercept)"] = "condval"
+
+b8j["condvar"] = attr(r8$`content:quesType`, "postVar")[,,]
+b8j["condsd"]  = sqrt(b8j$condvar)
+
+b8j["PI.low"]  = b8j$condval - 2*b8j$condsd
+b8j["PI.high"] = b8j$condval + 2*b8j$condsd
+
+b8j
+
+b8j %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+#### Content - Specificity blups
+
+```{r}
+b8k = r8$`content:specificity`
+names(b8k)[names(b8k) == "(Intercept)"] = "condval"
+
+b8k["condvar"] = attr(r8$`content:specificity`, "postVar")[,,]
+b8k["condsd"]  = sqrt(b8k$condvar)
+
+b8k["PI.low"]  = b8k$condval - 2*b8k$condsd
+b8k["PI.high"] = b8k$condval + 2*b8k$condsd
+
+b8k
+
+b8k %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+#### Content - Question type - Specificity blups
+
+```{r}
+b8l = r8$`content:specificity:quesType`
+names(b8l)[names(b8l) == "(Intercept)"] = "condval"
+
+b8l["condvar"] = attr(r8$`content:specificity:quesType`, "postVar")[,,]
+b8l["condsd"]  = sqrt(b8l$condvar)
+
+b8l["PI.low"]  = b8l$condval - 2*b8l$condsd
+b8l["PI.high"] = b8l$condval + 2*b8l$condsd
+
+b8l
+
+b8l %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+# Analyses using Codebook 3
+
+```{r}
+codebook_version = 3
+
+outputdir = sprintf("%s/codebook%d", outputparentdir, codebook_version)
+dir.create(outputdir)
+```
+
+```{r}
+fin = sprintf("derived-dataframes/regression-data-v%d/codebook%d_conv-annotator-code-speaker_outcome-counts.csv.gz", input_version, codebook_version)
+da = read_csv(fin)
+
+da
+```
+
+## Learner questions content (RQ 1.1)
+
+```{r}
+da5 = da %>% filter(str_starts(da$code, "Questioning > ") & da$speakerIsLearner)
+
+# Data management
+da5["code"] = substring(da5$code, 
+                        first=nchar("Questioning > ") + 2, 
+                        last=nchar(da5$code)-1)
+newcols = str_split_fixed(da5$code, ", ", 2)
+da5[c("questionType", "contentDomain")] = newcols
+
+da5
+```
+
+```{r}
+f5 = paste("count ~ request", 
+           "(1|conversation_sharedID) + (1|annotator)", 
+           # code
+           "(1|contentDomain)", "(1|questionType)", "(1|contentDomain:questionType)", 
+           # annotator : code
+           "(1|annotator:contentDomain)", "(1|annotator:questionType)", 
+           "(1|annotator:contentDomain:questionType)", 
+           # conversation : code
+           "(1|conversation_sharedID:contentDomain)", 
+           "(1|conversation_sharedID:questionType)", 
+           "(1|conversation_sharedID:contentDomain:questionType)", 
+           # request : code
+           "(1|request:contentDomain)", "(1|request:questionType)", 
+           "(1|request:contentDomain:questionType)", 
+           sep=" + ")
+f5
+```
+
+### Compare Poisson and Negative binomial model families
+
+```{r}
+# Fits in ~0.5hrs
+rds5a = sprintf("%s/m5a-learner-questions-poisson.rds", outputdir)
+
+if (FALSE) { # refit the model
+  start.time = Sys.time()
+  
+  m5a = glmer(f5, data=da5, family=poisson(link=log), 
+              offset=ln_conversation_length, 
+              nAGQ=0, # faster
+              #nAGQ=1, # slower but necessary for profiling
+              control=glmerControl(optimizer = "nloptwrap"))
+  
+  end.time = Sys.time()
+  print(end.time - start.time)
+  saveRDS(m5a, file=rds5a)
+} else { # read the model
+  m5a = readRDS(rds5a)
+}
+```
+
+```{r}
+# Fits in 2.1 hours
+rds5b = sprintf("%s/m5b-learner-questions-nb.rds", outputdir)
+
+if (FALSE) { # refit the model
+  start.time = Sys.time()
+  
+  m5b = glmer.nb(f5, data=da5, 
+                 offset=ln_conversation_length, 
+                 nAGQ=0, # faster
+                 #nAGQ=1, # slower but necessary for profiling
+                 #verbose=1, 
+                 control=glmerControl(optimizer = "nloptwrap"))
+  
+  end.time = Sys.time()
+  print(end.time - start.time)
+  saveRDS(m5b, file=rds5b)
+} else { # read the model
+  m5b = readRDS(rds5b)
+}
+```
+
+```{r}
+cat(sprintf("Poisson AIC: \t\t%f\nNegative binomial AIC: \t%f\n\n", 
+            AIC(m5a), AIC(m5b)))
+cat(sprintf("Poisson BIC: \t\t%f\nNegative binomial BIC: \t%f", 
+            BIC(m5a), BIC(m5b)))
+```
+
+```{r}
+m5 = if(AIC(m5a) < AIC(m5b) + 4) m5a else m5b
+```
+
+```{r}
+print(abs(AIC(m5a) - AIC(m5b)))
+```
+
+```{r}
+print(summary(m5))
+```
+
+### Evaluate the omnibus significance of the focus random effects
+
+```{r}
+# m5a with no request:content interactions
+m5a.h0 = readRDS("rscripts/learner-model/m5a-learner-questions-h0-poisson.rds") # 16.3 minutes
+
+# m5a with no request:content:questionType interaction
+m5a.h00 = readRDS("rscripts/learner-model/m5a-learner-questions-h00-poisson.rds") # 22.6 minutes
+```
+
+```{r}
+# this is the important one
+anova(m5a.h0, m5a.h00)
+```
+
+### Blups with visualization (forest plots)
+
+```{r}
+# Runs in 4.0 minutes
+rds5r = sprintf("%s/m5-ranef.rds", outputdir)
+
+if (FALSE) { # Generate the blups
+  start.time = Sys.time()
+  
+  r5 = ranef(m5, condVar=TRUE)
+  
+  end.time = Sys.time()
+  print(end.time - start.time)
+  
+  saveRDS(r5, file=rds5r)
+} else { # read the saved blups
+  r5 = readRDS(rds5r)
+}
+```
+
+```{r}
+rdf5 = as.data.frame(r5)
+rdf5
+```
+
+What topics do Learners focus their questions on? i.e., what do Learners not know/think they don't know?
+
+```{r}
+b5a = rdf5 %>% 
+  filter(grpvar == "contentDomain" & term == "(Intercept)") %>%
+  select(-grpvar) %>%
+  select(-term)
+b5a["PI.low"]  = b5a$condval - 2*b5a$condsd
+b5a["PI.high"] = b5a$condval + 2*b5a$condsd
+
+b5a %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+```{r}
+# https://www.khstats.com/blog/forest-plots/
+pp5a <- 
+  b5a |>
+  ggplot(aes(y = grp)) + 
+  theme_classic() +
+  geom_point(aes(x=condval), shape=15, size=3) +
+  geom_linerange(aes(xmin=CI.low, xmax=CI.high)) +
+  geom_vline(xintercept = 0, linetype="dashed") +
+  labs(x="Predicted Poisson rate offset", y="Content domain") #+
+  #coord_cartesian(ylim=c(1,15), xlim=c(-4, 4)) +
+  #annotate("text", x = -3, y = 15, label = "Less frequent") +
+  #annotate("text", x = 3, y = 15, label = "More frequent")
+pp5a
+```
+
+How does this break down between request types?
+
+```{r}
+rdf5 %>% 
+  filter(grpvar == "request:contentDomain" & term == "(Intercept)") %>% 
+  filter(abs(condval) > 2*condsd) %>%
+  select(-grpvar) %>%
+  select(-term)
+```
+
+```{r}
+# this is extra
+rdf5 %>% 
+  filter(grpvar == "contentDomain:questionType" & term == "(Intercept)") %>% 
+  filter(abs(condval) > 2*condsd) %>%
+  select(-grpvar) %>%
+  select(-term)
+```
+
+## Content domains overall (RQ 2.1)
+
+```{r}
+da6 = da %>% filter(str_starts(da$code, "Questioning > ") | 
+                      str_starts(da$code, "Helping > "))
+
+# Data management
+newcols = str_split_fixed(da6$code, " > ", 2)
+da6["QH"] = newcols[,1]                                        # questioning vs helping
+da6["I.Q"] = ifelse(da6$QH == "Questioning", 1, 0)
+da6["I.H"] = ifelse(da6$QH == "Helping",     1, 0)
+
+newcols = newcols[,2]                                          # get attributes only
+newcols = substring(newcols, first=2, last=nchar(newcols) - 1) # remove parens
+newcols = str_split_fixed(newcols, ", ", 2)
+da6[c("mech.type", "content")] = newcols
+
+da6["quesType"] = ifelse(da6$I.Q, da6$mech.type, "other")
+da6["commMech"] = ifelse(da6$I.H, da6$mech.type, "other")
+
+da6
+```
+
+```{r}
+f6 = paste("count ~ request + speakerIsLearner + QH", 
+           # code
+           "(1|content) + (0+I.Q|quesType) + (0+I.H|commMech)", 
+           "(0+I.Q|content:quesType) + (0+I.H|content:commMech)", 
+           # conversation
+           "(1|conversation_sharedID)", 
+           "(1|conversation_sharedID:content)", 
+           "(0+I.Q|conversation_sharedID:quesType)", 
+           "(0+I.H|conversation_sharedID:commMech)", 
+           "(0+I.Q|conversation_sharedID:content:quesType)", 
+           "(0+I.H|conversation_sharedID:content:commMech)", 
+           # annotator
+           "(1|annotator)", 
+           "(1|annotator:content) + (0+I.Q|annotator:quesType)", 
+           "(0+I.H|annotator:commMech)", 
+           "(0+I.Q|annotator:content:quesType) + (0+I.H|annotator:content:commMech)", 
+           # 2-way among request, speaker, and code
+           "(1|request:speakerIsLearner)", 
+           # request : code
+           "(1|request:content) + (0+I.Q|request:quesType) + (0+I.H|request:commMech)", 
+           "(0+I.Q|request:content:quesType) + (0+I.H|request:content:commMech)", 
+           # speaker : code
+           "(1|speakerIsLearner:content)", 
+           "(0+I.Q|speakerIsLearner:quesType) + (0+I.H|speakerIsLearner:commMech)", 
+           "(0+I.Q|speakerIsLearner:content:quesType)", 
+           "(0+I.H|speakerIsLearner:content:commMech)", 
+           # 3-way among request, speaker, and code
+           "(1|request:speakerIsLearner:content)", 
+           "(0+I.Q|request:speakerIsLearner:quesType)", 
+           "(0+I.H|request:speakerIsLearner:commMech)", 
+           "(0+I.Q|request:speakerIsLearner:content:quesType)", 
+           "(0+I.H|request:speakerIsLearner:content:commMech)", 
+           sep=" + ")
+f6
+```
+
+### FIXME Compare Poisson and Negative binomial model families
+
+```{r}
+# got the following message while fitting, is it ok?
+# Warning in doTryCatch(return(expr), name, parentenv, handler) :
+#   restarting interrupted promise evaluation
+
+# Fits in >=2hrs (didn't record exactly)
+rds6a = sprintf("%s/m6a-content-poisson.rds", outputdir)
+
+if (FALSE) { # refit the model
+  start.time = Sys.time()
+  
+  m6a = glmer(f6, data=da6, family=poisson(link=log), 
+              offset=ln_conversation_length, 
+              nAGQ=0, # faster
+              #nAGQ=1, # slower but necessary for profiling
+              #verbose=TRUE, 
+              control=glmerControl(optimizer = "nloptwrap"))
+  
+  end.time = Sys.time()
+  print(end.time - start.time)
+  saveRDS(m6a, file=rds6a)
+} else { # read the model
+  m6a = readRDS(rds6a)
+}
+```
+
+```{r}
+# Fits in FIXME amount of time
+rds6b = sprintf("%s/m6b-content-nb.rds", outputdir)
+
+if (FALSE) { # refit the model
+  start.time = Sys.time()
+  
+  m6b = glmer.nb(f6, data=da6, 
+                 offset=ln_conversation_length, 
+                 nAGQ=0, # faster
+                 #nAGQ=1, # slower but necessary for profiling
+                 #verbose=1, 
+                 control=glmerControl(optimizer = "nloptwrap"))
+  
+  end.time = Sys.time()
+  print(end.time - start.time)
+  saveRDS(m6b, file=rds6b)
+} else { # read the model
+  m6b = readRDS(rds6b)
+}
+```
+
+```{r}
+# FIXME temporary workaround (m6b is currently fitting)
+m6 = m6a
+```
+
+```{r}
+cat(sprintf("Poisson AIC: \t\t%f\nNegative binomial AIC: \t%f\n\n", 
+            AIC(m6a), AIC(m6b)))
+cat(sprintf("Poisson BIC: \t\t%f\nNegative binomial BIC: \t%f", 
+            BIC(m6a), BIC(m6b)))
+```
+
+```{r}
+m6 = if(AIC(m6a) < AIC(m6b) + 4) m6a else m6b
+```
+
+```{r}
+print(summary(m6))
+```
+
+### FIXME LRT the random effects
+
+```{r}
+# FIXME
+p6 = profile(m6)
+```
+
+### Blups
+
+```{r}
+# takes 1.2 hours for Poisson input (m16)
+rds6r = sprintf("%s/m6-ranef.rds", outputdir)
+
+if (FALSE) { # Generate the blups
+  start.time = Sys.time()
+  
+  r6 = ranef(m6, condVar=TRUE)
+  
+  end.time = Sys.time()
+  print(end.time - start.time)
+  
+  saveRDS(r6, file=rds6r)
+} else { # read the saved blups
+  r6 = readRDS(rds6r)
+}
+```
+
+```{r}
+rdf6 = as.data.frame(r6)
+rdf6
+```
+
+#### Overall effects (RQ 2.1.1)
+
+What topics to people focus on?
+
+```{r}
+b6a = rdf6 %>% 
+  filter(grpvar == "content" & term == "(Intercept)") %>%
+  select(-grpvar) %>%
+  select(-term)
+b6a["PI.low"]  = b6a$condval - 2*b6a$condsd
+b6a["PI.high"] = b6a$condval + 2*b6a$condsd
+
+b6a["rate.ratio"] = exp(b6a$condval)
+
+b6a %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+```{r}
+pp6a <- 
+  b6a |>
+  ggplot(aes(y = grp)) + 
+  theme_classic() +
+  geom_point(aes(x=condval), shape=15, size=3) +
+  geom_linerange(aes(xmin=PI.low, xmax=PI.high)) +
+  geom_vline(xintercept = 0, linetype="dashed") +
+  labs(x="Estimated Poisson rate difference from baseline", y="Content domain") #+
+  #coord_cartesian(ylim=c(1,15), xlim=c(-4, 4)) +
+  #annotate("text", x = -3, y = 15, label = "Less frequent") +
+  #annotate("text", x = 3, y = 15, label = "More frequent")
+pp6a
+```
+
+#### Speaker difference effects (RQ 2.1.2)
+
+RQ 2.1.2: How do Learners' and Helpers' focus areas (content domain) differ?
+
+```{r}
+b6b = rdf6 %>% 
+  filter(grpvar == "speakerIsLearner:content" & term == "(Intercept)") %>%
+  select(-grpvar) %>%
+  select(-term)
+b6b["CI.low"]  = b6b$condval - 2*b6b$condsd
+b6b["CI.high"] = b6b$condval + 2*b6b$condsd
+
+b6b %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+RQ 2.2.2 (aux): How do Learners' and Helpers' info-providing strategies (communication mechanisms) differ?
+
+Note: This is low-priority for the project.
+
+```{r}
+# FIXME
+```
+
+RQ 2.3.1 (aux): How do Learners' and Helpers' info-querying strategies (question types) differ?
+
+Note: This is low-priority for the project.
+
+```{r}
+# FIXME
+```
+
+#### Request difference effects (RQ 2.1.3)
+
+RQ 2.1.3: How do focus areas (content domain) differ between help request types?
+
+```{r}
+b6e = rdf6 %>% 
+  filter(grpvar == "request:content" & term == "(Intercept)") %>%
+  select(-grpvar) %>%
+  select(-term)
+b6e["PI.low"]  = b6e$condval - 2*b6e$condsd
+b6e["PI.high"] = b6e$condval + 2*b6e$condsd
+
+b6e["rate.ratio"] = exp(b6e$condval)
+
+b6e %>% 
+  filter(abs(condval) > 2*condsd)
+```
+
+```{r}
+# can't read the whole word
+print.data.frame((b6e %>% filter(abs(condval) > 2*condsd)))
+```
+
+```{r}
+# fig.align="center", echo = FALSE, fig.height = 10, fig.width = 10}
+
+pp6e <- 
+  b6e %>% 
+  filter(abs(condval) > condsd) |>
+  ggplot(aes(y = grp)) + 
+  theme_classic() +
+  geom_point(aes(x=condval), shape=15, size=2) +
+  geom_linerange(aes(xmin=PI.low, xmax=PI.high)) +
+  geom_vline(xintercept = 0, linetype="dashed") +
+  labs(x="Predicted Poisson rate difference", y="Request : Content domain") +
+  # wtf?
+  scale_x_break(breaks = c(0)) #+
+  #coord_cartesian(ylim=c(1,15), xlim=c(-4, 4)) +
+  #annotate("text", x = -3, y = 15, label = "Less frequent") +
+  #annotate("text", x = 3, y = 15, label = "More frequent")
+pp6e
+```
+
+Plotting is a mess but I'm working on it, anyways the significant level is `codeComprehension : codingConcept`, unsurprisingly.
+
+```{r}
+b6e %>% 
+  filter(abs(condval) > 1*condsd)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.

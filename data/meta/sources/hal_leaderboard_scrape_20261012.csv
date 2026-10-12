@@ -1,0 +1,247 @@
+page,rank,scaffold,pareto,model,verified,accuracy_pct,acc_ci_minus,acc_ci_plus,cost_usd,cost_ci_minus,cost_ci_plus,n_runs,zip
+assistantbench,1,Browser-Use,True,o3 Medium (April 2025),True,38.81,,,15.15,,,1,assistantbench_assistantbench_browser_agent_o320250416_1750104946_UPLOAD.zip
+assistantbench,2,Browser-Use,False,GPT-5 Medium (August 2025),True,35.23,,,41.69,,,1,assistantbench_assistantbench_browser_agent_gpt5_1754633901_UPLOAD.zip
+assistantbench,3,Browser-Use,True,o4-mini Low (April 2025),True,28.05,,,9.22,,,1,assistantbench_assistantbench_browser_agent_o4mini20250416_low_1746374633_UPLOAD.zip
+assistantbench,4,Browser-Use,False,o4-mini High (April 2025),True,23.84,,,16.39,,,1,assistantbench_assistantbench_browser_agent_o4mini20250416_high_1746297478_UPLOAD.zip
+assistantbench,5,Browser-Use,False,GPT-4.1 (April 2025),True,17.39,,,14.15,,,1,assistantbench_assistantbench_browser_agent_gpt4120250414_1746225570_UPLOAD.zip
+assistantbench,6,Browser-Use,False,Claude-3.7 Sonnet (February 2025),True,16.69,,,56.00,,,1,assistantbench_assistantbench_browser_agent_claude37sonnet20250219_1746383806_UPLOAD.zip
+assistantbench,7,Browser-Use,False,Claude Opus 4.1 High (August 2025),True,13.75,,,779.72,,,1,assistantbench_assistantbench_browser_agent_claudeopus41_high_1755199872_UPLOAD.zip
+assistantbench,8,Browser-Use,False,Claude-3.7 Sonnet High (February 2025),True,13.08,,,16.13,,,1,assistantbench_assistantbench_browser_agent_claude37sonnet20250219_high_1748638033_UPLOAD.zip
+assistantbench,9,Browser-Use,False,Claude Sonnet 4.5 High (September 2025),True,11.80,,,99.23,,,1,assistantbench_assistantbench_browser_agent_claudesonnet45_high_1759427714_UPLOAD.zip
+assistantbench,10,Browser-Use,False,DeepSeek R1 (May 2025),True,8.75,,,18.18,,,1,assistantbench_assistantbench_browser_agent_deepseekr1_1755121049_UPLOAD.zip
+assistantbench,11,Browser-Use,False,Claude Opus 4.1 (August 2025),True,7.26,,,385.43,,,1,assistantbench_assistantbench_browser_agent_claudeopus4120250514_1754678912_UPLOAD.zip
+assistantbench,12,Browser-Use,False,Claude Sonnet 4.5 (September 2025),True,7.09,,,75.60,,,1,assistantbench_assistantbench_browser_agent_claudesonnet4520250929_1759266550_UPLOAD.zip
+assistantbench,13,Browser-Use,False,Gemini 2.0 Flash (February 2025),True,2.62,,,2.18,,,1,assistantbench_assistantbench_browser_agent_gemini20flash_1755192000_UPLOAD.zip
+assistantbench,14,Browser-Use,False,DeepSeek V3 (March 2025),True,2.03,,,12.66,,,1,assistantbench_assistantbench_browser_agent_deepseekaideepseekv3_1746233269_UPLOAD.zip
+assistantbench,15,Browser-Use,False,DeepSeek R1 (January 2025),True,0.00,,,5.30,,,1,assistantbench_assistantbench_browser_agent_deepseekaideepseekr1_1748894163_UPLOAD.zip
+corebench_hard,1,Claude Code Submitted by Nicholas Carlini Download main.py,True,Claude Opus 4.5,True,77.78,,,87.16,,,1,corebench_hard_claude_code_claudeopus45_1764537671_UPLOAD.zip
+corebench_hard,2,Claude Code Submitted by Nicholas Carlini Download main.py,False,Claude Sonnet 4.5 (September 2025),True,62.22,,,68.33,,,1,corebench_hard_claude_code_claudesonnet4520250929_1764605733_UPLOAD.zip
+corebench_hard,3,CORE-Agent,False,Claude Opus 4.1 (August 2025),True,51.11,,,412.42,,,1,corebench_hard_coreagent_1754492675_UPLOAD.zip
+corebench_hard,4,Claude Code Submitted by Nicholas Carlini Download main.py,False,Claude Sonnet 4 (May 2025),True,46.67,,,65.58,,,1,corebench_hard_claude_code_claudesonnet420250514_1764558813_UPLOAD.zip
+corebench_hard,5,CORE-Agent,False,Claude Sonnet 4.5 High (September 2025),True,44.44,,,92.34,,,1,corebench_hard_coreagentclaudesonnet45high_1759330487_UPLOAD.zip
+corebench_hard,6,CORE-Agent,False,Claude Opus 4.5 High (November 2025),True,42.22,,,152.66,,,1,corebench_hard_core_agent_opus_45_high_1764027725_UPLOAD.zip
+corebench_hard,7,CORE-Agent,False,Claude Opus 4.5 (November 2025),True,42.22,,,168.99,,,1,corebench_hard_core_agent_opus_45_1764027531_UPLOAD.zip
+corebench_hard,8,Claude Code Submitted by Nicholas Carlini Download main.py,False,Claude Opus 4.1,True,42.22,,,331.79,,,1,corebench_hard_claude_code_claudeopus41_1764560915_UPLOAD.zip
+corebench_hard,9,CORE-Agent,False,Claude Opus 4.1 High (August 2025),True,42.22,,,509.95,,,1,corebench_hard_coreagent_1754539779_UPLOAD.zip
+corebench_hard,10,CORE-Agent,False,Gemini 3 Pro Preview High (November 2025),True,40.00,,,86.60,,,1,corebench_hard_core_agent_1763842609_UPLOAD.zip
+corebench_hard,11,HAL Generalist Agent,False,Claude-3.7 Sonnet High (February 2025),True,37.78,,,66.15,,,1,corebench_hard_hal_generalist_agentsonnet_37_high_1755663010_UPLOAD.zip
+corebench_hard,12,CORE-Agent,False,Claude Sonnet 4.5 (September 2025),True,37.78,,,97.15,,,1,corebench_hard_coreagentclaudesonnet45_1759329435_UPLOAD.zip
+corebench_hard,13,HAL Generalist Agent,False,o4-mini High (April 2025),True,35.56,,,45.37,,,1,corebench_hard_hal_generalist_agento4minihigh_1755580383_UPLOAD.zip
+corebench_hard,14,CORE-Agent,False,Claude-3.7 Sonnet (February 2025),True,35.56,,,73.04,,,1,corebench_hard_coreagent_1744922181_UPLOAD.zip
+corebench_hard,15,HAL Generalist Agent,False,Gemini 3 Pro Preview High (November 2025),True,35.56,,,101.27,,,1,corebench_hard_hal_generalist_agent_1763837773_UPLOAD.zip
+corebench_hard,16,HAL Generalist Agent,False,Claude Opus 4.1 (August 2025),True,35.56,,,375.11,,,1,corebench_hard_hal_generalist_agent_1754443772_UPLOAD.zip
+corebench_hard,17,HAL Generalist Agent,False,Claude Sonnet 4.5 (September 2025),True,33.33,,,85.19,,,1,corebench_hard_halgeneralistagentclaudesonnet45_1759433359_UPLOAD.zip
+corebench_hard,18,CORE-Agent,False,Claude Sonnet 4 High (May 2025),True,33.33,,,100.48,,,1,corebench_hard_coreagentclaudesonnet4high_1755814601_UPLOAD.zip
+corebench_hard,19,CORE-Agent,False,GPT-4.1 (April 2025),True,33.33,,,107.36,,,1,corebench_hard_coreagent_1744752123_UPLOAD.zip
+corebench_hard,20,HAL Generalist Agent,False,Claude Opus 4.5 (November 2025),True,33.33,,,127.41,,,1,corebench_hard_hal_generalist_agent_opus_45_1764046559_UPLOAD.zip
+corebench_hard,21,HAL Generalist Agent,False,Claude Opus 4.1 High (August 2025),True,33.33,,,358.47,,,1,corebench_hard_hal_generalist_agent_1754569694_UPLOAD.zip
+corebench_hard,22,HAL Generalist Agent,False,Claude-3.7 Sonnet (February 2025),True,31.11,,,56.64,,,1,corebench_hard_hal_generalist_agentsonnet_37_1755652380_UPLOAD.zip
+corebench_hard,23,HAL Generalist Agent,False,Claude Opus 4.5 High (November 2025),True,31.11,,,112.38,,,1,corebench_hard_hal_generalist_agent_opus_45_high_1764046628_UPLOAD.zip
+corebench_hard,24,CORE-Agent,False,Claude Sonnet 4 (May 2025),True,28.89,,,50.27,,,1,corebench_hard_coreagentclaudesonnet4_1755796611_UPLOAD.zip
+corebench_hard,25,HAL Generalist Agent,False,Claude Sonnet 4.5 High (September 2025),True,28.89,,,87.77,,,1,corebench_hard_halgeneralistagentclaudesonnet45high_1759423572_UPLOAD.zip
+corebench_hard,26,CORE-Agent,False,GPT-5 Medium (August 2025),True,26.67,,,31.76,,,1,corebench_hard_coreagent_1754599494_UPLOAD.zip
+corebench_hard,27,CORE-Agent,False,o4-mini High (April 2025),True,26.67,,,61.35,,,1,corebench_hard_coreagent_1745075792_UPLOAD.zip
+corebench_hard,28,CORE-Agent,False,Claude-3.7 Sonnet High (February 2025),True,24.44,,,72.47,,,1,corebench_hard_coreagent_1745258007_UPLOAD.zip
+corebench_hard,29,CORE-Agent,False,o3 Medium (April 2025),True,24.44,,,120.47,,,1,corebench_hard_coreagent_1745118876_UPLOAD.zip
+corebench_hard,30,HAL Generalist Agent,False,GPT-4.1 (April 2025),True,22.22,,,58.32,,,1,corebench_hard_hal_generalist_agentgpt41_1755644685_UPLOAD.zip
+corebench_hard,31,HAL Generalist Agent,False,o3 Medium (April 2025),True,22.22,,,88.34,,,1,corebench_hard_hal_generalist_agento3medium_1755626315_UPLOAD.zip
+corebench_hard,32,CORE-Agent,False,Gemini 2.5 Pro Preview (March 2025),True,22.22,,,182.34,,,1,corebench_hard_coreagent_1744922265_UPLOAD.zip
+corebench_hard,33,CORE-Agent,True,DeepSeek V3.1 (August 2025),True,20.00,,,12.55,,,1,corebench_hard_coreagentdeepseekv31_1755793007_UPLOAD.zip
+corebench_hard,34,CORE-Agent,False,DeepSeek V3 (March 2025),True,17.78,,,25.26,,,1,corebench_hard_coreagent_1744854746_UPLOAD.zip
+corebench_hard,35,CORE-Agent,False,o4-mini Low (April 2025),True,17.78,,,31.79,,,1,corebench_hard_coreagent_1745046580_UPLOAD.zip
+corebench_hard,36,HAL Generalist Agent,False,o4-mini Low (April 2025),True,15.56,,,22.50,,,1,corebench_hard_hal_generalist_agento4minilow_1755608756_UPLOAD.zip
+corebench_hard,37,CORE-Agent,False,GPT-OSS-120B (August 2025),True,11.11,,,4.21,,,1,corebench_hard_coreagent_1754492673_UPLOAD.zip
+corebench_hard,38,CORE-Agent,False,GPT-OSS-120B High (August 2025),True,11.11,,,4.21,,,1,corebench_hard_coreagent_1754539776_UPLOAD.zip
+corebench_hard,39,CORE-Agent,False,Gemini 2.0 Flash (February 2025),True,11.11,,,12.46,,,1,corebench_hard_coreagent_1744856042_UPLOAD.zip
+corebench_hard,40,HAL Generalist Agent,False,GPT-5 Medium (August 2025),True,11.11,,,29.75,,,1,corebench_hard_hal_generalist_agentgpt5medium_1756137340_UPLOAD.zip
+corebench_hard,41,CORE-Agent,False,Claude Haiku 4.5 (October 2025),True,11.11,,,43.93,,,1,corebench_hard_coreagentclaudehaiku45_1760647306_UPLOAD.zip
+corebench_hard,42,HAL Generalist Agent,True,GPT-OSS-120B High (August 2025),True,8.89,,,2.05,,,1,corebench_hard_hal_generalist_agent_1754569684_UPLOAD.zip
+corebench_hard,43,HAL Generalist Agent,False,GPT-OSS-120B (August 2025),True,8.89,,,2.79,,,1,corebench_hard_hal_generalist_agent_1754439280_UPLOAD.zip
+corebench_hard,44,HAL Generalist Agent,False,DeepSeek V3 (March 2025),True,8.89,,,4.69,,,1,corebench_hard_hal_generalist_agentdeepseekv30324_1755710007_UPLOAD.zip
+corebench_hard,45,HAL Generalist Agent,False,DeepSeek R1 (May 2025),True,8.89,,,7.77,,,1,corebench_hard_hal_generalist_agentdeepseekr10528_1755721934_UPLOAD.zip
+corebench_hard,46,CORE-Agent,False,DeepSeek R1 (January 2025),True,6.67,2.22,2.22,81.11,46.45,46.45,2,corebench_hard_coreagent_1744922373_UPLOAD.zip
+corebench_hard,47,HAL Generalist Agent,False,DeepSeek R1 (January 2025),True,4.45,2.22,2.22,24.95,11.07,22.15,2,corebench_hard_hal_generalist_agent_1747247500_UPLOAD.zip
+corebench_hard,48,HAL Generalist Agent,False,Gemini 2.0 Flash (February 2025),True,4.44,,,7.06,,,1,corebench_hard_hal_generalist_agentgemini20flash_1755839828_UPLOAD.zip
+corebench_hard,49,HAL Generalist Agent,False,Gemini 2.5 Pro Preview (March 2025),True,4.44,,,30.38,,,1,corebench_hard_hal_generalist_agent_1747247518_UPLOAD.zip
+gaia,1,HAL Generalist Agent,True,Claude Sonnet 4.5 (September 2025),True,74.55,0.00,0.00,178.20,9.17,9.17,2,gaia_hal_generalist_agent_claudesonnet45_1759276006_UPLOAD.zip
+gaia,2,HAL Generalist Agent,False,Claude Sonnet 4.5 High (September 2025),True,70.91,,,179.86,,,1,gaia_hal_generalist_agent_claudesonnet45_1759265643_UPLOAD.zip
+gaia,3,HAL Generalist Agent,False,Claude Opus 4.1 High (August 2025),True,68.48,,,562.24,,,1,gaia_hal_generalist_agent_claudeopus41_1758719749_UPLOAD.zip
+gaia,4,HAL Generalist Agent,False,Claude Opus 4 High (May 2025),True,64.85,,,665.89,,,1,gaia_hal_generalist_agent_claudeopus420250514_1754374886_UPLOAD.zip
+gaia,5,HAL Generalist Agent,False,Claude-3.7 Sonnet High (February 2025),True,64.24,,,122.49,,,1,gaia_hal_generalist_agent_claude37sonnet20250219_high_1744730242_UPLOAD.zip
+gaia,6,HAL Generalist Agent,False,Claude Opus 4.1 (August 2025),True,64.24,,,641.86,,,1,gaia_hal_generalist_agent_claudeopus41_1758798743_UPLOAD.zip
+gaia,7,HF Open Deep Research,False,GPT-5 Medium (August 2025),True,62.80,,,359.83,,,1,gaia_hf_open_deep_research_gpt520250807_1754605128_UPLOAD.zip
+gaia,8,HAL Generalist Agent,False,GPT-5 Medium (August 2025),True,59.39,,,104.75,,,1,gaia_hal_generalist_agent_gpt520250807_1758875386_UPLOAD.zip
+gaia,9,HAL Generalist Agent,True,o4-mini Low (April 2025),True,58.18,,,73.26,,,1,gaia_hal_generalist_agent_o4mini20250416_low_1745167262_UPLOAD.zip
+gaia,10,HF Open Deep Research,False,Claude Opus 4 (May 2025),True,57.58,,,1686.07,,,1,gaia_hf_open_deep_research_claudeopus4_1754425534_UPLOAD.zip
+gaia,11,HAL Generalist Agent,False,Claude-3.7 Sonnet (February 2025),True,56.36,,,130.68,,,1,gaia_hal_generalist_agent_claude37sonnet20250219_1744772193_UPLOAD.zip
+gaia,12,HAL Generalist Agent,False,Claude Haiku 4.5 (October 2025),True,56.36,,,130.81,,,1,gaia_hal_generalist_agent_claudehaiku45_1760657477_UPLOAD.zip
+gaia,13,HF Open Deep Research,False,o4-mini High (April 2025),True,55.76,,,184.87,,,1,gaia_hf_open_deep_research_o4mini20250416_high_1744923206_UPLOAD.zip
+gaia,14,HAL Generalist Agent,True,o4-mini High (April 2025),True,54.55,,,59.39,,,1,gaia_hal_generalist_agent_o4mini20250416_high_1745167285_UPLOAD.zip
+gaia,15,HF Open Deep Research,False,GPT-4.1 (April 2025),True,50.30,,,109.88,,,1,gaia_hf_open_deep_research_gpt4120250414_1744843595_UPLOAD.zip
+gaia,16,HAL Generalist Agent,False,GPT-4.1 (April 2025),True,49.70,,,74.19,,,1,gaia_hal_generalist_agent_gpt4120250414_1744652581_UPLOAD.zip
+gaia,17,HF Open Deep Research,False,o4-mini Low (April 2025),True,47.88,,,80.80,,,1,gaia_hf_open_deep_research_o4mini20250416_low_1744921254_UPLOAD.zip
+gaia,18,HF Open Deep Research,False,Claude-3.7 Sonnet (February 2025),True,36.97,,,415.15,,,1,gaia_hf_open_deep_research_claude37sonnet20250219_1745000974_UPLOAD.zip
+gaia,19,HF Open Deep Research,False,Claude-3.7 Sonnet High (February 2025),True,35.76,,,113.65,,,1,gaia_hf_open_deep_research_claude37sonnet20250219_high_1745539901_UPLOAD.zip
+gaia,20,HAL Generalist Agent,True,Gemini 2.0 Flash (February 2025),True,32.73,,,7.80,,,1,gaia_hal_generalist_agent_gemini20flash_1744828175_UPLOAD.zip
+gaia,21,HF Open Deep Research,False,o3 Medium (April 2025),True,32.73,,,136.39,,,1,gaia_hf_open_deep_research_o320250416_1745876880_UPLOAD.zip
+gaia,22,HF Open Deep Research,False,Claude Sonnet 4.5 (September 2025),True,30.91,,,451.84,,,1,gaia_hf_open_deep_research_claudesonnet45_1759311826_UPLOAD.zip
+gaia,23,HF Open Deep Research,False,Claude Sonnet 4.5 High (September 2025),True,30.91,,,535.00,,,1,gaia_hf_open_deep_research_claudesonnet45_1759261812_UPLOAD.zip
+gaia,24,HAL Generalist Agent,False,DeepSeek R1 (January 2025),True,30.30,,,73.19,,,1,gaia_hal_generalist_agent_deepseekaideepseekr1_1744683894_UPLOAD.zip
+gaia,25,HAL Generalist Agent,False,Claude Opus 4 (May 2025),True,30.30,,,272.76,,,1,gaia_hal_generalist_agent_claudeopus420250514_1754344946_UPLOAD.zip
+gaia,26,HAL Generalist Agent,False,DeepSeek V3 (March 2025),True,29.39,6.97,6.97,17.40,11.87,11.87,2,gaia_hal_generalist_agent_deepseekaideepseekv3_1744673872_UPLOAD.zip
+gaia,27,HF Open Deep Research,False,DeepSeek V3 (March 2025),True,28.48,,,76.64,,,1,gaia_hf_open_deep_research_deepseekaideepseekv3_1744851680_UPLOAD.zip
+gaia,28,HF Open Deep Research,False,Claude Opus 4.1 (August 2025),True,28.48,,,1306.85,,,1,gaia_hf_open_deep_research_claudeopus41_1755030930_UPLOAD.zip
+gaia,29,HAL Generalist Agent,False,o3 Medium (April 2025),True,28.48,,,2828.54,,,1,gaia_hal_generalist_agent_o320250416_1753903002slim_UPLOAD.zip
+gaia,30,HF Open Deep Research,False,Claude Opus 4.1 High (August 2025),True,25.45,,,1473.64,,,1,gaia_hf_open_deep_research_claudeopus41_high_1755092997_UPLOAD.zip
+gaia,31,HF Open Deep Research,False,DeepSeek R1 (January 2025),True,24.85,,,143.08,,,1,gaia_hf_open_deep_research_deepseekaideepseekr1_1744851690_UPLOAD.zip
+gaia,32,HF Open Deep Research,False,Gemini 2.0 Flash (February 2025),True,19.39,,,18.82,,,1,gaia_hf_open_deep_research_gemini20flash_1744843220_UPLOAD.zip
+online_mind2web,1,SeeAct,True,GPT-5 Medium (August 2025),True,42.33,,,171.07,,,1,seeact_gpt-5_reasoning_effort_medium_UPLOAD.zip
+online_mind2web,2,Browser-Use,False,Claude Sonnet 4 (May 2025),True,40.00,,,1577.26,,,1,browser-use_claude-sonnet-4-20250514_UPLOAD.zip
+online_mind2web,3,Browser-Use,False,Claude-3.7 Sonnet High (February 2025),True,39.33,,,1151.88,,,1,browser-use_claude-3-7-sonnet-20250219_thinking_high_4096_UPLOAD.zip
+online_mind2web,4,Browser-Use,False,Claude Sonnet 4 High (May 2025),True,39.33,,,1609.92,,,1,browser-use_claude-sonnet-4-20250514_thinking_high_4096_UPLOAD.zip
+online_mind2web,5,SeeAct,False,o3 Medium (April 2025),True,39.00,,,258.74,,,1,seeact_o3-2025-04-16_UPLOAD.zip
+online_mind2web,6,Browser-Use,False,Claude-3.7 Sonnet (February 2025),True,38.33,,,926.48,,,1,browser-use_claude-3-7-sonnet-20250219_UPLOAD.zip
+online_mind2web,7,SeeAct,False,Claude Sonnet 4 (May 2025),True,36.67,,,246.18,,,1,seeact_claude-sonnet-4-20250514_UPLOAD.zip
+online_mind2web,8,SeeAct,False,Claude Sonnet 4 High (May 2025),True,36.67,,,326.41,,,1,seeact_claude-sonnet-4-20250514_thinking_high_4096_UPLOAD.zip
+online_mind2web,9,Browser-Use,False,GPT-4.1 (April 2025),True,36.33,,,236.62,,,1,browser-use_gpt-4.1-2025-04-14_UPLOAD.zip
+online_mind2web,10,Browser-Use,False,DeepSeek V3 (March 2025),True,32.33,,,214.74,,,1,browser-use_DeepSeek-V3_UPLOAD.zip
+online_mind2web,11,SeeAct,False,o4-mini High (April 2025),True,32.00,,,228.98,,,1,seeact_o4-mini_reasoning_effort_high_UPLOAD.zip
+online_mind2web,12,Browser-Use,False,GPT-5 Medium (August 2025),True,32.00,,,736.31,,,1,browser-use_gpt-5_reasoning_effort_medium_UPLOAD.zip
+online_mind2web,13,SeeAct,False,o4-mini Low (April 2025),True,31.67,,,162.36,,,1,seeact_o4-mini_reasoning_effort_low_UPLOAD.zip
+online_mind2web,14,SeeAct,False,GPT-4.1 (April 2025),True,30.33,,,271.24,,,1,seeact_gpt-4.1-2025-04-14_UPLOAD.zip
+online_mind2web,15,SeeAct,False,Claude-3.7 Sonnet High (February 2025),True,30.33,,,367.51,,,1,seeact_claude-3-7-sonnet-20250219_thinking_high_4096_UPLOAD.zip
+online_mind2web,16,Browser-Use,True,Gemini 2.0 Flash (February 2025),True,29.00,,,8.83,,,1,browser-use_gemini-2.0-flash_UPLOAD.zip
+online_mind2web,17,Browser-Use,False,o3 Medium (April 2025),True,29.00,,,371.59,,,1,browser-use_o3-2025-04-16_UPLOAD.zip
+online_mind2web,18,SeeAct,False,Claude-3.7 Sonnet (February 2025),True,28.33,,,291.97,,,1,seeact_claude-3-7-sonnet-20250219_UPLOAD.zip
+online_mind2web,19,SeeAct,True,Gemini 2.0 Flash (February 2025),True,26.67,,,5.03,,,1,seeact_gemini-2.0-flash_UPLOAD.zip
+online_mind2web,20,Browser-Use,False,DeepSeek R1 (January 2025),True,25.33,,,280.93,,,1,browser-use_DeepSeek-R1_UPLOAD.zip
+online_mind2web,21,Browser-Use,False,o4-mini High (April 2025),True,20.00,,,297.93,,,1,browser-use_o4-mini_reasoning_effort_high_UPLOAD.zip
+online_mind2web,22,Browser-Use,False,o4-mini Low (April 2025),True,18.33,,,201.44,,,1,browser-use_o4-mini_reasoning_effort_low_UPLOAD.zip
+scicode,1,Scicode Zero Shot Agent,True,o4-mini Low (April 2025),True,9.23,,,1.74,,,1,scicode_scicode_zero_shot_agent_o4mini20250416_low_1745290900_UPLOAD.zip
+scicode,2,Scicode Tool Calling Agent,False,o3 Medium (April 2025),True,9.23,,,111.11,,,1,scicode_scicode_tool_calling_agent_o320250416_1745276105_UPLOAD.zip
+scicode,3,Scicode Tool Calling Agent,False,Claude Opus 4.1 (August 2025),True,7.69,,,625.13,,,1,scicode_scicode_tool_calling_agent_claudeopus41_1755801688_UPLOAD.zip
+scicode,4,Scicode Tool Calling Agent,False,Claude Opus 4.1 High (August 2025),True,6.92,0.77,0.77,550.54,42.81,42.81,2,scicode_scicode-tool_calling_agent_claudeopus4120250514_1754678715_UPLOAD.zip
+scicode,5,Scicode Zero Shot Agent,False,GPT-4.1 (April 2025),True,6.15,,,2.82,,,1,scicode_scicode_zero_shot_agent_gpt4120250414_1745265933_UPLOAD.zip
+scicode,6,Scicode Zero Shot Agent,False,o4-mini High (April 2025),True,6.15,,,5.37,,,1,scicode_scicode_zero_shot_agent_o4mini20250416_high_1745429794_UPLOAD.zip
+scicode,7,HAL Generalist Agent,False,o4-mini Low (April 2025),True,6.15,,,165.90,,,1,scicode_hal_generalist_agent_o4mini20250416_low_1745608137_UPLOAD.zip
+scicode,8,Scicode Tool Calling Agent,False,GPT-5 Medium (August 2025),True,6.15,,,193.52,,,1,scicode_scicode_tool_calling_agent_gpt5_1754600998_UPLOAD.zip
+scicode,9,Scicode Zero Shot Agent,False,o3 Medium (April 2025),True,4.62,,,6.03,,,1,scicode_scicode_zero_shot_agent_o320250416_1745284451_UPLOAD.zip
+scicode,10,Scicode Tool Calling Agent,False,o4-mini Low (April 2025),True,4.62,,,46.30,,,1,scicode_scicode_tool_calling_agent_o4mini20250416_low_1745286980_UPLOAD.zip
+scicode,11,Scicode Tool Calling Agent,False,o4-mini High (April 2025),True,4.62,,,66.20,,,1,scicode_scicode_tool_calling_agent_o4mini20250416_high_1745414081_UPLOAD.zip
+scicode,12,Scicode Tool Calling Agent,False,Claude-3.7 Sonnet High (February 2025),True,4.62,,,204.37,,,1,scicode_scicode_tool_calling_agent_claude37sonnet20250219_high_1753770104_UPLOAD.zip
+scicode,13,Scicode Zero Shot Agent,False,DeepSeek V3 (March 2025),True,3.08,,,0.79,,,1,scicode_scicode_zero_shot_agent_deepseekaideepseekv3_1745456160_UPLOAD.zip
+scicode,14,Scicode Zero Shot Agent,False,Claude-3.7 Sonnet High (February 2025),True,3.08,,,4.99,,,1,scicode_scicode_zero_shot_agent_claude37sonnet20250219_high_1748945506_UPLOAD.zip
+scicode,15,HAL Generalist Agent,False,Claude-3.7 Sonnet (February 2025),True,3.08,,,60.40,,,1,scicode_hal_generalist_agent_claude37sonnet20250219_1745706693_UPLOAD.zip
+scicode,16,HAL Generalist Agent,False,o3 Medium (April 2025),True,3.08,,,66.98,,,1,scicode_hal_generalist_agent_o320250416_1750127070_UPLOAD.zip
+scicode,17,Scicode Tool Calling Agent,False,Claude Sonnet 4.5 (September 2025),True,3.08,,,104.29,,,1,scicode_scicode_tool_calling_agent_claudesonnet4520250929_1759418654_UPLOAD.zip
+scicode,18,HAL Generalist Agent,False,Claude-3.7 Sonnet High (February 2025),True,3.08,,,188.15,,,1,scicode_hal_generalist_agent_claude37sonnet20250219_high_1748947217_UPLOAD.zip
+scicode,19,Scicode Tool Calling Agent,False,Claude-3.7 Sonnet (February 2025),True,3.08,,,191.41,,,1,scicode_scicode_tool_calling_agent_claude37sonnet20250219_1745294865_UPLOAD.zip
+scicode,20,Scicode Zero Shot Agent,True,Gemini 2.0 Flash (February 2025),True,1.54,,,0.12,,,1,scicode_scicode_zero_shot_agent_gemini20flash_1745437512_UPLOAD.zip
+scicode,21,Scicode Tool Calling Agent,False,Gemini 2.0 Flash (February 2025),True,1.54,,,5.23,,,1,scicode_scicode_tool_calling_agent_gemini20flash_1745324545_UPLOAD.zip
+scicode,22,Scicode Tool Calling Agent,False,GPT-4.1 (April 2025),True,1.54,,,69.39,,,1,scicode_scicode_tool_calling_agent_gpt4120250414_1745260672_UPLOAD.zip
+scicode,23,HAL Generalist Agent,False,GPT-4.1 (April 2025),True,1.54,,,73.87,,,1,scicode_hal_generalist_agent_gpt4120250414_1745597325_UPLOAD.zip
+scicode,24,HAL Generalist Agent,False,o4-mini High (April 2025),True,1.54,,,92.10,,,1,scicode_hal_generalist_agent_o4mini20250416_high_1745615438_UPLOAD.zip
+scicode,25,Scicode Tool Calling Agent,False,Claude Sonnet 4.5 High (September 2025),True,1.54,,,118.14,,,1,scicode_scicode_tool_calling_agent_claudesonnet45_high_1759429729_UPLOAD.zip
+scicode,26,Scicode Zero Shot Agent,False,DeepSeek R1 (May 2025),True,0.00,,,2.19,,,1,scicode_scicode_zero_shot_agent_deepseekaideepseekr1_1753815994_UPLOAD.zip
+scicode,27,Scicode Zero Shot Agent,False,Claude-3.7 Sonnet (February 2025),True,0.00,,,5.10,,,1,scicode_scicode_zero_shot_agent_claude37sonnet20250219_1745345545_UPLOAD.zip
+scicode,28,Scicode Tool Calling Agent,False,DeepSeek V3 (March 2025),True,0.00,,,52.11,,,1,scicode_scicode_tool_calling_agent_deepseekaiDeepSeekV3_1745349011_UPLOAD.zip
+scicode,29,Scicode Tool Calling Agent,False,DeepSeek R1 (May 2025),True,0.00,,,57.62,,,1,scicode_scicode_tool_calling_agent_deepseekaideepseekr1_1753819405_UPLOAD.zip
+scicode,30,HAL Generalist Agent,False,Gemini 2.0 Flash (February 2025),True,0.00,,,61.49,,,1,scicode_hal_generalist_agent_gemini20flash_1745628676_UPLOAD.zip
+scicode,31,HAL Generalist Agent,False,DeepSeek V3 (March 2025),True,0.00,,,219.36,,,1,scicode_hal_generalist_agent_deepseekaideepseekv3_1745642054_UPLOAD.zip
+scicode,32,Scicode Tool Calling Agent,False,Claude Haiku 4.5 (October 2025),True,0.00,,,232.36,,,1,scicode_scicode_tool_calling_agent_claudehaiku45_1760968740_UPLOAD.zip
+scicode,33,HAL Generalist Agent,False,DeepSeek R1 (January 2025),True,0.00,,,486.78,,,1,scicode_hal_generalist_agent_deepseekaideepseekr1_1753777608_UPLOAD.zip
+scienceagentbench,1,SAB Self-Debug,True,o3 Medium (April 2025),True,33.33,,,11.69,,,1,scienceagentbench_sab_selfdebug_o3_medium_1745186112_UPLOAD.zip
+scienceagentbench,2,SAB Self-Debug,True,Claude Sonnet 4.5 High (September 2025),True,30.39,,,7.47,,,1,scienceagentbench_sab_selfdebug_claudesonnet45_high_1761419019_UPLOAD.zip
+scienceagentbench,3,SAB Self-Debug,False,Claude-3.7 Sonnet High (February 2025),True,30.39,,,11.74,,,1,scienceagentbench_sab_selfdebug_claude37_high_1744847608_UPLOAD.zip
+scienceagentbench,4,SAB Self-Debug,False,GPT-5 Medium (August 2025),True,30.39,,,18.26,,,1,scienceagentbench_sab_selfdebug_gpt5medium_1755353093_UPLOAD.zip
+scienceagentbench,5,SAB Self-Debug,False,Claude Sonnet 4.5 (September 2025),True,29.41,,,7.39,,,1,scienceagentbench_sab_selfdebug_claudesonnet45_1761249283_UPLOAD.zip
+scienceagentbench,6,SAB Self-Debug,True,o4-mini Low (April 2025),True,27.45,,,3.95,,,1,scienceagentbench_sab_selfdebug_o4mini_low_1745199029_UPLOAD.zip
+scienceagentbench,7,SAB Self-Debug,False,o4-mini High (April 2025),True,27.45,,,11.18,,,1,scienceagentbench_sab_selfdebug_o4mini_high_1745253602_UPLOAD.zip
+scienceagentbench,8,SAB Self-Debug,False,Claude Opus 4.1 (August 2025),True,27.45,,,33.37,,,1,scienceagentbench_sab_selfdebug_claudeopus41_1755385889_UPLOAD.zip
+scienceagentbench,9,SAB Self-Debug,False,Claude Opus 4.1 High (August 2025),True,26.47,,,33.75,,,1,scienceagentbench_sab_selfdebug_claudeopus41high_1755438590_UPLOAD.zip
+scienceagentbench,10,SAB Self-Debug,False,GPT-4.1 (April 2025),True,24.51,,,7.42,,,1,scienceagentbench_sab_selfdebug_gpt_41_1744993235_UPLOAD.zip
+scienceagentbench,11,SAB Self-Debug,False,Claude Haiku 4.5 High (October 2025),True,23.53,,,3.41,,,1,scienceagentbench_sab_selfdebug_claudehaiku45_high_1761435103_UPLOAD.zip
+scienceagentbench,12,SAB Self-Debug,False,DeepSeek R1 (January 2025),True,23.53,,,18.24,,,1,scienceagentbench_sab_selfdebug_dsr1_1744769491_UPLOAD.zip
+scienceagentbench,13,SAB Self-Debug,False,Claude-3.7 Sonnet (February 2025),True,22.55,,,7.12,,,1,scienceagentbench_sab_selfdebug_claude37_1744812715_UPLOAD.zip
+scienceagentbench,14,HAL Generalist Agent,False,o4-mini High (April 2025),True,21.57,,,76.30,,,1,scienceagentbench_hal_generalist_agent_o4mini20250416_high_1746044352_UPLOAD.zip
+scienceagentbench,15,HAL Generalist Agent,False,o4-mini Low (April 2025),True,19.61,,,77.32,,,1,scienceagentbench_hal_generalist_agent_o4mini20250416_low_1746044336_UPLOAD.zip
+scienceagentbench,16,SAB Self-Debug,False,Claude Haiku 4.5 (October 2025),True,18.63,,,2.66,,,1,scienceagentbench_sab_selfdebug_claudehaiku45_1761449412_UPLOAD.zip
+scienceagentbench,17,HAL Generalist Agent,False,Claude-3.7 Sonnet High (February 2025),True,17.65,,,48.28,,,1,scienceagentbench_hal_generalist_agent_claude37sonnet20250219_high_1746405109_UPLOAD.zip
+scienceagentbench,18,SAB Self-Debug,False,DeepSeek V3 (March 2025),True,15.69,,,2.09,,,1,scienceagentbench_sab_selfdebug_dsv3_1744757465_UPLOAD.zip
+scienceagentbench,19,SAB Self-Debug,True,Gemini 2.0 Flash (February 2025),True,12.75,,,0.19,,,1,scienceagentbench_sab_selfdebug_gemini20flash_1744901453_UPLOAD.zip
+scienceagentbench,20,HAL Generalist Agent,False,Claude-3.7 Sonnet (February 2025),True,10.78,,,41.22,,,1,scienceagentbench_hal_generalist_agent_claude37sonnet20250219_1746110849_UPLOAD.zip
+scienceagentbench,21,HAL Generalist Agent,False,o3 Medium (April 2025),True,9.80,,,31.08,,,1,scienceagentbench_hal_generalist_agent_o320250416_1746110877_UPLOAD.zip
+scienceagentbench,22,HAL Generalist Agent,False,GPT-4.1 (April 2025),True,6.86,,,68.95,,,1,scienceagentbench_hal_generalist_agent_gpt4120250414_1745541259_UPLOAD.zip
+scienceagentbench,23,HAL Generalist Agent,False,DeepSeek V3 (March 2025),True,0.98,,,55.73,,,1,scienceagentbench_hal_generalist_agent_deepseekaideepseekv3_1746052235_UPLOAD.zip
+swebench_verified_mini,1,SWE-Agent,True,Claude Sonnet 4.5 High (September 2025),True,72.00,,,463.90,,,1,swebench_verified_mini_sweagentclaudesonnet4520250929_1761962167_UPLOAD.zip
+swebench_verified_mini,2,SWE-Agent,False,Claude Sonnet 4.5 (September 2025),True,68.00,,,505.92,,,1,swebench_verified_mini_sweagentclaudesonnet4520250929_1762053095_UPLOAD.zip
+swebench_verified_mini,3,SWE-Agent,False,Claude Opus 4.1 (August 2025),True,61.00,7.00,7.00,1351.35,438.32,438.32,2,swebench_verified_mini_sweagentclaudeopus4120250805_1759715672_UPLOAD.zip
+swebench_verified_mini,4,SWE-Agent,False,o4-mini Low (April 2025),True,54.00,,,259.20,,,1,swebench_verified_mini_my_agento4mini20250416_1745279519_UPLOAD.zip
+swebench_verified_mini,5,SWE-Agent,False,Claude-3.7 Sonnet High (February 2025),True,54.00,,,388.88,,,1,swebench_verified_mini_1744397462_UPLOAD.zip
+swebench_verified_mini,6,SWE-Agent,False,Claude Opus 4.1 High (August 2025),True,54.00,,,1599.90,,,1,swebench_verified_mini_sweagentclaudeopus4120250805_1754580585_UPLOAD.zip
+swebench_verified_mini,7,SWE-Agent,False,o4-mini High (April 2025),True,50.00,,,248.46,,,1,swebench_verified_mini_my_agento4mini20250416_1745345781_UPLOAD.zip
+swebench_verified_mini,8,SWE-Agent,False,Claude-3.7 Sonnet (February 2025),True,50.00,,,402.69,,,1,swebench_verified_mini_1744335342_UPLOAD.zip
+swebench_verified_mini,9,SWE-Agent,False,Claude Opus 4 (May 2025),True,50.00,,,1330.90,,,1,swebench_verified_mini_my_agentclaudeopus420250514_1754199232_UPLOAD.zip
+swebench_verified_mini,10,SWE-Agent,False,GPT-5 Medium (August 2025),True,46.00,,,162.93,,,1,swebench_verified_mini_sweagentgpt520250807_1754592641_UPLOAD.zip
+swebench_verified_mini,11,HAL Generalist Agent,False,Claude Opus 4.1 High (August 2025),True,46.00,,,399.93,,,1,swebench_verified_mini_hal_generalist_claudeopus4120250805_1755656398_UPLOAD.zip
+swebench_verified_mini,12,SWE-Agent,False,o3 Medium (April 2025),True,46.00,,,483.43,,,1,swebench_verified_mini_sweagento320250416_1754691194_UPLOAD.zip
+swebench_verified_mini,13,HAL Generalist Agent,True,Claude Haiku 4.5 High (October 2025),True,44.00,,,65.31,,,1,swebench_verified_mini_hal_generalist_claudehaiku4520251001_1762352878_UPLOAD.zip
+swebench_verified_mini,14,SWE-Agent,False,GPT-4.1 (April 2025),True,44.00,,,393.65,,,1,swebench_verified_mini_my_agentgpt41_1744677207_UPLOAD.zip
+swebench_verified_mini,15,HAL Generalist Agent,False,Claude Opus 4.1 (August 2025),True,42.00,,,477.65,,,1,swebench_verified_mini_hal_generalist_claudeopus4120250805_1755678864_UPLOAD.zip
+swebench_verified_mini,16,HAL Generalist Agent,False,Claude Sonnet 4.5 High (September 2025),True,40.00,,,95.97,,,1,swebench_verified_mini_hal_generalist_claudesonnet4520250929_1762371616_UPLOAD.zip
+swebench_verified_mini,17,HAL Generalist Agent,False,Claude Sonnet 4.5 (September 2025),True,34.00,,,128.19,,,1,swebench_verified_mini_hal_generalist_claudesonnet4520250929_1762442198_UPLOAD.zip
+swebench_verified_mini,18,HAL Generalist Agent,False,Claude Opus 4 (May 2025),True,34.00,,,382.39,,,1,swebench_verified_mini_hal_generalist_claudeopus420250514_1755353480_UPLOAD.zip
+swebench_verified_mini,19,HAL Generalist Agent,False,Claude Opus 4 High (May 2025),True,30.00,,,403.42,,,1,swebench_verified_mini_hal_generalist_claudeopus420250514_1754322422_UPLOAD.zip
+swebench_verified_mini,20,HAL Generalist Agent,False,Claude-3.7 Sonnet (February 2025),True,26.00,,,117.43,,,1,swebench_verified_mini_hal_generalist_agent_claude37sonnet20250219_1744644286_UPLOAD.zip
+swebench_verified_mini,21,SWE-Agent,True,Gemini 2.0 Flash (February 2025),True,24.00,,,4.72,,,1,swebench_verified_mini_1744505272_UPLOAD.zip
+swebench_verified_mini,22,SWE-Agent,False,DeepSeek V3 (March 2025),True,24.00,,,11.77,,,1,swebench_verified_mini_my_agenttogether_aideepseekaideepseekv3_1744923150_UPLOAD.zip
+swebench_verified_mini,23,HAL Generalist Agent,False,Claude-3.7 Sonnet High (February 2025),True,24.00,,,72.98,,,1,swebench_verified_mini_hal_generalist_claude37sonnet20250219_1754345420_UPLOAD.zip
+swebench_verified_mini,24,HAL Generalist Agent,False,Claude Haiku 4.5 (October 2025),True,24.00,0.00,0.00,147.89,60.67,60.67,2,swebench_verified_mini_hal_generalist_claudehaiku4520251001_1762392995_UPLOAD.zip
+swebench_verified_mini,25,HAL Generalist Agent,False,GPT-5 Medium (August 2025),True,12.00,,,57.58,,,1,swebench_verified_mini_hal_generalist_gpt520250807_1755463923_UPLOAD.zip
+swebench_verified_mini,26,HAL Generalist Agent,False,DeepSeek V3 (March 2025),True,10.00,,,30.17,,,1,swebench_verified_mini_hal_generalist_agent_deepseekaideepseekv3_1744610459_UPLOAD.zip
+swebench_verified_mini,27,HAL Generalist Agent,False,o4-mini Low (April 2025),True,6.00,,,87.03,,,1,swebench_verified_mini_hal_generalist_agent_o4mini20250416_low_1753776027_UPLOAD.zip
+swebench_verified_mini,28,HAL Generalist Agent,False,DeepSeek R1 (January 2025),True,6.00,,,146.71,,,1,swebench_verified_mini_hal_generalist_agent_deepseekaideepseekr1_1744619918_UPLOAD.zip
+swebench_verified_mini,29,HAL Generalist Agent,False,Gemini 2.0 Flash (February 2025),True,2.00,,,7.33,,,1,swebench_verified_mini_hal_generalist_agent_gemini20flash_1744635676_UPLOAD.zip
+swebench_verified_mini,30,HAL Generalist Agent,False,o4-mini High (April 2025),True,2.00,,,32.02,,,1,swebench_verified_mini_hal_generalist_agent_o4mini20250416_high_1753778285_UPLOAD.zip
+swebench_verified_mini,31,HAL Generalist Agent,False,GPT-4.1 (April 2025),True,2.00,,,51.80,,,1,swebench_verified_mini_hal_generalist_agent_gpt4120250414_1744667697_UPLOAD.zip
+swebench_verified_mini,32,SWE-Agent,False,DeepSeek R1 (January 2025),True,0.00,,,4.16,,,1,swebench_verified_mini_my_agenttogether_aideepseekaideepseekr1_1745262492_UPLOAD.zip
+swebench_verified_mini,33,HAL Generalist Agent,False,o3 Medium (April 2025),True,0.00,,,585.71,,,1,swebench_verified_mini_hal_generalist_o320250416_1755319917_UPLOAD.zip
+taubench_airline,1,TAU-bench Tool Calling,True,o4-mini High (April 2025),True,56.00,,,11.36,,,1,taubench_airline_taubench_toolcalling_o4mini20250416_high_1760993011_UPLOAD.zip
+taubench_airline,2,HAL Generalist Agent,False,Claude-3.7 Sonnet (February 2025),True,56.00,,,42.11,,,1,taubench_airline_hal_generalist_agent_claude37sonnet20250219_1746038671_UPLOAD.zip
+taubench_airline,3,TAU-bench Tool Calling,False,o3 Medium (April 2025),True,54.00,,,14.56,,,1,taubench_airline_taubench_toolcalling_o320250416_1760994863_UPLOAD.zip
+taubench_airline,4,HAL Generalist Agent,False,Claude Opus 4.1 (August 2025),True,54.00,,,180.49,,,1,taubench_airline_hal_generalist_no_reasoning_claudeopus41_1754431985_UPLOAD.zip
+taubench_airline,5,TAU-bench Tool Calling,False,Claude-3.7 Sonnet High (February 2025),True,52.00,,,31.94,,,1,taubench_airline_taubench_toolcalling_claude37sonnet_high_1760999140_UPLOAD.zip
+taubench_airline,6,TAU-bench Tool Calling,False,Claude Opus 4.1 High (August 2025),True,52.00,,,149.98,,,1,taubench_airline_taubench_toolcalling_claudeopus41_high_1761000598_UPLOAD.zip
+taubench_airline,7,TAU-bench Tool Calling,False,Claude Opus 4.1 (August 2025),True,50.00,,,69.78,,,1,taubench_airline_taubench_toolcalling_claudeopus41_1760380824_UPLOAD.zip
+taubench_airline,8,TAU-bench Tool Calling,False,GPT-5 Medium (August 2025),True,48.00,,,23.83,,,1,taubench_airline_taubench_toolcalling_gpt520250807_1760996356_UPLOAD.zip
+taubench_airline,9,TAU-bench Tool Calling,True,DeepSeek V3 (March 2025),True,44.00,,,5.43,,,1,taubench_airline_taubench_toolcalling_deepseekv3_1760385714_UPLOAD.zip
+taubench_airline,10,TAU-bench Tool Calling,False,Claude-3.7 Sonnet (February 2025),True,44.00,,,15.45,,,1,taubench_airline_taubench_toolcalling_claude37sonnet_1760379497_UPLOAD.zip
+taubench_airline,11,HAL Generalist Agent,False,Claude-3.7 Sonnet High (February 2025),True,44.00,,,34.58,,,1,taubench_airline_hal_generalist_agent_claude37sonnet20250219_high_1746060636_UPLOAD.zip
+taubench_airline,12,HAL Generalist Agent,False,Claude Opus 4 (May 2025),True,44.00,,,150.15,,,1,taubench_airline_hal_generalist_claudeopus420250514_1754320139_UPLOAD.zip
+taubench_airline,13,HAL Generalist Agent,False,Claude Opus 4 High (May 2025),True,44.00,,,150.29,,,1,taubench_airline_hal_generalist_high_reasoning_claudeopus420250514_1754320160_UPLOAD.zip
+taubench_airline,14,TAU-bench Tool Calling,False,o4-mini Low (April 2025),True,36.00,,,7.14,,,1,taubench_airline_taubench_toolcalling_o4mini20250416_low_1760991692_UPLOAD.zip
+taubench_airline,15,TAU-bench Tool Calling,False,GPT-4.1 (April 2025),True,36.00,,,8.18,,,1,taubench_airline_taubench_toolcalling_gpt4120250414_1760371184_UPLOAD.zip
+taubench_airline,16,TAU-bench Tool Calling,False,DeepSeek R1 (January 2025),True,36.00,,,13.30,,,1,taubench_airline_taubench_toolcalling_deepseekr1_1760382872_UPLOAD.zip
+taubench_airline,17,HAL Generalist Agent,False,Claude Opus 4.1 High (August 2025),True,32.00,,,140.28,,,1,taubench_airline_hal_generalist_high_reasoning_claudeopus41_1754432004_UPLOAD.zip
+taubench_airline,18,HAL Generalist Agent,False,GPT-5 Medium (August 2025),True,30.00,,,52.78,,,1,taubench_airline_hal_generalist_high_reasoning___gpt5_1754597451_UPLOAD.zip
+taubench_airline,19,TAU-bench Tool Calling,True,Gemini 2.0 Flash High (February 2025),True,28.00,,,0.31,,,1,taubench_airline_taubench_toolcalling_gemini20flash001_1760387340_UPLOAD.zip
+taubench_airline,20,HAL Generalist Agent,False,Gemini 2.0 Flash (February 2025),True,22.00,,,2.00,,,1,taubench_airline_hal_generalist_agent_gemini20flash_1746038655_UPLOAD.zip
+taubench_airline,21,HAL Generalist Agent,False,o4-mini Low (April 2025),True,22.00,,,20.16,,,1,taubench_airline_hal_generalist_agent_o4mini20250416_low_1745166691_UPLOAD.zip
+taubench_airline,22,HAL Generalist Agent,False,o3 Medium (April 2025),True,20.00,,,45.03,,,1,taubench_airline_hal_generalist_agent_o320250416_medium_1753774187_UPLOAD.zip
+taubench_airline,23,HAL Generalist Agent,False,DeepSeek V3 (March 2025),True,18.00,,,10.73,,,1,taubench_airline_hal_generalist_agent_deepseekaideepseekv3_1745263676_UPLOAD.zip
+taubench_airline,24,HAL Generalist Agent,False,o4-mini High (April 2025),True,18.00,,,20.57,,,1,taubench_airline_hal_generalist_agent_o4mini20250416_high_1745167079_UPLOAD.zip
+taubench_airline,25,HAL Generalist Agent,False,GPT-4.1 (April 2025),True,16.00,,,17.85,,,1,taubench_airline_hal_generalist_agent_gpt4120250414_1745167124_UPLOAD.zip
+taubench_airline,26,HAL Generalist Agent,False,DeepSeek R1 (January 2025),True,10.00,,,30.18,,,1,taubench_airline_hal_generalist_agent_deepseekaideepseekr1_1744655092_UPLOAD.zip
+usaco,1,USACO Episodic + Semantic,True,GPT-5 Medium (August 2025),True,69.06,,,116.63,,,1,usaco_usaco_episodic__semantic_gpt5_medium_1774238836_UPLOAD.zip
+usaco,2,USACO Episodic + Semantic,True,o4-mini High (April 2025),True,64.82,,,77.28,,,1,usaco_usaco_episodic__semantic_o4mini_high_1774243383_UPLOAD.zip
+usaco,3,USACO Episodic + Semantic,True,o4-mini Low (April 2025),True,53.09,,,24.60,,,1,usaco_usaco_episodic__semantic_o4mini_low_1774239521_UPLOAD.zip
+usaco,4,USACO Episodic + Semantic,False,Claude Opus 4.1 High (August 2025),True,51.47,,,267.72,,,1,usaco_usaco_episodic__semantic_claudeopus4120250514_high_1756132384_UPLOAD.zip
+usaco,5,USACO Episodic + Semantic,False,Claude Opus 4.1 (August 2025),True,48.21,,,276.19,,,1,usaco_usaco_episodic__semantic_claudeopus4120250514_1756127006_UPLOAD.zip
+usaco,6,USACO Episodic + Semantic,False,o3 Medium (April 2025),True,46.25,,,57.30,,,1,usaco_usaco_episodic__semantic_o320250416_1745878600_UPLOAD.zip
+usaco,7,USACO Episodic + Semantic,False,GPT-4.1 (April 2025),True,44.95,,,28.10,,,1,usaco_usaco_episodic__semantic_gpt4120250414_1744661741_UPLOAD.zip
+usaco,8,USACO Episodic + Semantic,True,DeepSeek V3 (March 2025),True,39.09,,,12.08,,,1,usaco_usaco_episodic__semantic_deepseekaideepseekv3_1744580934_UPLOAD.zip
+usaco,9,USACO Episodic + Semantic,False,DeepSeek R1 (January 2025),True,38.11,,,80.04,,,1,usaco_usaco_episodic__semantic_deepseekaideepseekr1_1744597968_UPLOAD.zip
+usaco,10,USACO Episodic + Semantic,False,Claude-3.7 Sonnet (February 2025),True,29.32,,,38.70,,,1,usaco_usaco_episodic__semantic_claude37sonnet20250219_1744648510_UPLOAD.zip
+usaco,11,USACO Episodic + Semantic,True,Gemini 2.0 Flash (February 2025),True,27.04,,,1.46,,,1,usaco_usaco_episodic__semantic_geminigemini20flash_1756136853_UPLOAD.zip
+usaco,12,USACO Episodic + Semantic,False,Claude-3.7 Sonnet High (February 2025),True,26.71,,,56.43,,,1,usaco_usaco_episodic__semantic_claude37sonnet20250219_high_1744655395_UPLOAD.zip
+usaco,13,HAL Generalist Agent,False,GPT-4.1 (April 2025),True,25.41,,,197.33,,,1,usaco_hal_generalist_agent_gpt4120250414_1750887884_UPLOAD.zip

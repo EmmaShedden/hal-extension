@@ -1,0 +1,8 @@
+data/processed/extracted_tasks.csv.gz
+data/raw/
+data/tmp_zips/
+data/tmp_zips_rev/
+fits/
+logs/
+__pycache__/
+*.Rds

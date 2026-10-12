@@ -1,0 +1,185 @@
+page,scaffold,model,paper_acc_pct,paper_cost_usd,paper_pareto
+assistantbench,Browser-Use,o3 Medium (April 2025),38.8,15.15,True
+assistantbench,Browser-Use,GPT-5 Medium (August 2025),35.2,41.69,False
+assistantbench,Browser-Use,o4-mini Low (April 2025),28.1,9.22,True
+assistantbench,Browser-Use,o4-mini High (April 2025),23.8,16.39,False
+assistantbench,Browser-Use,GPT-4.1 (April 2025),17.4,14.15,False
+assistantbench,Browser-Use,Claude-3.7 Sonnet (February 2025),16.7,56.00,False
+assistantbench,Browser-Use,Claude Opus 4.1 High (August 2025),13.8,779.72,False
+assistantbench,Browser-Use,Claude-3.7 Sonnet High (February 2025),13.1,16.13,False
+assistantbench,Browser-Use,DeepSeek R1 (May 2025),8.8,18.18,False
+assistantbench,Browser-Use,Claude Opus 4.1 (August 2025),7.3,385.43,False
+assistantbench,Browser-Use,Gemini 2.0 Flash (February 2025),2.6,2.18,False
+assistantbench,Browser-Use,DeepSeek V3 (March 2025),2.0,12.66,False
+corebench_hard,CORE-Agent,Claude Opus 4.1 (August 2025),51.1,412.42,True
+corebench_hard,CORE-Agent,Claude Opus 4.1 High (August 2025),42.2,509.95,False
+corebench_hard,HAL Generalist Agent,Claude-3.7 Sonnet High (February 2025),37.8,66.15,True
+corebench_hard,HAL Generalist Agent,o4-mini High (April 2025),35.6,45.37,True
+corebench_hard,CORE-Agent,Claude-3.7 Sonnet (February 2025),35.6,73.04,False
+corebench_hard,HAL Generalist Agent,Claude Opus 4.1 (August 2025),35.6,375.11,False
+corebench_hard,CORE-Agent,Claude Sonnet 4 High (May 2025),33.3,100.48,False
+corebench_hard,CORE-Agent,GPT-4.1 (April 2025),33.3,107.36,False
+corebench_hard,HAL Generalist Agent,Claude Opus 4.1 High (August 2025),33.3,358.47,False
+corebench_hard,HAL Generalist Agent,Claude-3.7 Sonnet (February 2025),31.1,56.64,False
+corebench_hard,CORE-Agent,Claude Sonnet 4 (May 2025),28.9,50.27,False
+corebench_hard,CORE-Agent,GPT-5 Medium (August 2025),26.7,31.76,False
+corebench_hard,CORE-Agent,o4-mini High (April 2025),26.7,61.35,False
+corebench_hard,CORE-Agent,Claude-3.7 Sonnet High (February 2025),24.4,72.47,False
+corebench_hard,CORE-Agent,o3 Medium (April 2025),24.4,120.47,False
+corebench_hard,HAL Generalist Agent,GPT-4.1 (April 2025),22.2,58.32,False
+corebench_hard,HAL Generalist Agent,o3 Medium (April 2025),22.2,88.34,False
+corebench_hard,CORE-Agent,Gemini 2.5 Pro Preview (March 2025),22.2,182.34,False
+corebench_hard,CORE-Agent,DeepSeek V3.1 (August 2025),20.0,12.55,True
+corebench_hard,CORE-Agent,DeepSeek V3 (March 2025),17.8,25.26,False
+corebench_hard,CORE-Agent,o4-mini Low (April 2025),17.8,31.79,False
+corebench_hard,HAL Generalist Agent,o4-mini Low (April 2025),15.6,22.50,False
+corebench_hard,CORE-Agent,GPT-OSS-120B (August 2025),11.1,4.21,False
+corebench_hard,CORE-Agent,GPT-OSS-120B High (August 2025),11.1,4.21,False
+corebench_hard,CORE-Agent,Gemini 2.0 Flash (February 2025),11.1,12.46,False
+corebench_hard,HAL Generalist Agent,GPT-5 Medium (August 2025),11.1,29.75,False
+corebench_hard,HAL Generalist Agent,GPT-OSS-120B High (August 2025),8.9,2.05,True
+corebench_hard,HAL Generalist Agent,GPT-OSS-120B (August 2025),8.9,2.79,False
+corebench_hard,HAL Generalist Agent,DeepSeek V3 (March 2025),8.9,4.69,False
+corebench_hard,HAL Generalist Agent,DeepSeek R1 (May 2025),8.9,7.77,False
+corebench_hard,CORE-Agent,DeepSeek R1 (January 2025),6.7,81.11,False
+corebench_hard,HAL Generalist Agent,Gemini 2.0 Flash (February 2025),4.4,7.06,False
+corebench_hard,HAL Generalist Agent,DeepSeek R1 (January 2025),2.2,13.87,False
+gaia,HAL Generalist Agent,Claude Opus 4 High (May 2025),64.8,665.89,True
+gaia,HAL Generalist Agent,Claude-3.7 Sonnet High (February 2025),64.2,122.49,True
+gaia,HF Open Deep Research,GPT-5 Medium (August 2025),62.8,359.83,False
+gaia,HAL Generalist Agent,o4-mini Low (April 2025),58.2,73.26,True
+gaia,HF Open Deep Research,Claude Opus 4 (May 2025),57.6,1686.07,False
+gaia,HAL Generalist Agent,Claude-3.7 Sonnet (February 2025),56.4,130.68,False
+gaia,HF Open Deep Research,o4-mini High (April 2025),55.8,184.87,False
+gaia,HAL Generalist Agent,o4-mini High (April 2025),54.5,59.39,True
+gaia,HF Open Deep Research,GPT-4.1 (April 2025),50.3,109.88,False
+gaia,HAL Generalist Agent,GPT-4.1 (April 2025),49.7,74.19,False
+gaia,HF Open Deep Research,o4-mini Low (April 2025),47.9,80.80,False
+gaia,HF Open Deep Research,Claude-3.7 Sonnet (February 2025),37.0,415.15,False
+gaia,HAL Generalist Agent,DeepSeek V3 (March 2025),36.4,29.27,False
+gaia,HF Open Deep Research,Claude-3.7 Sonnet High (February 2025),35.8,113.65,False
+gaia,HAL Generalist Agent,Gemini 2.0 Flash (February 2025),32.7,7.80,True
+gaia,HF Open Deep Research,o3 Medium (April 2025),32.7,136.39,False
+gaia,HAL Generalist Agent,DeepSeek R1 (January 2025),30.3,73.19,False
+gaia,HAL Generalist Agent,Claude Opus 4 (May 2025),30.3,272.76,False
+gaia,HF Open Deep Research,DeepSeek V3 (March 2025),28.5,76.64,False
+gaia,HF Open Deep Research,Claude Opus 4.1 (August 2025),28.5,1306.85,False
+gaia,HF Open Deep Research,Claude Opus 4.1 High (August 2025),25.4,1473.64,False
+gaia,HF Open Deep Research,DeepSeek R1 (January 2025),24.9,143.08,False
+gaia,HF Open Deep Research,Gemini 2.0 Flash (February 2025),19.4,18.82,False
+online_mind2web,SeeAct,GPT-5 Medium (August 2025),42.3,171.07,True
+online_mind2web,Browser-Use,Claude Sonnet 4 (May 2025),40.0,1577.26,False
+online_mind2web,Browser-Use,Claude-3.7 Sonnet High (February 2025),39.3,1151.88,False
+online_mind2web,Browser-Use,Claude Sonnet 4 High (May 2025),39.3,1609.92,False
+online_mind2web,SeeAct,o3 Medium (April 2025),39.0,258.74,False
+online_mind2web,Browser-Use,Claude-3.7 Sonnet (February 2025),38.3,926.48,False
+online_mind2web,SeeAct,Claude Sonnet 4 (May 2025),36.7,246.18,False
+online_mind2web,SeeAct,Claude Sonnet 4 High (May 2025),36.7,326.41,False
+online_mind2web,Browser-Use,GPT-4.1 (April 2025),36.3,236.62,False
+online_mind2web,Browser-Use,DeepSeek V3 (March 2025),32.3,214.74,False
+online_mind2web,SeeAct,o4-mini High (April 2025),32.0,228.98,False
+online_mind2web,Browser-Use,GPT-5 Medium (August 2025),32.0,736.31,False
+online_mind2web,SeeAct,o4-mini Low (April 2025),31.7,162.36,False
+online_mind2web,SeeAct,GPT-4.1 (April 2025),30.3,271.24,False
+online_mind2web,SeeAct,Claude-3.7 Sonnet High (February 2025),30.3,367.51,False
+online_mind2web,Browser-Use,Gemini 2.0 Flash (February 2025),29.0,8.83,True
+online_mind2web,Browser-Use,o3 Medium (April 2025),29.0,371.59,False
+online_mind2web,SeeAct,Claude-3.7 Sonnet (February 2025),28.3,291.97,False
+online_mind2web,SeeAct,Gemini 2.0 Flash (February 2025),26.7,5.03,True
+online_mind2web,Browser-Use,DeepSeek R1 (January 2025),25.3,280.93,False
+online_mind2web,Browser-Use,o4-mini High (April 2025),20.0,297.93,False
+online_mind2web,Browser-Use,o4-mini Low (April 2025),18.3,201.44,False
+scicode,Scicode Zero Shot Agent,o4-mini Low (April 2025),9.2,1.74,True
+scicode,Scicode Tool Calling Agent,o3 Medium (April 2025),9.2,111.11,False
+scicode,Scicode Tool Calling Agent,Claude Opus 4.1 (August 2025),7.7,625.13,False
+scicode,Scicode Tool Calling Agent,Claude Opus 4.1 High (August 2025),6.9,550.54,False
+scicode,Scicode Zero Shot Agent,GPT-4.1 (April 2025),6.2,2.82,False
+scicode,Scicode Zero Shot Agent,o4-mini High (April 2025),6.2,5.37,False
+scicode,Scicode Tool Calling Agent,GPT-5 Medium (August 2025),6.2,193.52,False
+scicode,Scicode Zero Shot Agent,o3 Medium (April 2025),4.6,6.03,False
+scicode,Scicode Tool Calling Agent,o4-mini Low (April 2025),4.6,46.30,False
+scicode,Scicode Tool Calling Agent,o4-mini High (April 2025),4.6,66.20,False
+scicode,Scicode Tool Calling Agent,Claude-3.7 Sonnet High (February 2025),4.6,204.37,False
+scicode,Scicode Zero Shot Agent,DeepSeek V3 (March 2025),3.1,0.79,False
+scicode,Scicode Zero Shot Agent,Claude-3.7 Sonnet High (February 2025),3.1,4.99,False
+scicode,Scicode Tool Calling Agent,Claude-3.7 Sonnet (February 2025),3.1,191.41,False
+scicode,Scicode Zero Shot Agent,Gemini 2.0 Flash (February 2025),1.5,0.12,True
+scicode,Scicode Tool Calling Agent,Gemini 2.0 Flash (February 2025),1.5,5.23,False
+scicode,Scicode Tool Calling Agent,GPT-4.1 (April 2025),1.5,69.39,False
+scicode,Scicode Zero Shot Agent,DeepSeek R1 (May 2025),0.0,2.19,False
+scicode,Scicode Zero Shot Agent,Claude-3.7 Sonnet (February 2025),0.0,5.10,False
+scicode,Scicode Tool Calling Agent,DeepSeek V3 (March 2025),0.0,52.11,False
+scicode,Scicode Tool Calling Agent,DeepSeek R1 (May 2025),0.0,57.62,False
+scienceagentbench,SAB Self-Debug,o3 Medium (April 2025),33.3,11.69,True
+scienceagentbench,SAB Self-Debug,Claude-3.7 Sonnet High (February 2025),30.4,11.74,False
+scienceagentbench,SAB Self-Debug,GPT-5 Medium (August 2025),30.4,18.26,False
+scienceagentbench,SAB Self-Debug,o4-mini Low (April 2025),27.4,3.95,True
+scienceagentbench,SAB Self-Debug,o4-mini High (April 2025),27.4,11.18,False
+scienceagentbench,SAB Self-Debug,Claude Opus 4.1 (August 2025),27.4,33.37,False
+scienceagentbench,SAB Self-Debug,Claude Opus 4.1 High (August 2025),26.5,33.75,False
+scienceagentbench,SAB Self-Debug,GPT-4.1 (April 2025),24.5,7.42,False
+scienceagentbench,SAB Self-Debug,DeepSeek R1 (January 2025),23.5,18.24,False
+scienceagentbench,SAB Self-Debug,Claude-3.7 Sonnet (February 2025),22.6,7.12,False
+scienceagentbench,HAL Generalist Agent,o4-mini High (April 2025),21.6,76.30,False
+scienceagentbench,HAL Generalist Agent,o4-mini Low (April 2025),19.6,77.32,False
+scienceagentbench,HAL Generalist Agent,Claude-3.7 Sonnet High (February 2025),17.6,48.28,False
+scienceagentbench,SAB Self-Debug,DeepSeek V3 (March 2025),15.7,2.09,False
+scienceagentbench,SAB Self-Debug,Gemini 2.0 Flash (February 2025),12.8,0.19,True
+scienceagentbench,HAL Generalist Agent,Claude-3.7 Sonnet (February 2025),10.8,41.22,False
+scienceagentbench,HAL Generalist Agent,o3 Medium (April 2025),9.8,31.08,False
+scienceagentbench,HAL Generalist Agent,GPT-4.1 (April 2025),6.9,68.95,False
+scienceagentbench,HAL Generalist Agent,DeepSeek V3 (March 2025),1.0,55.73,False
+swebench_verified_mini,SWE-Agent,o4-mini Low (April 2025),54.0,259.20,True
+swebench_verified_mini,SWE-Agent,Claude-3.7 Sonnet High (February 2025),54.0,388.88,False
+swebench_verified_mini,SWE-Agent,Claude Opus 4.1 High (August 2025),54.0,1599.90,False
+swebench_verified_mini,SWE-Agent,Claude Opus 4.1 (August 2025),54.0,1789.67,False
+swebench_verified_mini,SWE-Agent,o4-mini High (April 2025),50.0,248.46,False
+swebench_verified_mini,SWE-Agent,Claude-3.7 Sonnet (February 2025),50.0,402.69,False
+swebench_verified_mini,SWE-Agent,Claude Opus 4 (May 2025),50.0,1330.90,False
+swebench_verified_mini,SWE-Agent,GPT-5 Medium (August 2025),46.0,162.93,True
+swebench_verified_mini,HAL Generalist Agent,Claude Opus 4.1 High (August 2025),46.0,399.93,False
+swebench_verified_mini,SWE-Agent,o3 Medium (April 2025),46.0,483.43,False
+swebench_verified_mini,SWE-Agent,GPT-4.1 (April 2025),44.0,393.65,False
+swebench_verified_mini,HAL Generalist Agent,Claude Opus 4.1 (August 2025),42.0,477.65,False
+swebench_verified_mini,HAL Generalist Agent,Claude Opus 4 (May 2025),34.0,382.39,False
+swebench_verified_mini,HAL Generalist Agent,Claude Opus 4 High (May 2025),30.0,403.42,False
+swebench_verified_mini,HAL Generalist Agent,Claude-3.7 Sonnet (February 2025),26.0,117.43,False
+swebench_verified_mini,SWE-Agent,Gemini 2.0 Flash (February 2025),24.0,4.72,True
+swebench_verified_mini,SWE-Agent,DeepSeek V3 (March 2025),24.0,11.77,False
+swebench_verified_mini,HAL Generalist Agent,Claude-3.7 Sonnet High (February 2025),24.0,72.98,False
+swebench_verified_mini,HAL Generalist Agent,GPT-5 Medium (August 2025),12.0,57.58,False
+swebench_verified_mini,HAL Generalist Agent,DeepSeek V3 (March 2025),10.0,30.17,False
+swebench_verified_mini,HAL Generalist Agent,o4-mini Low (April 2025),6.0,87.03,False
+swebench_verified_mini,HAL Generalist Agent,DeepSeek R1 (January 2025),6.0,146.71,False
+swebench_verified_mini,HAL Generalist Agent,Gemini 2.0 Flash (February 2025),2.0,7.33,False
+swebench_verified_mini,HAL Generalist Agent,o4-mini High (April 2025),2.0,32.02,False
+swebench_verified_mini,HAL Generalist Agent,GPT-4.1 (April 2025),2.0,51.80,False
+swebench_verified_mini,SWE-Agent,DeepSeek R1 (January 2025),0.0,4.16,False
+swebench_verified_mini,HAL Generalist Agent,o3 Medium (April 2025),0.0,585.71,False
+taubench_airline,HAL Generalist Agent,Claude-3.7 Sonnet (February 2025),56.0,42.11,True
+taubench_airline,HAL Generalist Agent,Claude Opus 4.1 (August 2025),54.0,180.49,False
+taubench_airline,HAL Generalist Agent,Claude-3.7 Sonnet High (February 2025),44.0,34.58,False
+taubench_airline,HAL Generalist Agent,Claude Opus 4 (May 2025),44.0,150.15,False
+taubench_airline,HAL Generalist Agent,Claude Opus 4 High (May 2025),44.0,150.29,False
+taubench_airline,HAL Generalist Agent,Claude Opus 4.1 High (August 2025),32.0,140.28,False
+taubench_airline,HAL Generalist Agent,GPT-5 Medium (August 2025),30.0,52.78,False
+taubench_airline,HAL Generalist Agent,Gemini 2.0 Flash (February 2025),22.0,2.00,True
+taubench_airline,HAL Generalist Agent,o4-mini Low (April 2025),22.0,20.16,False
+taubench_airline,HAL Generalist Agent,o3 Medium (April 2025),20.0,45.03,False
+taubench_airline,HAL Generalist Agent,DeepSeek V3 (March 2025),18.0,10.73,False
+taubench_airline,HAL Generalist Agent,o4-mini High (April 2025),18.0,20.57,False
+taubench_airline,HAL Generalist Agent,GPT-4.1 (April 2025),16.0,17.85,False
+taubench_airline,HAL Generalist Agent,DeepSeek R1 (January 2025),10.0,30.18,False
+usaco,USACO Episodic + Semantic,GPT-5 Medium (August 2025),69.7,64.13,True
+usaco,USACO Episodic + Semantic,o4-mini High (April 2025),58.0,44.04,True
+usaco,USACO Episodic + Semantic,Claude Opus 4.1 High (August 2025),51.5,267.72,False
+usaco,USACO Episodic + Semantic,Claude Opus 4.1 (August 2025),48.2,276.19,False
+usaco,USACO Episodic + Semantic,o3 Medium (April 2025),46.2,57.30,False
+usaco,USACO Episodic + Semantic,GPT-4.1 (April 2025),45.0,28.10,False
+usaco,USACO Episodic + Semantic,DeepSeek V3 (March 2025),39.1,12.08,True
+usaco,USACO Episodic + Semantic,DeepSeek R1 (January 2025),38.1,80.04,False
+usaco,USACO Episodic + Semantic,o4-mini Low (April 2025),30.9,21.14,False
+usaco,USACO Episodic + Semantic,Claude-3.7 Sonnet (February 2025),29.3,38.70,False
+usaco,USACO Episodic + Semantic,Gemini 2.0 Flash (February 2025),27.0,1.46,True
+usaco,USACO Episodic + Semantic,Claude-3.7 Sonnet High (February 2025),26.7,56.43,False
+usaco,HAL Generalist Agent,GPT-4.1 (April 2025),25.4,197.33,False

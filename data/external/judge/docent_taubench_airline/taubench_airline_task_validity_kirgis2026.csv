@@ -1,0 +1,51 @@
+task_id,issue_type,description,manual,amazon_agi,gpt5_docent,sonnet45_docent
+0,,,0,0,1,1
+1,,,0,0,0,0
+2,D: grading error,Type error causes incorrect grading of correct actions,1,0,1,1
+3,A: ambiguous instr.,Checked bag constraint unclear,1,1,1,1
+4,,,0,1,1,1
+5,,,0,0,1,1
+6,,,0,1,1,1
+7,,,0,0,1,1
+8,D: grading error,Type errors on correct cancellation actions,1,1,1,1
+9,D: database error,Name mismatch (Evelyn/Liam Wilson),1,1,0,1
+10,P: policy violation,Cancellation violates stated policy,1,1,1,1
+11,A: ambiguous instr.,"""Wasted"" certificate undefined",1,1,1,1
+12,,,0,0,1,1
+13,A: ambiguous instr.,User model diverges; books new flight,1,0,1,0
+14,,,0,1,0,1
+15,A: ambiguous instr.,Downgrade on one-way of round trip,1,1,1,1
+16,P: policy violation,Certificate requires change/cancellation,1,1,1,1
+17,D: database error,Flight date conflict between reservation and DB,1,1,1,1
+18,,,0,0,0,0
+19,P: policy violation,Destination change violates policy,1,1,1,1
+20,,,0,0,0,0
+21,D: broken tool,Cabin upgrade tool changes price only,1,1,1,1
+22,,,0,1,1,1
+23,A: ambiguous instr.,User model confuses flight direction,1,1,1,1
+24,,,0,0,1,0
+25,D: database error,DOB mismatch in answer key vs. tool,1,1,1,1
+26,D: database error,Cancellation of past-dated reservation,1,1,1,1
+27,D: database error,Same past-date error as task 26,1,1,1,1
+28,P: policy violation,Cancellation without qualifying condition,1,0,1,1
+29,,,0,0,0,0
+30,,,0,0,0,1
+31,P: policy violation,Basic economy cancel without condition,1,1,1,1
+32,A: ambiguous instr.,Payment method unspecified; free bags rejected,1,1,1,1
+33,P: policy violation,Cancellation without health/weather reason,1,1,1,1
+34,P: policy violation,Cancellation without qualifying reason,1,1,1,1
+35,,,0,0,0,0
+36,,,0,0,0,0
+37,A: ambiguous instr.,User cancels instead of requesting certificate,1,0,0,1
+38,,,0,0,0,0
+39,,,0,0,1,0
+40,,,0,0,0,0
+41,,,0,0,0,0
+42,,,0,0,0,0
+43,,,0,0,1,0
+44,,,0,0,1,0
+45,P: policy violation,Certificate without change/cancellation,1,0,1,1
+46,P: policy violation,Same issue as task 45,1,1,1,1
+47,A: ambiguous instr.,Unspecified reservation to cancel,1,1,1,1
+48,,,0,0,1,1
+49,,,0,0,0,0
