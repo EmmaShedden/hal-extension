@@ -9,6 +9,7 @@ results be recovered by an IRT-style mixed-effects logistic regression fit on on
   **3.1 pp MAE**. Task-level AUC is 0.91, and conditional R² is 0.71.
 * With 10–50 % of the combinations removed and the model refit, held-out run accuracy is predicted to
   **7.2–8.2 pp MAE**. The naive baselines reach 8.9–10.8 pp. Held-out task-level AUC is 0.84–0.86.
+* Holding out individual task scores instead (§4c), the refit fills in a run's full accuracy to **1.0 / 1.7 / 2.9 pp** with 10 / 25 / 50 % of its tasks missing. That is only 0.2–0.4 pp better than reporting the accuracy on the observed tasks alone.
 * For runs added after the paper, MAE is **5.8 pp** for runs whose model is already known and **11.8 pp** for runs on brand-new models.
 
 Design decisions, including the one change made after fitting, are in [`DESIGN.md`](DESIGN.md).
@@ -206,6 +207,46 @@ For reference, HAL's own paired repeat runs differ by up to about 4.5 pp (e.g. C
 
 ![Task solve rates](results/figures/task_solve_rates.png)
 
+## 4c. Part 2b: task-level holdout (added on request; design in DESIGN.md)
+**Setup.**
+* The holdout unit is now a single task score: one task × one run, i.e. one model × scaffold × benchmark × effort combination on one task. Section 4 held out whole combinations instead.
+* 10 / 25 / 50 % of the 21,333 rows are held out at random (20 repetitions each, seeds 1001–1060), and the selected formula is refit on the rest. The primary design is `c027`; the PF-1 design `r032` gets the same seeds.
+* Every run and task keeps most of its observations, so this tests *filling in* missing task scores of partly observed runs, not predicting unseen agents.
+* Wall time: 4.6 min (`c027`) and 6.3 min (`r032`). 49 of the 60 `c027` refits are singular, which is the same PF-1 pattern; 10 of 60 `r032` refits are singular.
+
+**Results** (`c027`; `results/part2_task/main/`):
+
+| Held out | Held-out tasks per run | Subset MAE: GLMM refit | Subset MAE: run's own accuracy | Subset MAE: additive run+task logit | Noise floor | Full-run MAE: observed + GLMM-filled | Full-run MAE: subsample only | Cell holdout (§4) | Task Brier / AUC |
+|---|---|---|---|---|---|---|---|---|---|
+| 10 % | 12 | **10.2** | 12.1 | 10.2 | 9.4 | **0.96** | 1.13 | 7.5 | 0.132 / 0.873 |
+| 25 % | 31 | **7.0** | 7.8 | 7.0 | 5.8 | **1.72** | 1.91 | 7.2 | 0.132 / 0.874 |
+| 50 % | 61 | **5.9** | 6.7 | 6.1 | 4.0 | **2.94** | 3.32 | 8.2 | 0.137 / 0.864 |
+
+All values are in pp unless labelled otherwise.
+* **Subset MAE** is |mean predicted p − observed accuracy| over a run's held-out tasks.
+* **Noise floor** is the error a perfect p would still incur on so few tasks: E|mean p − mean y| with y ~ Bernoulli(p_full), using 200 draws.
+* **Full-run MAE** is error in the run's accuracy over all its tasks. "Subsample only" means the run's accuracy on its observed tasks.
+* Other baselines: the benchmark mean gives 15.5 / 11.9 / 10.8 pp; the task's solve rate gives 14.2 / 11.8 / 11.1 pp; the in-sample full model gives 9.2 / 5.9 / 4.3 pp.
+* `r032` is 0.3 pp better throughout (9.9 / 6.7 / 5.6 pp).
+
+![Task-level holdout](results/figures/task_holdout_error.png)
+
+**Interpretation.**
+1. **Most of the held-out-subset error is sampling noise.** With 12 held-out tasks per run, even the true probabilities would miss the observed subset accuracy by about 9.4 pp. Removing the floor in quadrature (a rough approximation) leaves a systematic error of about **4 pp at every fraction** (4.0 / 3.9 / 4.3). That is close to the full model's in-sample run MAE (3.1 pp), so losing up to half the rows barely degrades the model.
+2. **Filling in a run is far easier than predicting it outright.**
+   * A run whose remaining tasks are observed and the rest filled in by the GLMM has full-benchmark accuracy within 1.0 / 1.7 / 2.9 pp.
+   * Predicting a whole run, as in the cell holdout, gives 7.2–8.2 pp.
+   * So the run's own observed tasks carry most of the information about that run.
+3. **The GLMM's advantage over subsampling is modest.**
+   * Simply running a random subset of tasks and reporting that accuracy gives 1.1 / 1.9 / 3.3 pp. The GLMM saves 0.2–0.4 pp, about 10–15 %.
+   * A covariate-free additive logit (run accuracy + task solve rate) does as well as the GLMM: 0.96 / 1.72 / 3.06 pp, with essentially identical Brier.
+   * Once a run is partly observed, the covariates and random-effect structure add little beyond a Rasch-style run × task decomposition.
+4. **Task-level discrimination is the same as in the cell holdout** (AUC 0.86–0.87 vs 0.84–0.86; Brier 0.13 vs 0.14–0.15). Task difficulty dominates individual outcomes, and in both settings the task is seen in training.
+5. **The gain varies by benchmark** (25 % holdout, subset MAE; `per_benchmark.md`).
+   * The GLMM beats subsampling on CORE-Bench (8.4 vs 10.9 pp), SciCode (3.0 vs 3.9) and Online Mind2Web (4.0 vs 5.2).
+   * It is worse on **TAU-bench** (13.5 vs 11.1) and slightly worse on USACO (5.3 vs 5.0).
+   * TAU-bench is also where the cell holdout did worst. Its runs differ in ways the predictors don't capture, and its broken tasks (E3) add noise.
+
 ## 5. Extensions
 
 ### E1. Agent Psychometrics task features (SWE-bench Verified Mini)
@@ -282,12 +323,14 @@ python -I scripts/build_analysis_table.py
 ./run_R.sh R/02b_reduce_singular.R 50      # PF-1 sensitivity        -> fits/reduced/*.Rds
 ./run_R.sh R/03_report_selected.R 16 main  # Part 1 quality of fit (also: ... 16 reduced)
 ./run_R.sh R/04_holdout.R 60 main          # Part 2 (also: reduced, judge_both, judge_any, manual) -> fits/holdout/*
+./run_R.sh R/10_task_holdout.R 60 main     # Part 2b task-level holdout (also: 30 reduced) -> fits/holdout_task/*
 ./run_R.sh R/05_post_paper.R               # out-of-time test
 ./run_R.sh R/06_runtime.R 64               # E2
 ./run_R.sh R/07_ap_features.R              # E1
 ./run_R.sh R/08_judge_refit.R              # E3 (then 04_holdout.R with judge_* variants)
 ./run_R.sh R/09_latent_factors.R; python scripts/make_report_tables.py
+python scripts/make_figures.py; python scripts/make_task_holdout_figures.py
 ```
-* **Fitted models.** All are saved as `.Rds` under `fits/`: 64 candidates, 34 reduced refits (deduplicated), 300 holdout refits, the runtime and extension fits. The folder is gitignored because of its size, and the scripts regenerate it.
-* **Determinism.** Seeds are fixed (holdout seeds 1–60, DHARMa 42, CV 1).
+* **Fitted models.** All are saved as `.Rds` under `fits/`: 64 candidates, 34 reduced refits (deduplicated), 300 cell-holdout refits, 120 task-holdout refits, the runtime and extension fits. The folder is gitignored because of its size, and the scripts regenerate it.
+* **Determinism.** Seeds are fixed (cell-holdout seeds 1–60, task-holdout seeds 1001–1060, DHARMa 42, CV 1).
 * **Threads.** `run_R.sh` forces single-threaded BLAS. Without it, OpenBLAS oversubscribed the server (see DESIGN.md).
