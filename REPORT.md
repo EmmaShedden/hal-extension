@@ -263,7 +263,82 @@ All values are in pp unless labelled otherwise.
   | + AP difficulty `b` | **0.116** | **0.371** | **15.9 %** | **0.899** | 6.55 |
 
 * **In-sample.** PC1 coefficient −2.12 (SE 0.36), ΔAIC −36; `b` coefficient −2.69 (SE 0.44), ΔAIC −50. The overall task random-effect SD falls from 2.11 to 2.03.
-* **Conclusion.** Inherited task features substantially improve prediction for *new tasks*, matching the Agent Psychometrics finding (their AUC 0.84 vs 0.72). They cannot help predict *held-out combinations* of tasks already seen, because the task random effect already captures that.
+* **Conclusion.** Inherited task features substantially improve prediction for *new tasks*, matching the Agent Psychometrics finding (their AUC 0.84 vs 0.72).
+* **What this does not show.** The features entered only as task-level *main effects*. For tasks already seen in training, a main effect mostly duplicates the task random intercept. `(1|task)` is also additive: every run ranks tasks the same way. Task features crossed with agent terms could capture run × task structure that `(1|task)` cannot. E1b tests this.
+
+### E1b. Task-feature × agent interactions (SWE-bench Verified Mini)
+Added on request after E1 was reported, and pre-registered in DESIGN.md ("E1b") before any fit. Script: `R/11_ap_interactions.R`; outputs: `results/ext1b_interactions/`.
+* **Features (inherited, following Agent Psychometrics).**
+  * AP's fixed default 15 LLM-judge features, z-scored over all 500 SWE-bench Verified tasks.
+  * Two **task-type scores**: PC1 and PC2 of the 15 features (PCA on the 500 tasks).
+    * PC1 (42 % of variance) is a general difficulty axis: atypicality, debugging complexity, logical reasoning, domain knowledge and verification difficulty.
+    * PC2 (9 %) contrasts codebase scope, test edge-case coverage, solution complexity and fix localization against implementation-language complexity and codebase scale.
+  * **AP's own difficulty score** `dhat`, from their two-stage recipe: ridge regression of their frozen 1PL `b` on the 15 features.
+    * It is fit on the 450 Verified tasks *not* in Mini (λ = 100 by 5-fold CV; CV R² 0.38) and predicted for the 50 Mini tasks (r = 0.69 with their `b`).
+* **Models.** Each is the selected model `c027` plus extra terms. A = all agent-side fixed effects (provider, reasoning, release, effort, generalist).
+
+  | id | added terms | what it lets vary |
+  |---|---|---|
+  | M0 | none | nothing (baseline) |
+  | M1 | PC1 + PC2 main effects | task difficulty only (E1-style) |
+  | M2 | M1 + (PC1 + PC2) × A | how provider, reasoning, release, effort and scaffold type shift performance on each task type (18 fixed terms) |
+  | M3 | M1 + `(0 + PC1 + PC2 \| model)` | a shrunken model-specific slope on each task type |
+  | M4 | M2 + M3 (primary, "keep it maximal") | both |
+  | D1 / D4 | `dhat`, and `dhat` × A + `(0 + dhat \| model)` | 1-D analogs: model-specific sensitivity to difficulty |
+
+  * The full M4 fit was singular: the model slopes collapse to 0 once the fixed interactions are present.
+  * The pre-registered PF-1 reduction (drop the zero-variance slope) was therefore used as the primary in the holdouts. It is equivalent to M2 in practice.
+* **In-sample (full data).**
+  * The interaction blocks are supported:
+    * M2 vs M1: χ²(18) = 35.0, p = 0.009.
+    * M3 vs M1: χ²(3) = 11.7, p = 0.009.
+    * D4 vs D1: χ²(10) = 19.8, p = 0.03.
+  * AIC: M3 is best (−39 vs M0); M1 is −33 and M2 is −32.
+  * SWE in-sample run MAE falls from 5.15 pp (M0) to 4.45 (M3) and 4.14 (M2/M4).
+  * The one clear fixed interaction is provider × PC1.
+    * Anthropic models lose more from task difficulty than OpenAI models: −1.39 logits per SD of PC1 (SE 0.42), on top of the −2.06 main effect.
+    * Reasoning models lose less: +0.82 (SE 0.58, not significant).
+  * The M3 slopes agree: o4-mini, gpt-4.1 and o3 are flattest across difficulty, and DeepSeek-V3 and the Claude models are steepest.
+  * None of the PC2 interactions is distinguishable from 0. So a second task-type axis, beyond general difficulty, adds nothing detectable here.
+* **Holdouts.** Every model was refit on the same training sets as Part 2 (cell holdout, seeds 1–60) and Part 2b (task holdout, seeds 1001–1060), 840 refits in all.
+  * Metrics are on held-out SWE rows.
+  * 90 % intervals for each held-out run's accuracy come from simulation (fixed effects from their sampling distribution, random effects from their conditional distribution or from N(0, Σ) for unseen levels, then Bernoulli outcomes).
+  * The M0 rows reproduce Part 2 exactly (all-benchmark run MAE 7.52 / 7.20 / 8.22).
+  * Values below are for 10 / 25 / 50 % held out.
+
+  | Holdout, metric (SWE) | M0 | M3 (model slopes) | M4 primary (fixed interactions) |
+  |---|---|---|---|
+  | Cell: task log-loss | 0.334 / 0.372 / 0.375 | 0.332 / 0.370 / 0.372 | 0.356 / 0.406 / 0.466 |
+  | Cell: run MAE (pp) | 9.95 / 9.27 / 9.78 | **9.53 / 8.84 / 9.36** | 10.02 / 8.88 / 9.74 |
+  | Cell: 90 % PI width (pp); coverage | 33.7 / 34.4 / 35.1; 0.66 / 0.83 / 0.78 | 32.8 / 33.3 / 33.7; 0.67 / 0.83 / 0.79 | 33.3 / 33.2 / 33.2; 0.66 / 0.83 / 0.78 |
+  | Task: log-loss | 0.348 / 0.340 / 0.352 | **0.342 / 0.337 / 0.345** | 0.346 / 0.348 / 0.362 |
+  | Task: held-out-subset run MAE (pp) | 14.00 / 9.49 / 7.94 | 13.70 / 9.24 / 7.64 | 13.67 / 9.12 / 7.74 |
+  | Task: completed-run MAE (pp) | 1.29 / 2.34 / 3.97 | 1.26 / 2.28 / 3.81 | 1.26 / 2.25 / 3.85 |
+  | Task: 90 % PI width (pp); coverage | 54.6 / 41.2 / 37.0; 0.98 / 0.98 / 0.93 | 52.2 / 39.6 / 35.2; 0.98 / 0.98 / 0.94 | 52.1 / 39.3 / 34.8; 0.98 / 0.98 / 0.93 |
+
+  Paired differences vs M0, pooled over fractions, with seed-bootstrap 95 % CIs (`*_paired_vs_M0.csv`):
+  * **M4 (primary).**
+    * SWE log-loss is *worse*: +0.049 [+0.025, +0.086] in the cell holdout and +0.005 [+0.001, +0.009] in the task holdout. AUC is also lower.
+    * Run MAE is better in the task holdout (−0.30 pp [−0.44, −0.16]) and unchanged in the cell holdout (−0.12 [−0.53, +0.30]).
+    * PI width is 1.2–2.2 pp narrower, with no loss of coverage.
+    * The 18 fixed interaction terms are estimated from 10 models. They average out at the run level but make some task-level predictions overconfident.
+  * **M3 (model slopes only).** Every metric improves, in both holdouts:
+    * cell run MAE −0.42 pp [−0.64, −0.21];
+    * task log-loss −0.005 [−0.008, −0.003];
+    * task subset run MAE −0.29 pp [−0.39, −0.18];
+    * completed-run MAE −0.08 pp [−0.12, −0.05];
+    * PI width −1.1 pp (cell) and −1.9 pp (task), with coverage unchanged or slightly higher.
+
+    The gains are small: about 4–5 % of the run MAE and 1–2 % of log-loss.
+  * **D4** (1-D difficulty) behaves like M4: run MAE improves (cell −0.40 pp, task −0.38 pp) and intervals narrow, but cell log-loss is worse (+0.020).
+  * The intervals under-cover in the cell holdout for *every* model, M0 included (0.66–0.83 against a nominal 0.90). The simulation ignores uncertainty in the variance components, and new model × scaffold combinations differ more than Σ̂ implies.
+* **Verdict on the pre-registered gate: not met.**
+  * The primary (M4, reduced) does not lower held-out SWE log-loss in either holdout; it raises it.
+  * Therefore the extension stops at SWE-bench, as pre-registered: the other benchmarks were **not** annotated, and Parts 1–2 are unchanged.
+  * **The correction to the earlier claim stands.** Task features *do* carry information about held-out combinations once they are allowed to interact with the agent.
+    * The model-specific slopes on AP's task-type scores (M3) improve every holdout metric and narrow the intervals without losing coverage.
+    * The gains are modest. M3 was not the pre-registered primary, so they are reported as secondary.
+    * With only 10 models on SWE-bench, fixed interaction terms overfit, and shrunken random slopes are the form that generalizes.
 
 ### E2. Runtime of successful traces (TMS-style `lmer`)
 * **Data.** 6,722 successful traces with per-task wall time across 167 runs. Same 64-candidate class and AIC rule.
@@ -327,6 +402,7 @@ python -I scripts/build_analysis_table.py
 ./run_R.sh R/05_post_paper.R               # out-of-time test
 ./run_R.sh R/06_runtime.R 64               # E2
 ./run_R.sh R/07_ap_features.R              # E1
+./run_R.sh R/11_ap_interactions.R full; for k in cell task summary; do ./run_R.sh R/11_ap_interactions.R $k 46; done   # E1b
 ./run_R.sh R/08_judge_refit.R              # E3 (then 04_holdout.R with judge_* variants)
 ./run_R.sh R/09_latent_factors.R; python scripts/make_report_tables.py
 python scripts/make_figures.py; python scripts/make_task_holdout_figures.py

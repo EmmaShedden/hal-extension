@@ -40,9 +40,14 @@ All coefficients below are on the logit scale for the primary model `c027` unles
    * It is flat or negative on web browsing (−1.0 / yr) and customer service (−0.35 / yr), once provider and the other terms are controlled.
    * The domain × release interaction is strongly supported (χ²(3) = 25.6, p = 1e-5).
    * There are only 15 models, so treat the non-coding slopes as descriptive.
-7. **Task features help for new tasks, not new combinations.**
+7. **Task features help a lot for new tasks, and a little for new combinations, once they interact with the agent.**
    * For SWE-bench Verified Mini, inherited Agent Psychometrics features raise held-out-*task* AUC from 0.72 to 0.85, and their external IRT difficulty raises it to 0.90.
-   * For held-out *combinations* the task random effect already captures difficulty, so the features add nothing there.
+   * As main effects they add little for tasks already seen, which `(1|task)` covers. Crossed with the agent they do help (E1b; REPORT.md):
+     * The best form is shrunken model-specific slopes on AP task-type scores, `(0 + PC1 + PC2 | model)`.
+     * It lowers held-out SWE run MAE by about 0.3–0.4 pp (about 4–5 %) in both the cell and task holdouts, improves log-loss, and narrows 90 % intervals by 1–2 pp at unchanged coverage.
+   * The pre-registered primary was the maximal model with 18 fixed feature × agent terms. It overfits the 10 SWE-bench models: run MAE and intervals improve, but task log-loss gets worse.
+   * So the gate for annotating the other benchmarks was not met, and Parts 1–2 are unchanged.
+   * The interaction is essentially one-dimensional: models differ in how steeply they fall off with general task difficulty. Anthropic models are steeper than OpenAI models, and o4-mini, gpt-4.1 and o3 are flattest. A second task-type axis added nothing detectable.
 8. **LLM-judge corrections did not improve prediction.** Removing TAU-bench tasks that the judges flag as broken makes TAU-bench look easier: accuracy goes from 30.7 % to 35.4 % with both judges, or 39.1 % with manual flags. But holdout error does not improve: TAU run MAE rises from 11.9–13.0 pp to 13.9–15.9 pp with both judges.
    * The correction changes *what is measured* more than *how predictable it is*.
    * The two LLM judges agree on only 20 of the 39 tasks either one flags.

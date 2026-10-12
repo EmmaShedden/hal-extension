@@ -225,3 +225,9 @@ such interactions, so the interaction specification is ours. The feature encodin
   excluding 0, pooled over the three fractions, in the cell holdout **or** the task holdout. In that same holdout,
   its run-MAE point estimate must not be worse than M0 and its 90 % PI coverage must be ≥ 0.80. Otherwise the
   extension stops at SWE-bench and is reported as such.
+*E1b outcome (recorded after the holdouts).*
+* The full M4 was singular: its model slopes collapsed once the fixed interactions were present. The PF-1 reduction
+  (`M4r`, which drops the PC2 slope) was used as the primary, as pre-registered.
+* The primary raised held-out SWE log-loss in both holdouts, so **the gate is not met**. The other benchmarks were not
+  annotated, and Parts 1–2 are unchanged.
+* M3 (model slopes only) improved every holdout metric slightly. It is reported as a secondary result, not swapped in.
