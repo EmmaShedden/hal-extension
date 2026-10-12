@@ -1,0 +1,9 @@
+benchmark,tasks,never_solved,always_solved
+SciCode,65,83.1,0.0
+CORE-Bench Hard,45,22.2,0.0
+ScienceAgentBench,102,36.3,0.0
+TAU-bench Airline,50,14.0,0.0
+SWE-bench Verified Mini,50,22.0,0.0
+Online Mind2Web,300,11.7,0.7
+GAIA,165,3.6,0.6
+USACO,307,21.8,5.2

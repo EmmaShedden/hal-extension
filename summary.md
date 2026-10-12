@@ -10,6 +10,9 @@ All coefficients below are on the logit scale for the primary model `c027` unles
    * It predicts the accuracy of the dropped runs to **7–8 pp mean absolute error**. The naive baselines are at 9–11 pp, and in-sample error is 3 pp.
    * Error barely grows between 10 % and 50 % held out (7.5 → 8.2 pp). Roughly half of HAL's runs could have been predicted to within about 8 pp.
    * That is good enough to rank clearly separated agents, but not to settle close leaderboard positions. HAL's own run-to-run spread on repeated runs is several pp.
+   * **For scale:** HAL run accuracies range from 0 % to 70 % (SD 17 pp), and a run typically sits 10.2 pp from its benchmark's average. The refit removes about a quarter of that.
+   * The gain is concentrated on SWE-bench, CORE-Bench, ScienceAgentBench and SciCode (45–25 % less error than guessing the benchmark mean).
+   * On GAIA, TAU-bench, USACO and Online Mind2Web it is no better than that guess. See REPORT.md §4b and `results/figures/`.
 2. **Extrapolating to new models is much weaker.**
    * Runs on models released after the paper (the Claude 4.5 series, Gemini 3 Pro) are predicted to 11.8 pp MAE.
    * Known models on new scaffolds are predicted to 5.8 pp.
