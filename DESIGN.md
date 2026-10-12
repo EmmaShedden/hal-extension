@@ -154,3 +154,27 @@ Part 2 with the same holdout seeds; results for both are reported, the primary i
 *Compute note (not a design change).* The first launch was killed after 10 min with no completed fits: OpenBLAS
 was spawning 96 threads in each of 64 workers (load ~1300). All R scripts are now run via `run_R.sh`, which
 sets single-threaded BLAS. Part 1 candidate fitting then took 4.2 min.
+
+## Added analysis (2026-10-12, requested after the cell-holdout results): task-level holdout (Part 2b)
+This analysis was added on request after Part 2 results were seen. It is specified here before it is run, and the formula and everything else are unchanged.
+* **Unit held out.** An individual task score: one row = one task × one run, i.e. a model × scaffold × benchmark × effort
+  combination on a single task. Rows are sampled by simple random sampling of all rows in the paper data; the
+  benchmark, run and task are not stratified.
+* **Grid.** Fractions 10 / 25 / 50 % of rows, 20 repetitions each, seeds 1001..1060. The primary design `c027` is refit
+  unchanged on the remaining rows. The sensitivity design `r032` gets the same grid with the same seeds.
+* **Prediction.** `predict(type = "response", allow.new.levels = TRUE)`. Almost every run, task, model and scaffold
+  level is still present in training, so held-out rows are predicted with their BLUPs. This setting is therefore
+  *matrix completion* (filling in missing task scores of runs that were partly observed), not prediction for unseen agents.
+* **Metrics, on held-out rows.**
+  * Task-level Brier, log-loss, 0/1 error and AUC.
+  * Run-level accuracy error on the held-out subset: |mean predicted p − observed accuracy| over each run's held-out tasks.
+  * Run-level accuracy error of the *completed* run: observed training rows plus predicted held-out rows,
+    compared with the run's full observed accuracy.
+  * Sampling-noise floor of the subset metric: E|mean p − mean y| with y ~ Bernoulli(p_full), using 200 draws.
+    It shows how much of the subset error is unavoidable when only a few tasks per run are held out.
+* **Baselines on the same rows.**
+  * (a) The full-data model (in-sample).
+  * (b) Benchmark mean in training.
+  * (c) The run's own training accuracy. This is the "run only a subsample of the tasks" estimator.
+  * (d) The task's training solve rate.
+  * (e) Additive logit: logit(run acc) + logit(task rate) − logit(benchmark mean), with rates clamped to [0.005, 0.995].
