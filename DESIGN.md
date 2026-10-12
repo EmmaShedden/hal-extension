@@ -178,3 +178,50 @@ This analysis was added on request after Part 2 results were seen. It is specifi
   * (c) The run's own training accuracy. This is the "run only a subsample of the tasks" estimator.
   * (d) The task's training solve rate.
   * (e) Additive logit: logit(run acc) + logit(task rate) − logit(benchmark mean), with rates clamped to [0.005, 0.995].
+
+## Added analysis (2026-10-12, requested after E1 was reported): E1b task-feature × agent interactions (SWE-bench)
+Requested after E1, Part 2 and Part 2b results were seen. Everything below is fixed before any E1b model is fit.
+*Motivation.* E1 added task features only as main effects. For seen tasks, those are largely redundant with `(1|task)`.
+`(1|task)` is additive, so every agent ranks tasks identically. Feature × agent interactions let the ranking depend on
+the kind of task, and can inform held-out combinations. Agent Psychometrics (AP) uses an additive 1PL and never tests
+such interactions, so the interaction specification is ours. The feature encoding follows AP.
+* **Features (inherited, no annotation).**
+  * AP's fixed default 15 LLM-judge features, z-scored over all 500 SWE-bench Verified tasks (AP standardizes per dataset).
+  * **Task-type scores** `sw_pc1` and `sw_pc2`: the first two principal components of the 15 z-scored features. PCA is
+    fit on all 500 Verified tasks (external to HAL outcomes, so identical in every holdout fold). Signs are set so
+    each PC correlates positively with AP's 1PL `b`. Each is then centered and scaled to SD 1 over the 50 Mini tasks.
+  * **AP difficulty score** `sw_dhat`: AP's two-stage recipe (their eq. 2). A ridge regression of their frozen 1PL `b`
+    on the 15 z-features is fit on the **450 Verified tasks not in Mini**, with λ chosen by 5-fold CV MSE on a log grid.
+    It is then predicted for the 50 Mini tasks and centered and scaled to SD 1 over them.
+  * All three are 0 on non-SWE rows.
+* **Models.** Each is `c027` plus the terms shown, where A = `provider + reasoning_model + release_years_z + effort + generalist`,
+  i.e. all agent-side fixed effects of `c027`.
+  | id | added terms |
+  |---|---|
+  | M0 | none (`c027`) |
+  | M1 | `sw_pc1 + sw_pc2` (main effects, as in E1) |
+  | M2 | M1 + `(sw_pc1 + sw_pc2):(A)` (fixed feature × agent interactions) |
+  | M3 | M1 + `(0 + sw_pc1 + sw_pc2 \| model)` (model-specific slopes on task type) |
+  | M4 | M2 + `(0 + sw_pc1 + sw_pc2 \| model)` (maximal; **primary**) |
+  | D1 | `sw_dhat` |
+  | D4 | D1 + `sw_dhat:(A)` + `(0 + sw_dhat \| model)` (1-D "discrimination" analog of M4) |
+  If the full-data M4 fit is singular, the PF-1 reduction is applied: components with SD < 1e-3 are dropped, and the
+  reduced formula becomes the primary for the holdouts. Rank-deficient fixed columns are dropped by lme4 as usual.
+* **Evaluation.**
+  * (a) Full-data fits: AIC, an LRT of the interaction block (M2/M3/M4 vs M1, D4 vs D1), and the coefficients.
+  * (b) **Cell holdout** with Part 2's grid and seeds (1..60). All 7 models are refit on identical training sets.
+    Primary metrics are on held-out **SWE** cells: task log-loss, Brier, AUC and run MAE (pp). The same metrics are also
+    computed over all held-out cells.
+  * (c) **Task-level holdout** with Part 2b's grid and seeds (1001..1060), on held-out SWE rows: task log-loss and
+    Brier, held-out-subset run MAE and completed-run MAE.
+  * **Prediction intervals** (b and c): the 90 % interval of each held-out SWE run's observed accuracy (on its held-out
+    tasks), from 1,000 draws. Each draw takes β ~ N(β̂, V̂). Seen random-effect levels are drawn from their conditional
+    modes and variances (`condVar`), and unseen levels from N(0, Σ̂). Bernoulli outcomes are then drawn per task.
+    The interval ignores β–b covariance and the uncertainty in Σ̂, the same for every model. Reported: mean width and coverage.
+  * Paired comparison per seed, model − M0, summarized as a mean with a bootstrap 95 % CI over seeds (AP's
+    seed-bootstrap; 10,000 resamples).
+* **"Promising" gate** (decides whether the other benchmarks get annotated and the features enter Parts 1–2). The
+  primary model (M4, or its PF-1 reduction) must reduce held-out-SWE task log-loss vs M0, with the paired 95 % CI
+  excluding 0, pooled over the three fractions, in the cell holdout **or** the task holdout. In that same holdout,
+  its run-MAE point estimate must not be worse than M0 and its 90 % PI coverage must be ≥ 0.80. Otherwise the
+  extension stops at SWE-bench and is reported as such.
