@@ -27,6 +27,16 @@ lrt <- mclapply(tl, function(t) {
 }, mc.cores = min(ncores, length(tl)))
 fwrite(do.call(rbind, lrt), file.path(out, "lrt_fixed_terms.csv"))
 
+# drop-one LRT for each random term (PF-2 / AUDIT.md H1). The null is on the boundary (variance = 0), so the
+# chi2(1) p-value is halved (Self & Liang 1987).
+bars <- vapply(lme4::findbars(formula(m)), function(b) deparse(b[[3]]), "")
+rlrt <- mclapply(bars, function(g) {
+  m1 <- update(m, as.formula(sprintf(". ~ . - (1 | %s)", g)))
+  a <- anova(m1, m)
+  data.frame(term = g, Chisq = a$Chisq[2], Df = a$Df[2], p_boundary = a$`Pr(>Chisq)`[2] / 2, dAIC = AIC(m1) - AIC(m))
+}, mc.cores = min(ncores, length(bars)))
+fwrite(do.call(rbind, rlrt), file.path(out, "lrt_random_terms.csv"))
+
 # random effects: SDs and variance shares (latent-scale residual pi^2/3)
 vc <- as.data.frame(VarCorr(m))
 vc$share <- vc$vcov / (sum(vc$vcov) + pi^2 / 3)
@@ -54,7 +64,11 @@ runs <- fread(path("data/processed/runs.csv"))
 rl <- merge(rl, runs[, .(run = source_file, model, scaffold, effort, paper_acc_pct, extracted_acc_pct)], by = "run")
 fwrite(rl, file.path(out, "run_level_fit.csv"))
 
-# DHARMa simulated residuals, overall and aggregated to runs (where overdispersion would show)
+# DHARMa simulated residuals, overall and aggregated to runs. Caveat (PF-2): with crossed task effects, the
+# run-aggregated tests are not interpretable either way. Unconditional simulation redraws the task effects that all
+# runs share, so the simulated run totals are too spread and the residuals pile up near 0.5. Conditioning on the
+# fitted effects is circular: they were fit to these runs. The task-level dispersion test is uninformative for 0/1
+# data. Evidence about run-level dependence comes from lrt_random_terms.csv instead.
 sim <- simulateResiduals(m, n = 250, seed = 42)
 sim_run <- recalculateResiduals(sim, group = d$run)
 dh <- data.frame(test = c("uniformity_task", "dispersion_task", "uniformity_run", "dispersion_run"),
