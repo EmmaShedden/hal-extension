@@ -268,3 +268,32 @@ Written after the audit and before any PF-2 result was inspected. The PF-2 Part 
 * **Unplanned diagnostic finding.** The run-aggregated DHARMa tests cannot be interpreted for this crossed design. Unconditional simulation redraws the shared task effects, and conditional simulation is circular. They are reported with that caveat, and run-level dependence is assessed by random-term LRTs, a new output of `R/03_report_selected.R`. This is a change in interpretation only; no model was changed because of it.
 * **Pipeline fix.** E2's first run under PF-2 crashed on a data.table type error in a descriptive table. It was fixed with `as.numeric()` and rerun; nothing about the design changed.
 * **E1b base model.** E1b (pre-registered on `c027`) uses the selected formula as M0. Its rerun therefore uses `c028_r1`, and its gate is re-evaluated on the rerun. Its PF-1 reduction rule in `R/11_ap_interactions.R` is unchanged.
+
+## PF-3 (2026-10-12, user decision after the PF-2 results): heredity, and zero-variance components kept
+*Decision (by the user).* Random-effect formulas must respect **heredity**, the inheritance principle: a random interaction term may appear only if each of its factors is in the model as a fixed-effect factor or as its own random intercept.
+* PF-2 chose `c028_r1`, which keeps `(1|model:benchmark)`, `(1|scaffold:benchmark)` and `(1|model:scaffold)` but drops `(1|model)` and `(1|scaffold)`. That is not hereditary.
+* The user also directed that the "keep it maximal" result be followed: including a random effect that turns out to be unnecessary is not, by that result, a reason to remove it.
+
+*Where heredity comes from.*
+* TMS states heredity for fixed effects ("the principle of heredity in mixed modeling states that in general, main effects should be included when the fixed effects are").
+* PT's hand-written formulas include each interaction's parent random intercepts, e.g. `(1|annotator) + (1|annotator:code)`.
+* TMS's random-term enumeration does *not* enforce heredity: its subsets include `(1|id:domain)` without `(1|id)`. PF-3 therefore adopts PT's practice for random terms.
+
+*The "keep it maximal" result, in its own words.* Barr, Levy, Scheepers & Tily (2013), "Random effects structure for confirmatory hypothesis testing: Keep it maximal", *J. Memory and Language* 68:255–278; author manuscript PMC3881361.
+* Abstract: "LMEMs generalize best when they include the maximal random effects structure justified by the design."
+* General Discussion: "overfitting the data with a maximal model has only minimal consequences for Type I error and power".
+* Results, for the worst case of a zero random-slope variance: maximal LMEMs "incurred a negligible cost relative to random-intercepts-only LMEMs" in between-items designs. In within-items designs the cost was small and shrank as the number of items grew. The authors conclude "good performance of the estimation algorithm when random slope variances are zero."
+* *Scope.* The evidence is from simulations of Gaussian LMMs with two crossed factors, and is mostly about random slopes. It says "minimal" or "negligible" cost, not "no" cost. Singular fits are not discussed.
+* Matuschek et al. (2017, JML 94:305–315) argue that overparameterized models can cost power. Here that is moot, because a component estimated at zero changes neither the estimates nor the predictions; see the check below.
+
+*Rules (replacing PF-2 items 2–3 for Part 1 and E2).*
+1. **Validity rule 5 (heredity).** Each factor of a random interaction term must be a fixed-effect factor (`benchmark`, `effort`, `provider`) or have its own random intercept in the formula. `run` and `task` are not interactions. All 64 pre-registered candidates satisfy it, because the core part contains `(1|model)` and `(1|scaffold)`.
+2. **No reduction, and singularity does not disqualify.** Zero-variance components (SD < 1e-3) are kept at the boundary, following keep-it-maximal. A fit is eligible when it converged without warnings. Selection is the lowest AIC among eligible, valid candidates. The PF-2 reduction step is removed, and the `singular` and `zero` columns are still reported.
+3. **`(1|run)` stays in the core (PF-2 item 1).** Unchanged: it is the observation cluster and is not an interaction.
+
+*Expected consequence (stated before the rerun).*
+* Among the PF-2 originals, the lowest-AIC candidate is `c028`, the hereditary parent of `c028_r1`: AIC 18,730.4 vs 18,726.4, with zero `(1|model)` and `(1|scaffold)`.
+* The two are the same fit. Their log-likelihoods agree to 0.001, fixed effects differ by at most 0.007, SEs by at most 0.013, and fitted probabilities by at most 5e-4.
+* `c032` (all four optional terms) is the same fit again, plus a zero `(1|model:effort)`, at ΔAIC +2.0. That difference is purely the parameter penalty.
+* Everything downstream reruns with the PF-3 selection (`run_pf2.sh`).
+* E1b uses the selected formula as M0, so its zero `(1|model)` is kept. Its own PF-1 slope-reduction step therefore does not fire, which matches PF-3's rule that zero components are kept.
