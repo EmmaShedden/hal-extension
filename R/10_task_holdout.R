@@ -1,12 +1,12 @@
 # Part 2b: task-level (row) holdout refits with the fixed design. DESIGN.md "Added analysis ... task-level holdout".
-# Usage: ./run_R.sh R/10_task_holdout.R [n_cores] [variant]   variant: main (default) | reduced
-source("R/common.R"); source("R/metrics.R")
+# Usage: ./run_R.sh R/10_task_holdout.R [n_cores] [variant]   variant: main (default)
+source("R/common.R"); source("R/metrics.R"); source("R/candidates.R")
 suppressPackageStartupMessages(library(parallel))
 args <- commandArgs(TRUE)
 ncores <- if (length(args) >= 1) as.integer(args[1]) else 60
 variant <- if (length(args) >= 2) args[2] else "main"
 L <- load_analysis_data("paper", scaling = readRDS(path("results/scaling.Rds"))); d <- L$d
-f <- as.formula(readLines(path(if (variant == "reduced") "results/reduced/selected_formula.txt" else "results/selected_formula.txt"))[2])
+f <- as.formula(readLines(path("results/selected_formula.txt"))[2])
 full <- if (variant == "main") readRDS(path("fits/selected_model.Rds")) else readRDS(path(sprintf("fits/selected_model_%s.Rds", variant)))
 d$p_full <- predict(full, newdata = d, type = "response", allow.new.levels = TRUE)
 d[, row_id := .I]
@@ -65,7 +65,7 @@ one <- function(i) {
   res <- do.call(rbind, Map(function(nm, r) cbind(predictor = nm, r), names(rows), rows))
   res$noise_floor_pp <- mean(nf$noise_pp)
   res$frac <- g$frac; res$rep <- g$rep; res$seed <- g$seed; res$n_held_rows <- length(held)
-  res$singular <- isSingular(m); res$warnings <- paste(unique(c(warns, m@optinfo$conv$lme4$messages)), collapse = " | ")
+  res$singular <- is_singular2(m); res$warnings <- paste(unique(c(warns, m@optinfo$conv$lme4$messages)), collapse = " | ")
   per_run <- test[, .(obs = mean(success), pred = mean(p), pred_full = mean(p_full), pred_run = mean(p_run),
                       pred_add = mean(p_add), n = .N), by = .(run, cell, benchmark)]
   per_run <- merge(per_run, nf, by = "run")

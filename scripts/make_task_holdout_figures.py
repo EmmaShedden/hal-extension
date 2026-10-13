@@ -20,6 +20,7 @@ plt.rcParams.update({
 })
 FR = [0.10, 0.25, 0.50]
 
+SEL = open("results/selected_formula.txt").read().split()[0]
 ts = pd.read_csv("results/part2_task/main/holdout_summary.csv")
 cs = pd.read_csv("results/part2/main/holdout_summary.csv")
 g = lambda df, p, c: df[df.predictor == p].set_index("frac").loc[FR, c].values
@@ -81,7 +82,7 @@ a2.set_title("Error in each run's full-benchmark accuracy", loc="left"); a2.grid
 a2.legend(loc="upper left", fontsize=7.5); a2.set_ylim(0, 11)
 fig.suptitle("Task-level holdout: most remaining error is sampling noise; the GLMM beats subsampling only modestly",
              x=0.01, ha="left", fontweight="bold", fontsize=11)
-fig.text(0.01, 0.01, "Primary design c027, 20 random holdouts per fraction. Left: |mean predicted − observed| over the run's held-out tasks only. "
+fig.text(0.01, 0.01, f"Primary design {SEL}, 20 random holdouts per fraction. Left: |mean predicted − observed| over the run's held-out tasks only. "
          "Right: run accuracy over all its tasks.", fontsize=7.5, color=INK2)
 fig.subplots_adjust(left=0.06, right=0.99, bottom=0.17, top=0.86, wspace=0.22)
 fig.savefig(f"{OUT}/task_holdout_error.png", dpi=170); plt.close(fig)

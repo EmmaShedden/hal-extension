@@ -1,8 +1,9 @@
 # Part 1a: enumerate candidate formulas, apply validity filter, fit all valid candidates in parallel,
-# select by AIC (DESIGN.md). Usage: Rscript R/02_fit_candidates.R [n_cores]
+# reduce singular fits, select by AIC (DESIGN.md, rule PF-2). Usage: Rscript R/02_fit_candidates.R [n_cores]
 source("R/common.R"); source("R/candidates.R")
 suppressPackageStartupMessages(library(parallel))
 args <- commandArgs(TRUE); ncores <- if (length(args)) as.integer(args[1]) else 48
+unlink(path("fits/candidates"), recursive = TRUE)
 dir.create(path("fits/candidates"), recursive = TRUE, showWarnings = FALSE)
 dir.create(path("results"), showWarnings = FALSE)
 
@@ -32,28 +33,19 @@ fwrite(cands, path("results/candidates.csv"))
 cat("candidates:", nrow(cands), "valid:", sum(cands$valid), "\n")
 print(table(cands$reason[!cands$valid]))
 
-fit_one <- function(i) {
-  f <- cands$formula[i]; id <- cands$id[i]
-  t0 <- Sys.time(); warns <- character(0)
-  m <- withCallingHandlers(
-    tryCatch(glmer(as.formula(f), data = d, family = binomial, control = CTRL), error = function(e) e),
-    warning = function(w) { warns <<- c(warns, conditionMessage(w)); invokeRestart("muffleWarning") })
-  secs <- as.numeric(difftime(Sys.time(), t0, units = "secs"))
-  if (inherits(m, "error")) return(data.frame(id = id, AIC = NA, BIC = NA, logLik = NA, df = NA, singular = NA,
-                                              conv_warning = TRUE, messages = conditionMessage(m), secs = secs))
-  saveRDS(m, path("fits/candidates", paste0(id, ".Rds")))
-  conv <- c(warns, m@optinfo$conv$lme4$messages)
-  data.frame(id = id, AIC = AIC(m), BIC = BIC(m), logLik = as.numeric(logLik(m)), df = attr(logLik(m), "df"),
-             singular = isSingular(m), conv_warning = length(conv) > 0, messages = paste(unique(conv), collapse = " | "), secs = secs)
-}
-valid_idx <- which(cands$valid)
+# PF-2: fit, then refit singular fits without their zero (SD < 1e-3) components until none remain; select lowest AIC
+# among converged fits with no zero component, originals and reductions pooled.
+v <- cands[cands$valid, ]
 t0 <- Sys.time()
-res <- mclapply(valid_idx, fit_one, mc.cores = min(ncores, length(valid_idx)), mc.preschedule = FALSE)
+FR <- fit_and_reduce(setNames(v$formula, v$id), function(f) glmer(f, data = d, family = binomial, control = CTRL),
+                     mapper = function(x, f) mclapply(x, f, mc.cores = min(ncores, length(x)), mc.preschedule = FALSE),
+                     save_dir = path("fits/candidates"))
 cat("fitting wall time (min):", round(as.numeric(difftime(Sys.time(), t0, units = "mins")), 1), "\n")
-met <- merge(cands, do.call(rbind, res), by = "id", all.x = TRUE)
+met <- merge(FR$metrics, cands[, c("id", "rd", "bench", "re_opt")], by = "id", all.x = TRUE)
 met <- met[order(met$AIC), ]
-met$eligible <- met$valid & !is.na(met$AIC) & !met$conv_warning & !met$singular
 fwrite(met, path("results/candidate_metrics.csv"))
+cat("fits:", nrow(met), "(original", sum(met$round == 0), ", reductions", sum(met$round > 0), "); singular originals:",
+    sum(met$singular[met$round == 0], na.rm = TRUE), "; eligible:", sum(met$eligible), "\n")
 sel <- met[met$eligible, ][1, ]
 cat("SELECTED:", sel$id, "\n", sel$formula, "\nAIC", sel$AIC, "BIC", sel$BIC, "\n")
 writeLines(c(sel$id, sel$formula), path("results/selected_formula.txt"))

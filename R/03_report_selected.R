@@ -1,5 +1,5 @@
 # Part 1b: quality of fit of the selected model (DESIGN.md "Quality-of-fit report").
-# Usage: ./run_R.sh R/03_report_selected.R [n_cores] [variant: main | reduced]
+# Usage: ./run_R.sh R/03_report_selected.R [n_cores] [variant: main]
 source("R/common.R"); source("R/metrics.R")
 suppressPackageStartupMessages({library(parallel); library(performance); library(DHARMa)})
 args <- commandArgs(TRUE); ncores <- if (length(args)) as.integer(args[1]) else 16
