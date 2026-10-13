@@ -178,6 +178,26 @@
   * REPORT §E2's "per-task wall time" is wrong.
 * **Fix.** Rename the variable "LLM-call span". Then either exclude single-call scaffolds or model them separately, or use a direct per-task duration if the traces have one. Re-run E2.
 
+**Fixed:** (DESIGN.md DC-1; commits `b1c6888`, `faf11ca`)
+* **Root cause, confirmed in the per-call logs.** HAL's `total_time` is `last_call.started_at − first_call.started_at`. It leaves out the duration of the last call, which is why single-call tasks read 0.
+* **New measurement.**
+  * The zips also contain `raw_logging_results`, one Weave record per LLM call, with `weave_task_id`, `started_at`, `ended_at` and token usage. The original extraction dropped it.
+  * `scripts/extract_call_timing.py` re-streams the 175 modelled paper zips (about 47 GB, about 10 min; the 15 SWE-bench files come from the paper revision `1bf4166d`). Only per-task summaries are kept, in `data/processed/task_timing.csv.gz`:
+    * `span_s`: first call start to last call end;
+    * `n_calls`;
+    * `llm_time_s`: summed call durations;
+    * HAL's `total_time`, for comparison.
+  * Coverage is complete: every task of every modelled run has at least one logged call, and no call is missing a task id.
+  * `span_s` ≥ HAL's value for every task (r = 0.98), and its minimum is 0.12 s instead of 0.
+* **E2 now uses `span_s`.** No successful trace is under 1 s. Single-call tasks keep their real call duration: 26 % of SAB Self-Debug and 18 % of SciCode Zero Shot successes. All 6,805 successful traces are used, where the old outcome dropped 83 zeros.
+  * Neither of the options suggested above (exclude single-call scaffolds, or model them separately) is needed now, because the 0 s artefact is gone.
+  * The call count stays a property of the scaffold. `results/ext2_runtime/outcome_by_scaffold.csv` reports median calls next to median span, so readers can see it.
+* **Naming.** REPORT.md now calls the outcome "LLM-activity span", says it excludes environment setup and evaluation and includes API queueing, and no longer calls it wall time.
+* **Effect.**
+  * Scaffold's variance share falls from 63 % to 45 %, and task (16 %), model × benchmark (7 %) and run (6 %) gain.
+  * Holdout log-RMSE improves from 0.99–1.13 to 0.74–0.81.
+  * The main multiplicative effects are stable: reasoning ×1.83 vs ×1.85 before, DeepSeek ×2.01 vs ×2.25, high effort ×1.24 vs ×1.26.
+
 ### M3. The overdispersion check uses a test that cannot detect anything on Bernoulli data
 * DHARMa's dispersion test on ungrouped 0/1 outcomes is uninformative: binary data cannot be overdispersed observation by observation.
 * So "dispersion 1.00 (p = 0.65), so there is no overdispersion" (REPORT §3) is unsupported. The only meaningful tests are the run-aggregated ones, and those show misfit (H1).
