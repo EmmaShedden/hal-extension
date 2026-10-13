@@ -7,6 +7,11 @@
 * Every number below that does not appear in the repo's own results comes from those scripts.
 * All models I fitted here are **diagnostic**. They were fitted after the results were seen, so they must not replace the pre-registered selection without being logged as a post-fit change in DESIGN.md.
 
+**Fix status (updated after the audit).**
+* **Fixed:** H1, H2, H3 (DESIGN.md PF-2, then PF-3) and M2 (DESIGN.md DC-1). Each has a **Fixed:** section below, and the whole analysis was rerun.
+* **Still open:** H4, M1 and M3–M8, and the §3 items, apart from the parts touched incidentally and noted in the Fixed sections.
+* Numbers in the finding texts describe the audited state. The Fixed sections give the current numbers.
+
 ---
 
 ## 0. Bottom line
@@ -341,6 +346,8 @@
 7. Correct the wording items in §3 and M3 / M4 / M5.
 
 ## 6. Audit scripts (in `audit/`)
+
+These scripts reproduce the **audit-time** numbers. They read fits from the pre-PF-2 pipeline (`fits/selected_model_reduced.Rds`, `fits/holdout/{main,judge_both}`), which the PF-2/PF-3 reruns overwrote or removed. To rerun them, check out commit `2766def` and regenerate `fits/` with that commit's pipeline.
 
 | Script | What it checks | Run with |
 |---|---|---|
