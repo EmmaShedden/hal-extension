@@ -1,29 +1,31 @@
 # Extension 2: runtime of successful traces (TMS-style lmer on log runtime), same predictor set and
-# candidate class as the success model; AIC selection among converged, non-singular fits.
+# candidate class as the success model; PF-2 selection (reduce zero components, lowest AIC among non-singular fits).
+# Outcome (AUDIT.md M2 fix): span_s = first LLM call start to last LLM call end, from HAL's per-call Weave logs
+# (scripts/extract_call_timing.py -> data/processed/task_timing.csv.gz). HAL's own total_time stops at the *start* of
+# the last call, so single-call tasks read ~0 s. Neither measure includes environment setup or evaluation.
 source("R/common.R"); source("R/candidates.R"); source("R/metrics.R")
 suppressPackageStartupMessages({library(parallel); library(moments)})
 args <- commandArgs(TRUE); ncores <- if (length(args)) as.integer(args[1]) else 48
 out <- path("results/ext2_runtime"); dir.create(out, recursive = TRUE, showWarnings = FALSE)
-fdir <- path("fits/runtime"); dir.create(fdir, recursive = TRUE, showWarnings = FALSE)
+fdir <- path("fits/runtime"); unlink(fdir, recursive = TRUE); dir.create(fdir, recursive = TRUE, showWarnings = FALSE)
 L <- load_analysis_data("paper", scaling = readRDS(path("results/scaling.Rds")))
-d <- droplevels(L$d[success == 1 & !is.na(latency_s) & latency_s > 0])
-cat("successful traces with latency:", nrow(d), "runs", nlevels(d$run), "\n")
-print(d[, .(n = .N, runs = uniqueN(run), med_s = median(latency_s)), by = benchmark])
+tim <- fread(path("data/processed/task_timing.csv.gz"), colClasses = list(character = "task_id"))
+d0 <- merge(L$d, tim[, .(source_file, task_id, span_s, n_calls, llm_time_s)], by = c("source_file", "task_id"), all.x = TRUE)
+cat("successful traces:", d0[success == 1, .N], " with span_s:", d0[success == 1 & !is.na(span_s), .N], "\n")
+d <- droplevels(d0[success == 1 & !is.na(span_s) & span_s > 0])
+d[, latency_s := span_s]
+cat("successful traces with span:", nrow(d), "runs", nlevels(d$run), "\n")
+print(d[, .(n = .N, runs = uniqueN(run), med_s = median(latency_s), single_call = mean(n_calls == 1), under_1s = mean(latency_s < 1)), by = benchmark])
+fwrite(d[, .(n = .N, runs = uniqueN(run), median_span_s = median(span_s), median_calls = median(n_calls), share_single_call = mean(n_calls == 1),
+             share_under_1s = mean(span_s < 1)), by = .(benchmark, scaffold)][order(benchmark, scaffold)], file.path(out, "outcome_by_scaffold.csv"))
 cands <- validity_filter(enumerate_candidates("log(latency_s)"), d)
 cands <- cands[!duplicated(cands$formula), ]; cands$id <- sprintf("t%03d", seq_len(nrow(cands)))
-fit_one <- function(i) {
-  warns <- character(0)
-  m <- withCallingHandlers(tryCatch(lmer(as.formula(cands$formula[i]), data = d, REML = FALSE), error = function(e) e),
-                           warning = function(w) { warns <<- c(warns, conditionMessage(w)); invokeRestart("muffleWarning") })
-  if (inherits(m, "error")) return(data.frame(id = cands$id[i], AIC = NA, BIC = NA, singular = NA, conv_warning = TRUE, messages = conditionMessage(m)))
-  saveRDS(m, file.path(fdir, paste0(cands$id[i], ".Rds")))
-  conv <- c(warns, m@optinfo$conv$lme4$messages)
-  data.frame(id = cands$id[i], AIC = AIC(m), BIC = BIC(m), singular = isSingular(m), conv_warning = length(conv) > 0, messages = paste(unique(conv), collapse = " | "))
-}
-vi <- which(cands$valid)
-met <- merge(cands, do.call(rbind, mclapply(vi, fit_one, mc.cores = min(ncores, length(vi)), mc.preschedule = FALSE)), by = "id", all.x = TRUE)
-met <- met[order(met$AIC), ]; met$eligible <- met$valid & !is.na(met$AIC) & !met$conv_warning & !met$singular
+v <- cands[cands$valid, ]
+FR <- fit_and_reduce(setNames(v$formula, v$id), function(f) lmer(f, data = d, REML = FALSE),
+                     mapper = function(x, f) mclapply(x, f, mc.cores = min(ncores, length(x)), mc.preschedule = FALSE), save_dir = fdir)
+met <- FR$metrics
 fwrite(met, file.path(out, "candidate_metrics.csv"))
+cat("fits:", nrow(met), "; singular originals:", sum(met$singular[met$round == 0], na.rm = TRUE), "; eligible:", sum(met$eligible), "\n")
 sel <- met[met$eligible, ][1, ]; writeLines(c(sel$id, sel$formula), file.path(out, "selected_formula.txt"))
 m <- readRDS(file.path(fdir, paste0(sel$id, ".Rds"))); saveRDS(m, path("fits/runtime_selected_model.Rds"))
 cat("SELECTED runtime model:", sel$formula, "\n")
