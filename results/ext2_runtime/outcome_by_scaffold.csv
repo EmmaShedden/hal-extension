@@ -1,0 +1,16 @@
+benchmark,scaffold,n,runs,median_span_s,median_calls,share_single_call,share_under_1s
+GAIA,HAL Generalist Agent,788,10,81.5855065584183,14,0,0
+GAIA,HF Open Deep Research,835,13,193.78733086586,32,0,0
+CORE-Bench Hard,CORE-Agent,203,19,375.563067913055,33,0,0
+CORE-Bench Hard,HAL Generalist Agent,129,15,330.259315013886,30,0,0
+Online Mind2Web,Browser-Use,1138,12,138.746365427971,92,0,0
+Online Mind2Web,SeeAct,1002,10,470.43764591217,34,0,0
+SciCode,Scicode Tool Calling Agent,37,11,319.846214056015,26,0,0
+SciCode,Scicode Zero Shot Agent,22,7,28.4362285137177,3,0.181818181818182,0
+ScienceAgentBench,HAL Generalist Agent,89,7,190.910420179367,28,0,0
+ScienceAgentBench,SAB Self-Debug,308,12,50.1723253726959,2,0.256493506493507,0
+SWE-bench Verified Mini,HAL Generalist Agent,121,13,309.973675966263,25,0,0
+SWE-bench Verified Mini,SWE-Agent,275,12,295.959024906158,45,0,0
+TAU-bench Airline,HAL Generalist Agent,215,14,198.664882898331,37,0,0
+USACO,HAL Generalist Agent,78,1,93.3210884332657,30,0,0
+USACO,USACO Episodic + Semantic,1565,12,56.0622699260712,4,0,0

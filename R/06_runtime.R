@@ -15,8 +15,8 @@ cat("successful traces:", d0[success == 1, .N], " with span_s:", d0[success == 1
 d <- droplevels(d0[success == 1 & !is.na(span_s) & span_s > 0])
 d[, latency_s := span_s]
 cat("successful traces with span:", nrow(d), "runs", nlevels(d$run), "\n")
-print(d[, .(n = .N, runs = uniqueN(run), med_s = median(latency_s), single_call = mean(n_calls == 1), under_1s = mean(latency_s < 1)), by = benchmark])
-fwrite(d[, .(n = .N, runs = uniqueN(run), median_span_s = median(span_s), median_calls = median(n_calls), share_single_call = mean(n_calls == 1),
+print(d[, .(n = .N, runs = uniqueN(run), med_s = as.numeric(median(latency_s)), single_call = mean(n_calls == 1), under_1s = mean(latency_s < 1)), by = benchmark])
+fwrite(d[, .(n = .N, runs = uniqueN(run), median_span_s = as.numeric(median(span_s)), median_calls = as.numeric(median(n_calls)), share_single_call = mean(n_calls == 1),
              share_under_1s = mean(span_s < 1)), by = .(benchmark, scaffold)][order(benchmark, scaffold)], file.path(out, "outcome_by_scaffold.csv"))
 cands <- validity_filter(enumerate_candidates("log(latency_s)"), d)
 cands <- cands[!duplicated(cands$formula), ]; cands$id <- sprintf("t%03d", seq_len(nrow(cands)))
