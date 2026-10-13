@@ -1,2 +1,2 @@
-t018_r1
-log(latency_s) ~ provider + reasoning_model + release_years_z + effort + generalist + benchmark + (1 | task) + (1 | run) + (1 | scaffold) + (1 | model:benchmark) + release_years_z:domain
+t018
+log(latency_s) ~ provider + reasoning_model + release_years_z + effort + generalist + benchmark + domain:release_years_z + (1 | task) + (1 | run) + (1 | model) + (1 | scaffold) + (1 | model:benchmark)

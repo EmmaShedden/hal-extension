@@ -1,96 +1,96 @@
 level,blup
-o4-mini:SWE-Agent,0.641666986945074
-claude-3.7-sonnet:HAL Generalist Agent,0.617288431416703
-claude-opus-4.1:HAL Generalist Agent,0.560074032683519
-gpt-5:HF Open Deep Research,0.417153261505914
-gpt-5:USACO Episodic + Semantic,0.389854663091991
-claude-opus-4.1:CORE-Agent,0.388689640173687
-o4-mini:Scicode Zero Shot Agent,0.384983771319144
-deepseek-v3:USACO Episodic + Semantic,0.370595698784741
-o3:Scicode Tool Calling Agent,0.366379930401022
-deepseek-r1:USACO Episodic + Semantic,0.344102009299846
-claude-3.7-sonnet:SWE-Agent,0.32354359615309
-claude-opus-4:HF Open Deep Research,0.321755351064281
-deepseek-r1:SAB Self-Debug,0.313940577213609
-o3:SWE-Agent,0.266428397728807
-claude-opus-4:HAL Generalist Agent,0.26631282354952
-gpt-5:SeeAct,0.262572434728069
-gemini-2.5-pro-preview:CORE-Agent,0.226128258169808
-deepseek-v3:Browser-Use,0.218100352901183
-deepseek-v3:Scicode Zero Shot Agent,0.197176386503918
-o3:SAB Self-Debug,0.195112562026735
-gpt-4.1:Scicode Zero Shot Agent,0.170455694375557
-gemini-2.0-flash:Browser-Use,0.16598172062133
-o3:SeeAct,0.165785821882541
-gpt-4.1:SWE-Agent,0.1580840999478
-o4-mini:HAL Generalist Agent,0.152483854772021
-deepseek-v3:SAB Self-Debug,0.148675223558429
-o4-mini:SeeAct,0.134492127538785
-claude-3.7-sonnet:Scicode Tool Calling Agent,0.121022095733159
-claude-3.7-sonnet:Browser-Use,0.11926501512975
-gemini-2.0-flash:SWE-Agent,0.110286719499691
-deepseek-r1:Browser-Use,0.109915889302012
-deepseek-v3:CORE-Agent,0.100610498322208
-claude-sonnet-4:Browser-Use,0.0941755090150011
-o4-mini:HF Open Deep Research,0.0937006481359961
-claude-opus-4.1:Scicode Tool Calling Agent,0.0841862252742444
-deepseek-v3:HAL Generalist Agent,0.0781058865152258
-deepseek-v3.1:CORE-Agent,0.0779791010934954
-gpt-5:SAB Self-Debug,0.0717047423734531
-gpt-4.1:CORE-Agent,0.069039018353668
-gemini-2.0-flash:SeeAct,0.0683385754216242
-o4-mini:Scicode Tool Calling Agent,0.06031855492981
-gpt-4.1:Browser-Use,0.0580835725981424
-gemini-2.0-flash:HAL Generalist Agent,0.052312670611135
-gpt-5:Scicode Tool Calling Agent,0.0488500489238678
-deepseek-v3:SWE-Agent,0.048699925770771
-claude-3.7-sonnet:SAB Self-Debug,0.0442336673688849
-gemini-2.0-flash:Scicode Tool Calling Agent,0.0398338267552367
-gemini-2.0-flash:Scicode Zero Shot Agent,0.030344095137168
-claude-sonnet-4:CORE-Agent,0.0265318128621168
-o3:Scicode Zero Shot Agent,0.022205015801065
-o3:USACO Episodic + Semantic,0.0205364059516054
-gpt-5:CORE-Agent,0.0179898275988829
-gpt-4.1:HF Open Deep Research,0.0027203161450214
-deepseek-r1-0528:HAL Generalist Agent,-0.00579257129532037
-deepseek-r1:HAL Generalist Agent,-0.0105661810455612
-o4-mini:USACO Episodic + Semantic,-0.026185911236851
-gpt-5:SWE-Agent,-0.0264856916490614
-gemini-2.0-flash:USACO Episodic + Semantic,-0.0296060619075249
-claude-opus-4:SWE-Agent,-0.032422615187448
-gpt-4.1:SAB Self-Debug,-0.0360470152481064
-gemini-2.0-flash:CORE-Agent,-0.0388692284963022
-gemini-2.0-flash:SAB Self-Debug,-0.0434454308736529
-gpt-4.1:USACO Episodic + Semantic,-0.0520692849651367
-claude-sonnet-4:SeeAct,-0.0525399432272396
-gpt-5:Browser-Use,-0.0546209396480708
-claude-3.7-sonnet:CORE-Agent,-0.0549912872951291
-o3:CORE-Agent,-0.08868414299114
-deepseek-v3:HF Open Deep Research,-0.100266196552507
-deepseek-v3:Scicode Tool Calling Agent,-0.102084674034154
-deepseek-r1:HF Open Deep Research,-0.104769749971946
-claude-opus-4.1:SAB Self-Debug,-0.131371600694005
-deepseek-r1-0528:Scicode Tool Calling Agent,-0.148640951496211
-o4-mini:SAB Self-Debug,-0.149152251570947
-o3:Browser-Use,-0.150481447687258
-gpt-4.1:SeeAct,-0.154590660670687
-deepseek-r1-0528:Scicode Zero Shot Agent,-0.158062242039124
-claude-opus-4.1:SWE-Agent,-0.164706754878853
-gpt-4.1:Scicode Tool Calling Agent,-0.167520077121311
-o3:HF Open Deep Research,-0.207494120304059
-deepseek-r1:CORE-Agent,-0.208507353190139
-o4-mini:CORE-Agent,-0.20996491984623
-claude-3.7-sonnet:Scicode Zero Shot Agent,-0.231762367505005
-gpt-5:HAL Generalist Agent,-0.262620792338261
-gpt-oss-120b:HAL Generalist Agent,-0.262661830339967
-gemini-2.0-flash:HF Open Deep Research,-0.28612538323444
-claude-opus-4.1:USACO Episodic + Semantic,-0.293673036702779
-o3:HAL Generalist Agent,-0.314585968950444
-claude-3.7-sonnet:SeeAct,-0.322129860525469
-claude-3.7-sonnet:HF Open Deep Research,-0.37736168346893
-gpt-4.1:HAL Generalist Agent,-0.381796622782049
-gpt-oss-120b:CORE-Agent,-0.463014467626557
-claude-opus-4.1:HF Open Deep Research,-0.472863054909187
-o4-mini:Browser-Use,-0.494245892537298
-claude-3.7-sonnet:USACO Episodic + Semantic,-0.569125165592025
-deepseek-r1:SWE-Agent,-0.606380936554902
+o4-mini:SWE-Agent,0.64362876066015
+claude-3.7-sonnet:HAL Generalist Agent,0.617759064411655
+claude-opus-4.1:HAL Generalist Agent,0.561179868293356
+gpt-5:HF Open Deep Research,0.416952095561159
+gpt-5:USACO Episodic + Semantic,0.390300658894352
+claude-opus-4.1:CORE-Agent,0.389303757153243
+o4-mini:Scicode Zero Shot Agent,0.386275243138493
+deepseek-v3:USACO Episodic + Semantic,0.371497909888101
+o3:Scicode Tool Calling Agent,0.366431790787973
+deepseek-r1:USACO Episodic + Semantic,0.343960507310787
+claude-3.7-sonnet:SWE-Agent,0.324063806168608
+claude-opus-4:HF Open Deep Research,0.322404972501908
+deepseek-r1:SAB Self-Debug,0.314004599219117
+claude-opus-4:HAL Generalist Agent,0.267014576373302
+o3:SWE-Agent,0.26607209241767
+gpt-5:SeeAct,0.262538745863293
+gemini-2.5-pro-preview:CORE-Agent,0.225631303212571
+deepseek-v3:Browser-Use,0.218807878805911
+deepseek-v3:Scicode Zero Shot Agent,0.197510700942495
+o3:SAB Self-Debug,0.194543377787199
+gpt-4.1:Scicode Zero Shot Agent,0.170732684658311
+gemini-2.0-flash:Browser-Use,0.166244049535355
+o3:SeeAct,0.16526887688124
+gpt-4.1:SWE-Agent,0.158450812629547
+o4-mini:HAL Generalist Agent,0.154564914182307
+deepseek-v3:SAB Self-Debug,0.149373752472998
+o4-mini:SeeAct,0.135501742027914
+claude-3.7-sonnet:Scicode Tool Calling Agent,0.121005354914759
+claude-3.7-sonnet:Browser-Use,0.119306446910203
+gemini-2.0-flash:SWE-Agent,0.110371430255071
+deepseek-r1:Browser-Use,0.109407327490287
+deepseek-v3:CORE-Agent,0.101120178618964
+o4-mini:HF Open Deep Research,0.0948432118405287
+claude-sonnet-4:Browser-Use,0.0945952143767234
+claude-opus-4.1:Scicode Tool Calling Agent,0.0848436015630168
+deepseek-v3.1:CORE-Agent,0.0795063257849049
+deepseek-v3:HAL Generalist Agent,0.0789743804448156
+gpt-5:SAB Self-Debug,0.0708498977360802
+gpt-4.1:CORE-Agent,0.0691565184311142
+gemini-2.0-flash:SeeAct,0.0684774692750528
+o4-mini:Scicode Tool Calling Agent,0.0611278841053154
+gpt-4.1:Browser-Use,0.0582964183399538
+gemini-2.0-flash:HAL Generalist Agent,0.0524373805416461
+deepseek-v3:SWE-Agent,0.0490104492076034
+gpt-5:Scicode Tool Calling Agent,0.0486355444528067
+claude-3.7-sonnet:SAB Self-Debug,0.0444552767071425
+gemini-2.0-flash:Scicode Tool Calling Agent,0.0398215097570778
+gemini-2.0-flash:Scicode Zero Shot Agent,0.0303186936861098
+claude-sonnet-4:CORE-Agent,0.0265457024692646
+o3:Scicode Zero Shot Agent,0.0218203824072947
+o3:USACO Episodic + Semantic,0.019812009142553
+gpt-5:CORE-Agent,0.017153727501394
+gpt-4.1:HF Open Deep Research,0.00261945805855689
+deepseek-r1-0528:HAL Generalist Agent,-0.00613007017943202
+deepseek-r1:HAL Generalist Agent,-0.0114626880532209
+o4-mini:USACO Episodic + Semantic,-0.0245731744161674
+gpt-5:SWE-Agent,-0.0268442605070823
+gemini-2.0-flash:USACO Episodic + Semantic,-0.0296425275145159
+claude-opus-4:SWE-Agent,-0.0319569492637471
+gpt-4.1:SAB Self-Debug,-0.0360122734986191
+gemini-2.0-flash:CORE-Agent,-0.0389588749598079
+gemini-2.0-flash:SAB Self-Debug,-0.0434108884911257
+gpt-4.1:USACO Episodic + Semantic,-0.052009915749185
+claude-sonnet-4:SeeAct,-0.0522495018984686
+claude-3.7-sonnet:CORE-Agent,-0.054998901269959
+gpt-5:Browser-Use,-0.0550006019235464
+o3:CORE-Agent,-0.0896274643640035
+deepseek-v3:HF Open Deep Research,-0.100348715513367
+deepseek-v3:Scicode Tool Calling Agent,-0.102257438223739
+deepseek-r1:HF Open Deep Research,-0.105805785256615
+claude-opus-4.1:SAB Self-Debug,-0.13148363852079
+o4-mini:SAB Self-Debug,-0.148009055047488
+deepseek-r1-0528:Scicode Tool Calling Agent,-0.149005911426757
+o3:Browser-Use,-0.151341172973799
+gpt-4.1:SeeAct,-0.154632486661474
+deepseek-r1-0528:Scicode Zero Shot Agent,-0.158440674204085
+claude-opus-4.1:SWE-Agent,-0.164080977376782
+gpt-4.1:Scicode Tool Calling Agent,-0.167776140956502
+o3:HF Open Deep Research,-0.209066366094012
+o4-mini:CORE-Agent,-0.209235892003098
+deepseek-r1:CORE-Agent,-0.209388329089986
+claude-3.7-sonnet:Scicode Zero Shot Agent,-0.232222738801664
+gpt-oss-120b:HAL Generalist Agent,-0.263119457986809
+gpt-5:HAL Generalist Agent,-0.263834633555813
+gemini-2.0-flash:HF Open Deep Research,-0.286825114259048
+claude-opus-4.1:USACO Episodic + Semantic,-0.292942956109364
+o3:HAL Generalist Agent,-0.316112734093726
+claude-3.7-sonnet:SeeAct,-0.322444537715373
+claude-3.7-sonnet:HF Open Deep Research,-0.377979898431097
+gpt-4.1:HAL Generalist Agent,-0.381504259085212
+gpt-oss-120b:CORE-Agent,-0.463868650249747
+claude-opus-4.1:HF Open Deep Research,-0.47325680297129
+o4-mini:Browser-Use,-0.493720030885658
+claude-3.7-sonnet:USACO Episodic + Semantic,-0.569817534389124
+deepseek-r1:SWE-Agent,-0.607797500044514

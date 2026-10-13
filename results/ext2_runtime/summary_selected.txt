@@ -1,11 +1,12 @@
 Linear mixed model fit by maximum likelihood  ['lmerMod']
 Formula: log(latency_s) ~ provider + reasoning_model + release_years_z +  
-    effort + generalist + benchmark + (1 | task) + (1 | run) +  
-    (1 | scaffold) + (1 | model:benchmark) + release_years_z:domain
+    effort + generalist + benchmark + domain:release_years_z +  
+    (1 | task) + (1 | run) + (1 | model) + (1 | scaffold) + (1 |  
+    model:benchmark)
    Data: d
 
       AIC       BIC    logLik -2*log(L)  df.resid 
-  14034.4   14205.0   -6992.2   13984.4      6780 
+  14036.4   14213.8   -6992.2   13984.4      6779 
 
 Scaled residuals: 
     Min      1Q  Median      3Q     Max 
@@ -16,30 +17,34 @@ Random effects:
  task            (Intercept) 0.22492  0.4743  
  run             (Intercept) 0.08106  0.2847  
  model:benchmark (Intercept) 0.09358  0.3059  
- scaffold        (Intercept) 0.62621  0.7913  
+ model           (Intercept) 0.00000  0.0000  
+ scaffold        (Intercept) 0.62616  0.7913  
  Residual                    0.35133  0.5927  
 Number of obs: 6805, groups:  
-task, 857; run, 168; model:benchmark, 79; scaffold, 10
+task, 857; run, 168; model:benchmark, 79; model, 15; scaffold, 10
 
 Fixed effects:
-                                        Estimate Std. Error t value
-(Intercept)                             3.684859   0.408063   9.030
-providerAnthropic                      -0.056737   0.156293  -0.363
-providerGoogle                         -0.323574   0.193047  -1.676
-providerDeepSeek                        0.698350   0.165740   4.214
-reasoning_modelTRUE                     0.602492   0.188892   3.190
-release_years_z                         0.548723   0.191739   2.862
-effortdefault                           0.222738   0.169657   1.313
-effortlow                              -0.497842   0.146097  -3.408
-efforthigh                              0.215887   0.081182   2.659
-generalistTRUE                          0.357170   0.871691   0.410
-benchmarkCORE-Bench Hard                1.092551   0.220739   4.950
-benchmarkOnline Mind2Web                1.614241   0.692888   2.330
-benchmarkSciCode                        0.291720   0.717597   0.407
-benchmarkScienceAgentBench              0.943888   0.247915   3.807
-benchmarkSWE-bench Verified Mini        0.969691   0.230130   4.214
-benchmarkTAU-bench Airline              0.674701   0.218855   3.083
-benchmarkUSACO                          0.747765   0.379346   1.971
-release_years_z:domaincustomer_service  0.086486   0.330812   0.261
-release_years_z:domainscience          -0.529934   0.240634  -2.202
-release_years_z:domainweb              -0.009444   0.258124  -0.037
+                                       Estimate Std. Error t value
+(Intercept)                             3.68486    0.40805   9.030
+providerAnthropic                      -0.05674    0.15629  -0.363
+providerGoogle                         -0.32357    0.19304  -1.676
+providerDeepSeek                        0.69835    0.16574   4.214
+reasoning_modelTRUE                     0.60249    0.18889   3.190
+release_years_z                         0.54872    0.19173   2.862
+effortdefault                           0.22274    0.16965   1.313
+effortlow                              -0.49784    0.14609  -3.408
+efforthigh                              0.21589    0.08118   2.659
+generalistTRUE                          0.35717    0.87166   0.410
+benchmarkCORE-Bench Hard                1.09255    0.22074   4.950
+benchmarkOnline Mind2Web                1.61424    0.69286   2.330
+benchmarkSciCode                        0.29172    0.71757   0.407
+benchmarkScienceAgentBench              0.94389    0.24791   3.807
+benchmarkSWE-bench Verified Mini        0.96969    0.23013   4.214
+benchmarkTAU-bench Airline              0.67470    0.21885   3.083
+benchmarkUSACO                          0.74777    0.37933   1.971
+release_years_z:domaincustomer_service  0.08649    0.33081   0.261
+release_years_z:domainscience          -0.52993    0.24063  -2.202
+release_years_z:domainweb              -0.00944    0.25812  -0.037
+optimizer (nloptwrap) convergence code: 0 (OK)
+boundary (singular) fit: see help('isSingular')
+

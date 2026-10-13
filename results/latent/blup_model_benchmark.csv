@@ -1,81 +1,81 @@
 level,blup
-o4-mini:ScienceAgentBench,0.465807399427505
-claude-3.7-sonnet:SWE-bench Verified Mini,0.377613679221211
-o4-mini:SciCode,0.377578422231006
-claude-opus-4:SWE-bench Verified Mini,0.373006348840092
-o4-mini:GAIA,0.366857774613502
-claude-opus-4.1:SWE-bench Verified Mini,0.357829406429388
-gpt-5:GAIA,0.353710414303678
-claude-opus-4.1:CORE-Bench Hard,0.330908393978319
-gpt-5:USACO,0.330563529343395
-o3:SciCode,0.329486917631011
-deepseek-v3:USACO,0.31423356893606
-deepseek-v3:SWE-bench Verified Mini,0.30853376415023
-deepseek-r1:USACO,0.291769178150016
-deepseek-r1:ScienceAgentBench,0.266194854217589
-claude-3.7-sonnet:CORE-Bench Hard,0.237360179017711
-gpt-4.1:CORE-Bench Hard,0.234553963772616
-gpt-4.1:GAIA,0.222801421225356
-claude-3.7-sonnet:TAU-bench Airline,0.207758111250908
-gemini-2.0-flash:Online Mind2Web,0.198683641340685
-gemini-2.5-pro-preview:CORE-Bench Hard,0.191737491382113
-gemini-2.0-flash:TAU-bench Airline,0.189544038682787
-claude-opus-4:TAU-bench Airline,0.189094066289776
-deepseek-v3:Online Mind2Web,0.184930511884121
-o3:ScienceAgentBench,0.182052481692559
-gpt-5:Online Mind2Web,0.176325145377761
-o3:CORE-Bench Hard,0.169643730623352
-o4-mini:CORE-Bench Hard,0.164260138788346
-gpt-5:TAU-bench Airline,0.118854678369279
-deepseek-r1:Online Mind2Web,0.0931993066606661
-deepseek-v3:SciCode,0.0806296680819579
-claude-opus-4.1:SciCode,0.071382744348968
-deepseek-v3.1:CORE-Bench Hard,0.0661196320394021
-gpt-5:ScienceAgentBench,0.0607995105704982
-deepseek-v3:CORE-Bench Hard,0.0597751341198569
-gemini-2.0-flash:SciCode,0.0595048969242751
-deepseek-v3:TAU-bench Airline,0.0591075208792542
-gpt-5:SciCode,0.0414206782927755
-claude-sonnet-4:Online Mind2Web,0.03530341144012
-claude-sonnet-4:CORE-Bench Hard,0.0224967161608825
-deepseek-v3:GAIA,0.0211086656839319
-o3:USACO,0.0174131220531084
-o3:Online Mind2Web,0.0129768050183307
-gpt-4.1:SciCode,0.00248915324667054
-deepseek-r1-0528:CORE-Bench Hard,-0.0049116067925605
-deepseek-r1:GAIA,-0.0188484507158178
-o4-mini:USACO,-0.0222034210616286
-claude-opus-4.1:TAU-bench Airline,-0.0239243543983625
-gemini-2.0-flash:USACO,-0.0251034173517325
-gemini-2.0-flash:ScienceAgentBench,-0.0368380227891448
-gemini-2.0-flash:SWE-bench Verified Mini,-0.0500230686299479
-o3:TAU-bench Airline,-0.0624837253160233
-gpt-4.1:Online Mind2Web,-0.0818297859692394
-gpt-4.1:USACO,-0.087555345392766
-claude-opus-4:GAIA,-0.0909603350518586
-gemini-2.0-flash:GAIA,-0.0925827243087793
-claude-3.7-sonnet:SciCode,-0.0938983127378778
-deepseek-r1:TAU-bench Airline,-0.103081879961824
-claude-opus-4.1:ScienceAgentBench,-0.111391921380346
-gpt-4.1:ScienceAgentBench,-0.133259746426517
-gpt-5:CORE-Bench Hard,-0.148895192728161
-claude-3.7-sonnet:GAIA,-0.169626301014165
-claude-3.7-sonnet:Online Mind2Web,-0.172012099950032
-o3:GAIA,-0.175937330546997
-claude-3.7-sonnet:ScienceAgentBench,-0.184452382743471
-gemini-2.0-flash:CORE-Bench Hard,-0.184635553713663
-gpt-4.1:TAU-bench Airline,-0.194612640692027
-gpt-5:SWE-bench Verified Mini,-0.199843304623131
-deepseek-v3:ScienceAgentBench,-0.21464870546434
-o4-mini:SWE-bench Verified Mini,-0.237251175130426
-o3:SWE-bench Verified Mini,-0.239803774126126
-gpt-4.1:SWE-bench Verified Mini,-0.245486119103321
-claude-opus-4.1:USACO,-0.249009707144555
-deepseek-r1-0528:SciCode,-0.260058169656924
-o4-mini:Online Mind2Web,-0.305040533077914
-deepseek-r1:SWE-bench Verified Mini,-0.307018738715436
-o4-mini:TAU-bench Airline,-0.311352496498232
-deepseek-r1:CORE-Bench Hard,-0.359801792420738
-claude-opus-4.1:GAIA,-0.400947571300414
-claude-3.7-sonnet:USACO,-0.482569637321032
-gpt-oss-120b:CORE-Bench Hard,-0.615311655667008
+o4-mini:ScienceAgentBench,0.466828124671776
+o4-mini:SciCode,0.378346469254663
+claude-3.7-sonnet:SWE-bench Verified Mini,0.377168408686035
+claude-opus-4:SWE-bench Verified Mini,0.373380218151841
+o4-mini:GAIA,0.367618699267058
+claude-opus-4.1:SWE-bench Verified Mini,0.358746868995238
+gpt-5:GAIA,0.35259555331166
+claude-opus-4.1:CORE-Bench Hard,0.330306300801581
+gpt-5:USACO,0.330057765018638
+o3:SciCode,0.328325463019898
+deepseek-v3:USACO,0.314157219703587
+deepseek-v3:SWE-bench Verified Mini,0.308436266563649
+deepseek-r1:USACO,0.29087021430935
+deepseek-r1:ScienceAgentBench,0.265537999647321
+claude-3.7-sonnet:CORE-Bench Hard,0.237284153844922
+gpt-4.1:CORE-Bench Hard,0.234456423310859
+gpt-4.1:GAIA,0.222593830613186
+claude-3.7-sonnet:TAU-bench Airline,0.207939645067777
+gemini-2.0-flash:Online Mind2Web,0.198492260094568
+gemini-2.5-pro-preview:CORE-Bench Hard,0.190805118975586
+gemini-2.0-flash:TAU-bench Airline,0.189721349598033
+claude-opus-4:TAU-bench Airline,0.189145877670181
+deepseek-v3:Online Mind2Web,0.185034889901951
+o3:ScienceAgentBench,0.180934072500072
+gpt-5:Online Mind2Web,0.175504638242069
+o3:CORE-Bench Hard,0.168688474588513
+o4-mini:CORE-Bench Hard,0.165258305651762
+gpt-5:TAU-bench Airline,0.118386993853121
+deepseek-r1:Online Mind2Web,0.0925203100870794
+deepseek-v3:SciCode,0.0805509247479761
+claude-opus-4.1:SciCode,0.0717479944496094
+deepseek-v3.1:CORE-Bench Hard,0.0672345270124503
+deepseek-v3:CORE-Bench Hard,0.0602131127772906
+gpt-5:ScienceAgentBench,0.0599142183485401
+deepseek-v3:TAU-bench Airline,0.0595790247705059
+gemini-2.0-flash:SciCode,0.0593140653464202
+gpt-5:SciCode,0.0411286497646009
+claude-sonnet-4:Online Mind2Web,0.0358096531486234
+claude-sonnet-4:CORE-Bench Hard,0.0224483741653813
+deepseek-v3:GAIA,0.0210006948206878
+o3:USACO,0.0167540261824179
+o3:Online Mind2Web,0.0117779632670569
+gpt-4.1:SciCode,0.00250020127858231
+deepseek-r1-0528:CORE-Bench Hard,-0.00518389404866055
+deepseek-r1:GAIA,-0.0199527884068134
+o4-mini:USACO,-0.0207803057524533
+claude-opus-4.1:TAU-bench Airline,-0.024031744616672
+gemini-2.0-flash:USACO,-0.0250672043665845
+gemini-2.0-flash:ScienceAgentBench,-0.036710419278924
+gemini-2.0-flash:SWE-bench Verified Mini,-0.050156131694508
+o3:TAU-bench Airline,-0.0627455870395853
+gpt-4.1:Online Mind2Web,-0.0814665993414934
+gpt-4.1:USACO,-0.0867346337566069
+claude-opus-4:GAIA,-0.0911078301432879
+gemini-2.0-flash:GAIA,-0.0929107702136792
+claude-3.7-sonnet:SciCode,-0.0940509843383782
+deepseek-r1:TAU-bench Airline,-0.103027914118563
+claude-opus-4.1:ScienceAgentBench,-0.111189143235443
+gpt-4.1:ScienceAgentBench,-0.133133959747925
+gpt-5:CORE-Bench Hard,-0.149857852793479
+claude-3.7-sonnet:GAIA,-0.170065614269337
+claude-3.7-sonnet:Online Mind2Web,-0.17178373316415
+o3:GAIA,-0.176796979356976
+claude-3.7-sonnet:ScienceAgentBench,-0.184428981862587
+gemini-2.0-flash:CORE-Bench Hard,-0.184474412677594
+gpt-4.1:TAU-bench Airline,-0.194329314399002
+gpt-5:SWE-bench Verified Mini,-0.19983570714996
+deepseek-v3:ScienceAgentBench,-0.214028417043672
+o4-mini:SWE-bench Verified Mini,-0.236194444441933
+o3:SWE-bench Verified Mini,-0.240471684692917
+gpt-4.1:SWE-bench Verified Mini,-0.245216110697605
+claude-opus-4.1:USACO,-0.247727220459481
+deepseek-r1-0528:SciCode,-0.259992215240906
+o4-mini:Online Mind2Web,-0.302927307742938
+deepseek-r1:SWE-bench Verified Mini,-0.307243092994601
+o4-mini:TAU-bench Airline,-0.31041821379341
+deepseek-r1:CORE-Bench Hard,-0.359997516046711
+claude-opus-4.1:GAIA,-0.400209630983087
+claude-3.7-sonnet:USACO,-0.481866216679413
+gpt-oss-120b:CORE-Bench Hard,-0.614777517617865

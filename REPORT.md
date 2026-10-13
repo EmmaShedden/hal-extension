@@ -404,16 +404,16 @@ Added on request after E1 was reported, and pre-registered in DESIGN.md ("E1b") 
   * HAL's own `latencies.total_time`, used before DC-1, stops at the *start* of the last call. Single-call tasks therefore read about 0 s (79 SAB Self-Debug successes were exactly 0, and 109 more were under 1 s).
   * The span measures the agent's LLM activity, including API queueing under HAL's concurrent execution. It excludes environment setup and evaluation, so it is **not** full wall time.
   * Single-call tasks remain in the data, now with their true call duration: 26 % of SAB Self-Debug successes and 18 % of SciCode Zero Shot successes. No successful trace is now under 1 s.
-* **Data.** 6,805 successful traces across 168 runs. Same 64-candidate class (now with `(1|run)` as a core term) and the PF-2 selection rule: 61 of 64 originals were singular, and 13 fits in the pool are eligible.
+* **Data.** 6,805 successful traces across 168 runs. Same 64-candidate class (now with `(1|run)` as a core term) and the PF-3 selection rule (heredity, zero components kept). 61 of 64 fits are singular, and 63 are eligible; one has a convergence warning.
 * **Selected model:**
 
   ```
   log(span) ~ provider + reasoning + release + effort + generalist + benchmark + release:domain
-              + (1|task) + (1|run) + (1|scaffold) + (1|model:benchmark)
+              + (1|task) + (1|run) + (1|model) + (1|scaffold) + (1|model:benchmark)
   ```
 * **TMS transform check.** Residual skewness is 0.42 on the log scale vs 28.3 raw, so the log is clearly right.
 * **Fit.** R² marginal / conditional = 0.28 / 0.82.
-  * Variance shares: scaffold 45 %, residual 26 %, task 16 %, model × benchmark 7 %, run 6 %.
+  * Variance shares: scaffold 45 %, residual 26 %, task 16 %, model × benchmark 7 %, run 6 %, model 0 (kept for heredity).
   * Before DC-1 the scaffold share was 63 %. Part of that came from the measurement artefact, which made single-call scaffolds look near-instant.
   * Multiplicative effects on LLM-activity time:
     * reasoning models ×1.83 (SE 0.19 on the log scale);
@@ -432,15 +432,15 @@ Added on request after E1 was reported, and pre-registered in DESIGN.md ("E1b") 
 
 | Variant | TAU tasks kept | TAU accuracy | TAU benchmark coefficient | Overall holdout run MAE, 10 / 25 / 50 % | TAU-only holdout run MAE |
 |---|---|---|---|---|---|
-| Uncorrected | 50 | 30.7 % | −0.48 | 7.14 / 7.06 / 8.31 | 9.5 / 9.7 / 10.7 |
-| Both judges (primary) | 20 | 35.4 % | −0.06 | 7.41 / 7.45 / 8.47 | 11.6 / 13.0 / 13.3 |
-| Either judge | 11 | 33.8 % | +0.01 | 8.11 / 8.12 / 8.97 | 18.9 / 20.1 / 19.4 |
-| Manual review | 25 | 39.1 % | +0.16 | 7.45 / 7.28 / 8.45 | 12.8 / 11.8 / 13.2 |
+| Uncorrected | 50 | 30.7 % | −0.49 | 7.10 / 7.07 / 8.36 | 9.5 / 9.8 / 10.8 |
+| Both judges (primary) | 20 | 35.4 % | −0.05 | 7.38 / 7.40 / 8.47 | 11.6 / 12.9 / 13.3 |
+| Either judge | 11 | 33.8 % | −0.65 | 8.11 / 8.11 / 8.96 | 18.8 / 20.1 / 19.4 |
+| Manual review | 25 | 39.1 % | −0.47 | 7.44 / 7.26 / 8.40 | 12.9 / 11.8 / 13.2 |
 
 * **Verdict: the corrections did not improve predictive accuracy.**
   - TAU-only holdout error rose for every variant, and overall task-level Brier was unchanged (0.141 → 0.141 at 10 %).
   - Part of this is mechanical: a TAU run's accuracy then rests on 11–25 tasks instead of 50, so it is noisier. The removed tasks were also near-certain failures, which are easy to predict.
-  - The correction does change the *substantive* estimate: TAU-bench looks easier (coefficient −0.48 → −0.06), and accuracy rises by 4.7 pp (judges) or 8.4 pp (manual).
+  - The correction does change the *substantive* estimate: TAU-bench looks easier (coefficient −0.49 → −0.05), and accuracy rises by 4.7 pp (judges) or 8.4 pp (manual).
   - The two judges agree with the manual review only partly: 20 tasks flagged by both, 39 by either, 25 by the manual review.
   - Outputs: `results/ext3_judge/`, `results/part2/judge_*`.
 
