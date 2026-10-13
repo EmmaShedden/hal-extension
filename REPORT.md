@@ -61,12 +61,20 @@ Full details are in `DESIGN.md`. The TMS/PT method summary is in `refs/METHODS_S
   * Two release-date transforms: linear or log.
   * With or without domain-specific release slopes.
   * Every subset of four optional random terms (`model:benchmark`, `scaffold:benchmark`, `model:scaffold`, `model:effort`) on top of the maximal fixed part and the core random effects.
-* **Validity filter (PT-style), applied before fitting:** grouping factors with fewer than 3 levels; groups observed in only one run; random terms whose partition duplicates another random term or a fixed factor; a rank-deficient fixed-effect matrix; duplicate formulas. All 64 passed.
-* **Selection (PF-2):** lowest AIC (as in TMS) among converged, non-singular fits.
-  * A variance component with SD < 1e-3 counts as zero.
-  * Singular fits are refit without their zero components, repeatedly, and the reductions join the pool.
+* **Validity filter (PT-style), applied before fitting:**
+  * grouping factors with fewer than 3 levels;
+  * groups observed in only one run (except `run` itself);
+  * random terms whose partition duplicates another random term or a fixed factor;
+  * random interactions whose factors have no main term, fixed or random (heredity, PF-3);
+  * a rank-deficient fixed-effect matrix;
+  * duplicate formulas.
+
+  All 64 passed.
+* **Selection (PF-3):** lowest AIC (as in TMS) among converged fits.
+  * Zero-variance components (SD < 1e-3) are kept rather than removed, following "keep it maximal" (Barr et al. 2013).
+  * Singular fits are therefore eligible.
 * **Runtime.** Part 1 totals about 20 minutes, well within the 2 h budget:
-  * 64 candidate fits plus 32 reductions: 10.9 min on 70 cores;
+  * 64 candidate fits: 6.8 min on 70 cores;
   * report with drop-one LRTs for fixed and random terms, plus DHARMa: ~10 min.
 
 ### Post-fit design changes (logged in DESIGN.md)
@@ -237,12 +245,12 @@ The refit removes about a quarter of the naive error overall, but the gain is un
 |---|---|---|---|
 | SWE-bench Verified Mini | 18.0 | 9.8 | 0.54 |
 | CORE-Bench Hard | 10.4 | 6.6 | 0.64 |
-| ScienceAgentBench | 7.3 | 5.3 | 0.72 |
+| ScienceAgentBench | 7.3 | 5.3 | 0.73 |
 | SciCode | 2.5 | 1.9 | 0.78 |
-| TAU-bench Airline | 12.8 | 10.2 | 0.80 |
-| GAIA | 13.2 | 12.3 | 0.94 |
+| TAU-bench Airline | 12.8 | 10.3 | 0.80 |
+| GAIA | 13.2 | 12.4 | 0.94 |
 | USACO | 11.0 | 12.1 | 1.10 |
-| Online Mind2Web | 5.1 | 6.6 | 1.29 |
+| Online Mind2Web | 5.1 | 6.7 | 1.31 |
 
 * **Where it helps:** benchmarks where runs differ a lot by model or scaffold (SWE-bench, CORE-Bench, ScienceAgentBench, SciCode, and now TAU-bench, which was at 0.97 under `c027`).
 * **Where it does not beat a benchmark-average guess:**
@@ -334,7 +342,7 @@ Added on request after E1 was reported, and pre-registered in DESIGN.md ("E1b") 
     * PC2 (9 %) contrasts codebase scope, test edge-case coverage, solution complexity and fix localization against implementation-language complexity and codebase scale.
   * **AP's own difficulty score** `dhat`, from their two-stage recipe: ridge regression of their frozen 1PL `b` on the 15 features.
     * It is fit on the 450 Verified tasks *not* in Mini (λ = 100 by 5-fold CV; CV R² 0.38) and predicted for the 50 Mini tasks (r = 0.69 with their `b`).
-* **Models.** Each is the selected model `c027` plus extra terms. A = all agent-side fixed effects (provider, reasoning, release, effort, generalist).
+* **Models.** Each is the selected model (now `c028`, PF-3) plus extra terms. A = all agent-side fixed effects (provider, reasoning, release, effort, generalist).
 
   | id | added terms | what it lets vary |
   |---|---|---|
@@ -345,59 +353,56 @@ Added on request after E1 was reported, and pre-registered in DESIGN.md ("E1b") 
   | M4 | M2 + M3 (primary, "keep it maximal") | both |
   | D1 / D4 | `dhat`, and `dhat` × A + `(0 + dhat \| model)` | 1-D analogs: model-specific sensitivity to difficulty |
 
-  * The full M4 fit was singular: the model slopes collapse to 0 once the fixed interactions are present.
-  * The pre-registered PF-1 reduction (drop the zero-variance slope) was therefore used as the primary in the holdouts. It is equivalent to M2 in practice.
-* **In-sample (full data).**
-  * The interaction blocks are supported:
-    * M2 vs M1: χ²(18) = 35.0, p = 0.009.
-    * M3 vs M1: χ²(3) = 11.7, p = 0.009.
-    * D4 vs D1: χ²(10) = 19.8, p = 0.03.
-  * AIC: M3 is best (−39 vs M0); M1 is −33 and M2 is −32.
-  * SWE in-sample run MAE falls from 5.15 pp (M0) to 4.45 (M3) and 4.14 (M2/M4).
-  * The one clear fixed interaction is provider × PC1.
-    * Anthropic models lose more from task difficulty than OpenAI models: −1.39 logits per SD of PC1 (SE 0.42), on top of the −2.06 main effect.
-    * Reasoning models lose less: +0.82 (SE 0.58, not significant).
-  * The M3 slopes agree: o4-mini, gpt-4.1 and o3 are flattest across difficulty, and DeepSeek-V3 and the Claude models are steepest.
-  * None of the PC2 interactions is distinguishable from 0. So a second task-type axis, beyond general difficulty, adds nothing detectable here.
+  * **Reductions.** The full M4 is singular because its model slopes collapse to 0 once the fixed interactions are present. E1b's pre-registered PF-1 reduction drops the zero slopes, giving M4r, which is identical to M2. As in the original E1b run, M4r is the primary in the holdouts.
+  * D4 is singular too, but its zero `(1|scaffold)` intercept blocks the script's reduction, so D4 is used unreduced (DESIGN.md PF-3 outcome).
+* **In-sample (full data, base `c028`).**
+  * Task features as main effects are strongly supported: M1 vs M0 χ²(2) = 35.2, p = 2e-8; D1 vs M0 χ²(1) = 30.9.
+  * **The interaction blocks are no longer supported:**
+    * M2 vs M1: χ²(18) = 21.9, p = 0.24;
+    * M3 vs M1: χ²(3) = 6.3, p = 0.10;
+    * D4 vs D1: χ²(10) = 15.4, p = 0.12.
+  * On the pre-registered `c027` base these were p = 0.009, 0.009 and 0.03. That base had no run or model × benchmark effects, so model-specific SWE strength had nowhere to go except the feature interactions.
+  * AIC: M3 −31.5 vs M0, M1 −31.2, D1 −28.9, M2/M4r −17.1. SWE in-sample run MAE: 2.50 pp (M0), 2.46 (M3), 2.38 (M2/M4r).
+  * The largest fixed interaction is still provider × PC1: Anthropic models lose more from task difficulty than OpenAI models, −0.93 logits per SD of PC1 (SE 0.47, p = 0.051), on top of the −2.34 main effect. Before PF-2 this was −1.39 (SE 0.42).
+  * The M3 slopes have SD 0.20 on PC1 and 0.22 on PC2, with correlation −1.00. That is effectively a single model-specific difficulty-sensitivity axis.
+    * o4-mini is flattest across difficulty (+0.29 on PC1).
+    * Claude Opus 4.1, DeepSeek V3 and Claude 3.7 Sonnet are steepest (−0.10 to −0.15).
+  * No PC2 interaction is distinguishable from 0.
 * **Holdouts.** Every model was refit on the same training sets as Part 2 (cell holdout, seeds 1–60) and Part 2b (task holdout, seeds 1001–1060), 840 refits in all.
   * Metrics are on held-out SWE rows.
   * 90 % intervals for each held-out run's accuracy come from simulation (fixed effects from their sampling distribution, random effects from their conditional distribution or from N(0, Σ) for unseen levels, then Bernoulli outcomes).
-  * The M0 rows reproduce Part 2 exactly (all-benchmark run MAE 7.52 / 7.20 / 8.22).
+  * The M0 rows reproduce Part 2 (all-benchmark run MAE 7.10 / 7.07 / 8.36).
   * Values below are for 10 / 25 / 50 % held out.
 
-  | Holdout, metric (SWE) | M0 | M3 (model slopes) | M4 primary (fixed interactions) |
+  | Holdout, metric (SWE) | M0 | M3 (model slopes) | M4r primary (fixed interactions) |
   |---|---|---|---|
-  | Cell: task log-loss | 0.334 / 0.372 / 0.375 | 0.332 / 0.370 / 0.372 | 0.356 / 0.406 / 0.466 |
-  | Cell: run MAE (pp) | 9.95 / 9.27 / 9.78 | **9.53 / 8.84 / 9.36** | 10.02 / 8.88 / 9.74 |
-  | Cell: 90 % PI width (pp); coverage | 33.7 / 34.4 / 35.1; 0.66 / 0.83 / 0.78 | 32.8 / 33.3 / 33.7; 0.67 / 0.83 / 0.79 | 33.3 / 33.2 / 33.2; 0.66 / 0.83 / 0.78 |
-  | Task: log-loss | 0.348 / 0.340 / 0.352 | **0.342 / 0.337 / 0.345** | 0.346 / 0.348 / 0.362 |
-  | Task: held-out-subset run MAE (pp) | 14.00 / 9.49 / 7.94 | 13.70 / 9.24 / 7.64 | 13.67 / 9.12 / 7.74 |
-  | Task: completed-run MAE (pp) | 1.29 / 2.34 / 3.97 | 1.26 / 2.28 / 3.81 | 1.26 / 2.25 / 3.85 |
-  | Task: 90 % PI width (pp); coverage | 54.6 / 41.2 / 37.0; 0.98 / 0.98 / 0.93 | 52.2 / 39.6 / 35.2; 0.98 / 0.98 / 0.94 | 52.1 / 39.3 / 34.8; 0.98 / 0.98 / 0.93 |
+  | Cell: task log-loss | 0.332 / 0.372 / 0.373 | 0.331 / 0.369 / 0.369 | 0.351 / 0.402 / 0.497 |
+  | Cell: run MAE (pp) | 9.49 / 9.21 / 9.89 | **9.30 / 9.00 / 9.47** | 9.80 / 9.17 / 9.87 |
+  | Cell: 90 % PI width (pp); coverage | 36.1 / 36.6 / 36.6; 0.66 / 0.84 / 0.80 | 34.2 / 35.0 / 34.8; 0.71 / 0.84 / 0.78 | 34.5 / 34.4 / 33.8; 0.66 / 0.84 / 0.77 |
+  | Task: log-loss | 0.332 / 0.326 / 0.340 | 0.330 / 0.326 / 0.336 | 0.336 / 0.338 / 0.355 |
+  | Task: held-out-subset run MAE (pp) | 12.93 / 8.40 / 7.04 | 12.89 / 8.46 / 7.02 | 12.95 / 8.50 / 7.24 |
+  | Task: completed-run MAE (pp) | 1.17 / 2.06 / 3.51 | 1.17 / 2.08 / 3.50 | 1.18 / 2.09 / 3.60 |
+  | Task: 90 % PI width (pp); coverage | 55.1 / 41.9 / 39.0; 0.99 / 0.99 / 0.98 | 53.1 / 40.6 / 36.6; 0.99 / 0.99 / 0.97 | 53.1 / 40.2 / 36.2; 0.99 / 0.99 / 0.96 |
 
-  Paired differences vs M0, pooled over fractions, with seed-bootstrap 95 % CIs (`*_paired_vs_M0.csv`):
-  * **M4 (primary).**
-    * SWE log-loss is *worse*: +0.049 [+0.025, +0.086] in the cell holdout and +0.005 [+0.001, +0.009] in the task holdout. AUC is also lower.
-    * Run MAE is better in the task holdout (−0.30 pp [−0.44, −0.16]) and unchanged in the cell holdout (−0.12 [−0.53, +0.30]).
-    * PI width is 1.2–2.2 pp narrower, with no loss of coverage.
-    * The 18 fixed interaction terms are estimated from 10 models. They average out at the run level but make some task-level predictions overconfident.
-  * **M3 (model slopes only).** Every metric improves, in both holdouts:
-    * cell run MAE −0.42 pp [−0.64, −0.21];
-    * task log-loss −0.005 [−0.008, −0.003];
-    * task subset run MAE −0.29 pp [−0.39, −0.18];
-    * completed-run MAE −0.08 pp [−0.12, −0.05];
-    * PI width −1.1 pp (cell) and −1.9 pp (task), with coverage unchanged or slightly higher.
-
-    The gains are small: about 4–5 % of the run MAE and 1–2 % of log-loss.
-  * **D4** (1-D difficulty) behaves like M4: run MAE improves (cell −0.40 pp, task −0.38 pp) and intervals narrow, but cell log-loss is worse (+0.020).
-  * The intervals under-cover in the cell holdout for *every* model, M0 included (0.66–0.83 against a nominal 0.90). The simulation ignores uncertainty in the variance components, and new model × scaffold combinations differ more than Σ̂ implies.
+  Paired differences vs M0, pooled over fractions, with seed-bootstrap 95 % CIs (`*_paired_vs_M0.csv`). These CIs reflect variation across random splits of this dataset, not sampling uncertainty about new tasks or models (AUDIT.md M6).
+  * **M4r (primary).**
+    * SWE log-loss is *worse*: +0.058 [+0.022, +0.121] in the cell holdout and +0.010 [+0.007, +0.014] in the task holdout. AUC is also lower.
+    * Run MAE is not better: cell +0.08 pp [−0.20, +0.36], task +0.11 [−0.02, +0.24]. Completed-run MAE is slightly worse, +0.04 [+0.00, +0.09].
+    * Intervals are about 2.2 pp narrower, with slightly lower coverage (−0.01).
+    * The 18 fixed interaction terms are estimated from 10 models on SWE-bench and overfit.
+  * **M3 (model slopes only).**
+    * In the cell holdout it helps modestly: log-loss −0.0027 [−0.0045, −0.0008], run MAE −0.27 pp [−0.40, −0.17], about 3 %. PI width is −1.8 pp with unchanged coverage.
+    * In the task holdout it no longer improves run accuracy: subset MAE +0.00 [−0.08, +0.08], completed-run +0.00 [−0.02, +0.03]. Log-loss improves very slightly (−0.002), and PI width narrows by 1.9 pp with coverage 0.006 lower.
+    * Under the pre-registered `c027` base, M3 had improved every task-holdout metric. With a run effect in the base model, a partly observed run's own data already captures what the slopes added.
+  * **M1 (main effects only)** does about as well as M3 in the cell holdout: log-loss −0.0016 [−0.0033, +0.0003], run MAE −0.16 pp [−0.28, −0.07].
+  * **D4** behaves like M4r: intervals narrow, log-loss gets worse (cell +0.040).
+  * The intervals under-cover in the cell holdout for *every* model, M0 included (0.66–0.85 against a nominal 0.90). The simulation ignores uncertainty in the variance components, and new model × scaffold combinations differ more than Σ̂ implies.
 * **Verdict on the pre-registered gate: not met.**
-  * The primary (M4, reduced) does not lower held-out SWE log-loss in either holdout; it raises it.
+  * The primary (M4r) raises held-out SWE log-loss in both holdouts.
   * Therefore the extension stops at SWE-bench, as pre-registered: the other benchmarks were **not** annotated, and Parts 1–2 are unchanged.
-  * **The correction to the earlier claim stands.** Task features *do* carry information about held-out combinations once they are allowed to interact with the agent.
-    * The model-specific slopes on AP's task-type scores (M3) improve every holdout metric and narrow the intervals without losing coverage.
-    * The gains are modest. M3 was not the pre-registered primary, so they are reported as secondary.
-    * With only 10 models on SWE-bench, fixed interaction terms overfit, and shrunken random slopes are the form that generalizes.
+  * **What remains of the earlier positive finding is small.** Task features carry information about held-out combinations mainly as **main effects** plus, at most, a single shrunken model-specific sensitivity to difficulty (M3).
+    * M3 gives about a 3 % gain in held-out-cell run MAE and none in the task holdout.
+    * In-sample, the interaction blocks are not statistically supported once the run and model × benchmark effects are modelled (p = 0.10–0.24).
 
 ### E2. Runtime of successful traces (TMS-style `lmer`)
 * **Outcome (DC-1, AUDIT.md M2).** `span_s` is the time from the first LLM call's start to the last LLM call's end, per task. It comes from HAL's per-call Weave logs (`scripts/extract_call_timing.py` → `data/processed/task_timing.csv.gz`).
@@ -445,8 +450,10 @@ Added on request after E1 was reported, and pre-registered in DESIGN.md ("E1b") 
   - Outputs: `results/ext3_judge/`, `results/part2/judge_*`.
 
 ## 6. Limitations
-* **Selection on all the data.** The formula was chosen on the full paper data, so the Part 2 holdout reuses a design selected with the held-out cells present. The user specified this. The effect is small because only 64 candidates (plus their reductions) were compared.
-* **Post-fit design change.** PF-2 changed the random structure after results were seen, in response to the statistical audit. It was logged in DESIGN.md before the PF-2 results were inspected, and the pre-registered `c027` results are kept in git history (§2).
+* **Selection on all the data.** The formula was chosen on the full paper data, so the Part 2 holdout reuses a design selected with the held-out cells present. The user specified this. The effect is small because only 64 candidates were compared.
+* **Post-fit design changes.** PF-2 (after the statistical audit) and PF-3 (a user decision on heredity and keep-it-maximal) changed the random structure and selection rule after results were seen.
+  * Each was logged in DESIGN.md before its own results were inspected.
+  * The pre-registered `c027` results are kept in git history (§2).
 * **Model ability rests on few models.** With 15 models, `(1|model)` is estimated at zero once the covariates and model × benchmark / model × scaffold terms are present. Ability for a new model therefore extrapolates provider + reasoning + release date, which gives 10.7 pp MAE out of time.
 * **Missing benchmarks and labels.**
   * AssistantBench is excluded: its per-task partial-credit scores cannot be aligned to task ids.
@@ -467,9 +474,9 @@ python -I scripts/build_analysis_table.py
 python -I scripts/extract_call_timing.py data/meta/timing_zips_main.txt data/raw/call_timing data/tmp_zips_timing 12
 HAL_REVISION=1bf4166d052cdd3445127e17c15139cbb5505ca5 \
   python -I scripts/extract_call_timing.py data/meta/timing_zips_paperrev.txt data/raw/call_timing_paperrev data/tmp_zips_timing 8
-mkdir -p data/raw/call_timing_all && cp data/raw/call_timing*/*.csv.gz data/raw/call_timing_all/
+mkdir -p data/raw/call_timing_all && cp data/raw/call_timing/*.csv.gz data/raw/call_timing_paperrev/*.csv.gz data/raw/call_timing_all/
 python -I scripts/extract_call_timing.py --merge data/raw/call_timing_all data/processed/task_timing.csv.gz   # E2 outcome (DC-1)
-./run_R.sh R/02_fit_candidates.R 70        # Part 1 selection (PF-2: fit + reduce) -> fits/candidates/*.Rds, fits/selected_model.Rds
+./run_R.sh R/02_fit_candidates.R 70        # Part 1 selection (PF-3) -> fits/candidates/*.Rds, fits/selected_model.Rds
 ./run_R.sh R/03_report_selected.R 16 main  # Part 1 quality of fit
 ./run_R.sh R/04_holdout.R 60 main          # Part 2 (also: judge_both, judge_any, manual) -> fits/holdout/*
 ./run_R.sh R/10_task_holdout.R 60 main     # Part 2b task-level holdout -> fits/holdout_task/*
@@ -481,6 +488,6 @@ python -I scripts/extract_call_timing.py --merge data/raw/call_timing_all data/p
 ./run_R.sh R/09_latent_factors.R; python scripts/make_report_tables.py
 python scripts/make_figures.py; python scripts/make_task_holdout_figures.py
 ```
-* **Fitted models.** All are saved as `.Rds` under `fits/`: 64 candidates and 32 reductions, 240 cell-holdout refits (main + 3 judge variants), 60 task-holdout refits, the runtime and extension fits. `run_pf2.sh` reruns everything after Part 1 selection. The folder is gitignored because of its size, and the scripts regenerate it.
+* **Fitted models.** All are saved as `.Rds` under `fits/`: 64 candidates, 240 cell-holdout refits (main + 3 judge variants), 60 task-holdout refits, the runtime and extension fits. `run_pf2.sh` reruns everything after Part 1 selection. The folder is gitignored because of its size, and the scripts regenerate it.
 * **Determinism.** Seeds are fixed (cell-holdout seeds 1–60, task-holdout seeds 1001–1060, DHARMa 42, CV 1).
 * **Threads.** `run_R.sh` forces single-threaded BLAS. Without it, OpenBLAS oversubscribed the server (see DESIGN.md).

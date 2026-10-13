@@ -48,14 +48,15 @@ Full results and methods are in [`REPORT.md`](REPORT.md), and the design log is 
    * The domain × release interaction as a whole: χ²(3) = 11.5, p = 0.009. The best candidate without it is 3.5 AIC worse.
    * The pre-registered model gave p = 1e-5, because it had no model × benchmark term to absorb model-specific benchmark strengths. PF-2's non-hereditary model gave p = 0.038.
    * There are only 15 models, so treat all the slopes as descriptive.
-7. **Task features help a lot for new tasks, and a little for new combinations, once they interact with the agent.**
-   * For SWE-bench Verified Mini, inherited Agent Psychometrics features raise held-out-*task* AUC from 0.72 to 0.85, and their external IRT difficulty raises it to 0.90.
-   * As main effects they add little for tasks already seen, which `(1|task)` covers. Crossed with the agent they do help (E1b; REPORT.md):
-     * The best form is shrunken model-specific slopes on AP task-type scores, `(0 + PC1 + PC2 | model)`.
-     * It lowers held-out SWE run MAE by about 0.3–0.4 pp (about 4–5 %) in both the cell and task holdouts, improves log-loss, and narrows 90 % intervals by 1–2 pp at unchanged coverage.
-   * The pre-registered primary was the maximal model with 18 fixed feature × agent terms. It overfits the 10 SWE-bench models: run MAE and intervals improve, but task log-loss gets worse.
+7. **Task features help a lot for new tasks, and little for new combinations.**
+   * For SWE-bench Verified Mini, inherited Agent Psychometrics features raise held-out-*task* AUC from 0.73 to 0.87, and their external IRT difficulty raises it to 0.91.
+   * Crossed with agent terms (E1b; REPORT.md), they add little once the run and model × benchmark effects are modelled:
+     * The interaction blocks are not supported in-sample (p = 0.10–0.24). On the pre-registered `c027` base they had been p ≈ 0.01.
+     * The best form is a single shrunken model-specific sensitivity to task difficulty, `(0 + PC1 + PC2 | model)`, whose two slopes are perfectly correlated.
+     * It lowers held-out-cell SWE run MAE by about 0.27 pp (about 3 %) and narrows 90 % intervals by about 2 pp. It gives no run-accuracy gain in the task holdout.
+     * o4-mini is flattest across difficulty, and Claude Opus 4.1, DeepSeek V3 and Claude 3.7 Sonnet are steepest.
+   * The pre-registered primary had 18 fixed feature × agent terms. It overfits the 10 SWE-bench models, and held-out log-loss gets worse.
    * So the gate for annotating the other benchmarks was not met, and Parts 1–2 are unchanged.
-   * The interaction is essentially one-dimensional: models differ in how steeply they fall off with general task difficulty. Anthropic models are steeper than OpenAI models, and o4-mini, gpt-4.1 and o3 are flattest. A second task-type axis added nothing detectable.
 8. **LLM-judge corrections did not improve prediction.** Removing TAU-bench tasks that the judges flag as broken makes TAU-bench look easier: accuracy goes from 30.7 % to 35.4 % with both judges, or 39.1 % with manual flags. But holdout error does not improve: TAU run MAE rises from 9.5–10.8 pp to 11.6–13.3 pp with both judges.
    * The correction changes *what is measured* more than *how predictable it is*.
    * The two LLM judges agree on only 20 of the 39 tasks either one flags.
