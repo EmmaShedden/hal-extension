@@ -259,3 +259,12 @@ Written after the audit and before any PF-2 result was inspected. The PF-2 Part 
 * **The new outcome, `span_s`.** It runs from the first LLM call's start to the last LLM call's end, by task, computed from HAL's per-call Weave logs (`raw_logging_results`). `scripts/extract_call_timing.py` re-streams the 175 modelled paper zips, using the paper-revision copies for the 15 SWE-bench files, and writes `data/processed/task_timing.csv.gz`. That file also holds the call count and summed call time.
 * **What it measures.** It is the span of the agent's LLM activity. It still excludes environment setup and evaluation, and it includes API queueing under HAL's concurrent task execution. REPORT.md describes it that way rather than as wall time.
 * **Unchanged.** The design otherwise stays the same: successful traces, a log outcome, the same predictors and the same candidate class.
+
+### PF-2 / DC-1 outcome (recorded after the runs)
+* **Selection.**
+  * All 64 originals are singular under the single 1e-3 threshold. `(1|model)`, `(1|scaffold)` and `(1|model:effort)` are zero wherever they appear.
+  * There are 32 distinct reductions, 29 of them eligible. Three reductions had a further zero component, and each of their second-round reductions was already in the pool.
+  * Selected: `c028_r1` = full fixed part + `release_years_z:domain` + `(1|task) + (1|run) + (1|model:benchmark) + (1|scaffold:benchmark) + (1|model:scaffold)`, AIC 18,726.4. It contains `model:benchmark`, so the conditional rule in PF-2 item 4 was not needed.
+* **Unplanned diagnostic finding.** The run-aggregated DHARMa tests cannot be interpreted for this crossed design. Unconditional simulation redraws the shared task effects, and conditional simulation is circular. They are reported with that caveat, and run-level dependence is assessed by random-term LRTs, a new output of `R/03_report_selected.R`. This is a change in interpretation only; no model was changed because of it.
+* **Pipeline fix.** E2's first run under PF-2 crashed on a data.table type error in a descriptive table. It was fixed with `as.numeric()` and rerun; nothing about the design changed.
+* **E1b base model.** E1b (pre-registered on `c027`) uses the selected formula as M0. Its rerun therefore uses `c028_r1`, and its gate is re-evaluated on the rerun. Its PF-1 reduction rule in `R/11_ap_interactions.R` is unchanged.
