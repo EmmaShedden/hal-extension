@@ -49,18 +49,21 @@
   * Re-run selection, logged as a post-fit change: "the pre-registered candidate class omitted the observation-cluster term".
   * At minimum, report the fixed-effect inference from `r032 + (1|run)`.
 
-**Fixed:** (DESIGN.md PF-2; commits `3a327e2`, `af28663`, `f2ae7a4`)
-* **Change.** `(1|run)` is now part of the core random part: `R/candidates.R`, `RE_CORE = (1|task) + (1|run) + (1|model) + (1|scaffold)`.
+**Fixed:** (DESIGN.md PF-2 item 1, kept under PF-3)
+* **Change.** `(1|run)` is a core random term: `R/candidates.R`, `RE_CORE = (1|task) + (1|run) + (1|model) + (1|scaffold)`.
   * The validity rule "every level is a single run" exempts `run`, because the observation cluster is exactly what this term is for.
-  * All 64 candidates were refit, and selection was redone under the H3 rule.
-* **Result.** The selected model `c028_r1` keeps `(1|run)` with SD 0.43. The drop-one LRT for the run term (`results/part1/lrt_random_terms.csv`, a new output) is χ²(1) = 84.1, boundary-corrected p = 2e-20, and dropping it would cost 82 AIC. As predicted here, `model:effort` collapsed to 0 and was removed.
+  * All 64 candidates were refit and selection redone; see H3 for the final rule.
+* **Result.**
+  * The selected model `c028` has `(1|run)` with SD 0.43.
+  * Its drop-one LRT is χ²(1) = 86.3, boundary-corrected p = 8e-21, and dropping it would cost 84 AIC (`results/part1/lrt_random_terms.csv`, a new output).
+  * As predicted here, `(1|model:effort)` collapses to zero wherever it appears. The run effect absorbs it.
 * **Correction to the evidence above.** The DHARMa run-aggregated uniformity test cited above (p = 0.024) is **not valid evidence** for this design, in either direction. I checked this while making the fix:
   * DHARMa's default simulation redraws the crossed task effects that all runs share. The simulated run totals are then too spread, and the observed residuals pile up near 0.5. The new model gives p = 2e-6, with 94 of 174 runs in the 0.4–0.6 band.
-  * Simulating conditional on the fitted random effects goes the other way and is strongly under-dispersed (p < 1e-7), because those effects were estimated from the same runs.
+  * Simulating conditional on the fitted effects goes the other way and is strongly under-dispersed (p < 1e-7), because those effects were estimated from the same runs.
   * The support for `(1|run)` rests on the AIC and LRT evidence alone. `R/03_report_selected.R` now says this, and REPORT.md no longer reads the DHARMa run-level test as a misfit signal.
 * **Effect on the results.**
   * In-sample run MAE falls to 1.3 pp, because a fitted run effect absorbs most of each run's deviation. That makes it a much looser floor than before.
-  * Cell-holdout MAE is 7.1 / 7.1 / 8.3 pp at 10 / 25 / 50 %, against 7.5 / 7.2 / 8.2 before.
+  * Cell-holdout MAE is 7.1 / 7.1 / 8.4 pp at 10 / 25 / 50 %, against 7.5 / 7.2 / 8.2 before.
   * The task-level holdout, where the run is seen, improved as expected: held-out-subset MAE is 9.7 / 6.4 / 5.3 pp, against 10.2 / 7.0 / 5.9. The GLMM now beats the covariate-free additive logit at every fraction.
 
 ### H2. The primary model `c027` omits `model:benchmark`, which inflates the domain and benchmark claims
@@ -84,27 +87,33 @@
   * The provider effect and the null effort/reasoning result are robust.
 * **Recommendation.** Base all inferential statements in REPORT/summary on `r032` (preferably `r032 + (1|run)`), or report both side by side. Prediction-based statements can stay on `c027`, since the predictions are nearly identical.
 
-**Fixed:** (DESIGN.md PF-2, item 4)
-* **Change.** PF-2 selection (H1 + H3) picks `c028_r1`:
-  `provider + reasoning + release + effort + generalist + benchmark + release:domain + (1|task) + (1|run) + (1|model:benchmark) + (1|scaffold:benchmark) + (1|model:scaffold)`.
-  * It contains `model:benchmark`, which is the error term the domain × release test needed.
-  * All p-values, CIs and LRTs in REPORT.md and summary.md now come from this model (`results/part1/lrt_fixed_terms.csv`).
-  * Its LRTs reproduce the `r032 + (1|run)` column above:
+**Fixed:** (DESIGN.md PF-2 item 4, PF-3)
+* **Change.** The final selection (H1 + H3) is `c028`:
+  `provider + reasoning + release + effort + generalist + benchmark + release:domain + (1|task) + (1|run) + (1|model) + (1|scaffold) + (1|model:benchmark) + (1|scaffold:benchmark) + (1|model:scaffold)`.
+  * `(1|model)` and `(1|scaffold)` sit at zero but are kept, for heredity.
+  * The model contains `model:benchmark`, the error term the domain × release test needed.
+  * All p-values, CIs and LRTs in REPORT.md and summary.md now come from this model.
+  * The drop-one LRTs keep the full hereditary random structure in the null model (`results/part1/lrt_fixed_terms.csv`).
 
-  | Term | Before (`c027`) | After (`c028_r1`) |
-  |---|---|---|
-  | release × domain, χ²(3) | 25.6, p = 1e-5 | 8.4, **p = 0.038** |
-  | release (+ slopes), χ²(4) | 26.9, p = 2e-5 | 10.9, p = 0.028 |
-  | benchmark, χ²(7) | 136.6 | 40.4 |
-  | generalist, χ²(1) | 2.9, p = 0.09 | 9.7, **p = 0.002** |
-  | provider, χ²(3) | 12.0, p = 0.007 | 15.6, p = 0.001 |
-  | effort, χ²(3) | 2.2, p = 0.54 | 2.2, p = 0.54 |
-  | reasoning model, χ²(1) | 0.7, p = 0.42 | 0.1, p = 0.72 |
+  | Term | Before (`c027`) | PF-2 (`c028_r1`) | Final (`c028`, PF-3) |
+  |---|---|---|---|
+  | release × domain, χ²(3) | 25.6, p = 1e-5 | 8.4, p = 0.038 | 11.5, **p = 0.009** |
+  | release (+ slopes), χ²(4) | 26.9, p = 2e-5 | 10.9, p = 0.028 | 14.0, p = 0.007 |
+  | benchmark, χ²(7) | 136.6 | 40.4 | 40.4 |
+  | generalist, χ²(1) | 2.9, p = 0.09 | 9.7, p = 0.002 | 5.5, **p = 0.019** |
+  | provider, χ²(3) | 12.0, p = 0.007 | 15.6, p = 0.001 | 17.4, p = 6e-4 |
+  | effort, χ²(3) | 2.2, p = 0.54 | 2.2, p = 0.54 | 5.2, p = 0.16 |
+  | reasoning model, χ²(1) | 0.7, p = 0.42 | 0.1, p = 0.72 | 0.1, p = 0.72 |
 
-* **Documentation.** REPORT.md §3 and summary.md takeaways 4–6 and the fixed-effects table were rewritten:
-  * The domain × release result is now called weak evidence (p ≈ 0.04), carried by the web slope (−1.23 per 2 SD, p = 0.005).
-  * The customer-service and science slopes are no longer distinguishable from the coding slope (p = 0.09 and 0.06).
-  * The generalist effect is now stated as clearly supported.
+* **What changed and what did not.**
+  * The inflation identified here is removed: the domain × release evidence drops by three orders of magnitude, from p = 1e-5 to 0.009.
+  * The final p-values differ from PF-2's even though the fitted model is the same. Under PF-3, the null model for each fixed-effect test keeps `(1|model)` and `(1|scaffold)`, and these can take up variance once a covariate is removed.
+    * For the generalist flag, which marks a single scaffold, this is the more appropriate test: the null model can give that scaffold its own intercept.
+    * The Wald tests from the same fit are unchanged: generalist p = 6e-4, web slope p = 0.005, customer service p = 0.09, science p = 0.05.
+* **Documentation.** REPORT.md §2–3 and summary.md takeaways 4–6 and the fixed-effects table were rewritten:
+  * domain × release is now moderate evidence (p = 0.009), carried by the web slope;
+  * the customer-service and science slopes are not distinguishable from the coding slope;
+  * the generalist effect is supported (p = 0.019).
 
 ### H3. The PF-1 selection rule is internally inconsistent: `c027` is itself singular by PF-1's own definition
 * **What.** The primary rule keeps fits that `isSingular()` does not flag. lme4's default tolerance is θ < 1e-4. `c027`'s `(1|model)` SD is **5.5e-4** (`results/part1/random_effects_variance.csv`; θ = 0.000548). That is under the 1e-3 threshold `R/02b_reduce_singular.R` uses to declare a component zero.
@@ -117,17 +126,26 @@
   * make `r032` (or its H1 extension) primary for inference; or
   * state explicitly that `c027` is near-singular and that inference comes from the sensitivity model.
 
-**Fixed:** (DESIGN.md PF-2, items 2–3; `R/candidates.R: zero_components`, `is_singular2`, `fit_and_reduce`)
-* **One threshold.** A variance component is zero when its SD < 1e-3. A fit is singular when `isSingular()` is TRUE **or** any component is zero. The same definition decides both eligibility and which components get removed, and the holdout scripts use it to count singular refits.
-* **Reduction is part of the primary rule.** Every singular fit is refit without its zero components, repeatedly, until none remains. Originals and reductions form one pool, and the selected model is the lowest-AIC fit that converged with no zero component.
-  * The separate `reduced` / `r032` sensitivity variant (`R/02b_reduce_singular.R`) is retired, and its outputs were removed.
-  * The pre-registered `c027` results stay in git history at `e4812fe`. REPORT.md compares old and new side by side.
-* **Result.**
-  * All 64 originals are singular under the single threshold, and their reductions give 32 distinct formulas, 29 of them eligible.
-  * Three of the reduced fits (`c064_r1`, `c015_r1`, `c057_r1`) had a further component reach zero. Each second-round reduction is a formula already in the pool (`c055_r1`, `c009_r1`, `c052_r1`, all eligible), so the loop correctly skips refitting it.
-  * `(1|model)`, `(1|scaffold)` and `(1|model:effort)` are zero in every candidate that has them.
-  * The selected `c028_r1` has no component below SD 0.39 and is not singular under either criterion.
-  * The convergence-warning flag no longer counts lme4's "boundary (singular) fit" message, which singularity already tracks.
+**Fixed:** (DESIGN.md PF-2 items 2–3, superseded for selection by PF-3)
+* **PF-2, the first fix.**
+  * It used a single zero threshold (SD < 1e-3) for both eligibility and reduction, and made iterative reduction of singular fits part of the primary rule. It selected `c028_r1`.
+  * `R/candidates.R: zero_components`, `is_singular2` and `fit_and_reduce` implement the threshold and the reduction. The separate `reduced` / `r032` variant was retired.
+* **PF-3, the final rule, a user decision after PF-2.**
+  * `c028_r1` dropped `(1|model)` and `(1|scaffold)` while keeping `model:*` and `scaffold:*` interactions. That violates the heredity (inheritance) principle followed in the PT analysis's formulas.
+  * The user directed two rules:
+    * Heredity is a validity rule (rule 5 in `validity_filter`).
+    * Following Barr et al. (2013, "keep it maximal"), zero-variance components are **kept** rather than reduced, and singularity no longer disqualifies a fit. DESIGN.md PF-3 quotes the result and its scope: "only minimal consequences for Type I error and power".
+  * Selection is the lowest AIC among converged, valid candidates. That gives `c028`, the hereditary parent of `c028_r1`:
+    * the same fit, with log-likelihoods within 0.001 and fixed effects within 0.007;
+    * `(1|model)` and `(1|scaffold)` at SD ≈ 3e-5.
+* **How the inconsistency is resolved.** It no longer matters where a tolerance falls, because no fit is excluded or altered for being near the boundary.
+  * The 1e-3 threshold is still used to *report* zero components (`zero` and `singular` columns in `results/candidate_metrics.csv`).
+  * `(1|model)` is zero in 60 of 64 candidates, `(1|scaffold)` in 18 of the 32 that contain `scaffold:benchmark`, and `(1|model:effort)` in all 32 that contain it.
+* **Side effects handled.**
+  * `performance::r2_nakagawa` returns NA (and an inflated marginal R²) when a component is exactly zero. R² is now computed from Nakagawa's definition (`R/common.R: r2_nakagawa_def`). It reproduces the package value on the non-singular `c028_r1`: 0.219 / 0.702.
+  * The random-term LRTs drop a term together with the interactions that contain its factors, also for heredity.
+  * The convergence-warning flag no longer counts lme4's "boundary (singular) fit" message.
+* **Pre-registered results.** The `c027` results stay in git history at `e4812fe`. REPORT.md §2 compares `c027`, `c028_r1` and `c028`.
 
 ### H4. Extension 3: the "corrections did not improve prediction" verdict comes from an invalid comparison, and the text misstates the judge agreement
 * **Invalid comparison.** Uncorrected and corrected models were scored on **different outcomes**: TAU run accuracy over 50 tasks vs over 20 / 11 / 25 tasks.
