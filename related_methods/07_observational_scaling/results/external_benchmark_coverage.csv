@@ -1,0 +1,34 @@
+benchmark,n_models
+GPQA diamond,14
+SimpleBench,14
+OTIS Mock AIME 2024-2025,13
+Fiction.LiveBench,13
+MATH level 5,12
+WeirdML,12
+Aider polyglot,12
+Lech Mazur Writing,11
+DTBench,10
+ARC-AGI-2,10
+ARC-AGI,10
+GeoBench,9
+HLE,9
+LMCA,9
+VPCT,8
+CadEval,6
+Chess Puzzles,6
+FrontierMath-2025-02-28-Private,5
+FrontierMath-Tiers-1-3-v2-Private,5
+Mystery Game Puzzles,5
+FrontierMath-Tier-4-2025-07-01-Private,4
+SimpleQA Verified,4
+FrontierMath-Tier-4-v2-Private,3
+Surface Evolver Bench,1
+CL-bench,1
+PIQA,1
+Winogrande,1
+TriviaQA,1
+MMLU,1
+ARC AI2,1
+BBH,1
+HellaSwag,1
+ProofBench,1
