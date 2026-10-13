@@ -1,22 +1,22 @@
 | term                                   |    est |    se |   ratio |
 |:---------------------------------------|-------:|------:|--------:|
-| (Intercept)                            |  2.714 | 0.68  |  15.09  |
-| providerAnthropic                      |  0.092 | 0.143 |   1.097 |
-| providerGoogle                         | -0.155 | 0.175 |   0.857 |
-| providerDeepSeek                       |  0.81  | 0.147 |   2.247 |
-| reasoning_modelTRUE                    |  0.616 | 0.178 |   1.852 |
-| release_years_z                        |  0.119 | 0.125 |   1.127 |
-| effortdefault                          |  0.27  | 0.158 |   1.31  |
-| effortlow                              | -0.358 | 0.144 |   0.699 |
-| efforthigh                             |  0.227 | 0.07  |   1.255 |
-| generalistTRUE                         |  1.022 | 1.63  |   2.78  |
-| benchmarkCORE-Bench Hard               |  1.312 | 0.164 |   3.712 |
-| benchmarkOnline Mind2Web               |  2.422 | 1.248 |  11.264 |
-| benchmarkSciCode                       |  0.82  | 1.274 |   2.27  |
-| benchmarkScienceAgentBench             |  1.104 | 0.156 |   3.018 |
-| benchmarkSWE-bench Verified Mini       |  1.155 | 0.161 |   3.175 |
-| benchmarkTAU-bench Airline             |  0.762 | 0.143 |   2.143 |
-| benchmarkUSACO                         |  0.935 | 0.139 |   2.548 |
-| release_years_z:domaincustomer_service |  0.278 | 0.146 |   1.321 |
-| release_years_z:domainscience          | -0.56  | 0.099 |   0.571 |
-| release_years_z:domainweb              |  0.28  | 0.063 |   1.323 |
+| (Intercept)                            |  3.685 | 0.408 |  39.839 |
+| providerAnthropic                      | -0.057 | 0.156 |   0.945 |
+| providerGoogle                         | -0.324 | 0.193 |   0.724 |
+| providerDeepSeek                       |  0.698 | 0.166 |   2.01  |
+| reasoning_modelTRUE                    |  0.602 | 0.189 |   1.827 |
+| release_years_z                        |  0.549 | 0.192 |   1.731 |
+| effortdefault                          |  0.223 | 0.17  |   1.249 |
+| effortlow                              | -0.498 | 0.146 |   0.608 |
+| efforthigh                             |  0.216 | 0.081 |   1.241 |
+| generalistTRUE                         |  0.357 | 0.872 |   1.429 |
+| benchmarkCORE-Bench Hard               |  1.093 | 0.221 |   2.982 |
+| benchmarkOnline Mind2Web               |  1.614 | 0.693 |   5.024 |
+| benchmarkSciCode                       |  0.292 | 0.718 |   1.339 |
+| benchmarkScienceAgentBench             |  0.944 | 0.248 |   2.57  |
+| benchmarkSWE-bench Verified Mini       |  0.97  | 0.23  |   2.637 |
+| benchmarkTAU-bench Airline             |  0.675 | 0.219 |   1.963 |
+| benchmarkUSACO                         |  0.748 | 0.379 |   2.112 |
+| release_years_z:domaincustomer_service |  0.086 | 0.331 |   1.09  |
+| release_years_z:domainscience          | -0.53  | 0.241 |   0.589 |
+| release_years_z:domainweb              | -0.009 | 0.258 |   0.991 |

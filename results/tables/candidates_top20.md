@@ -1,22 +1,22 @@
-| id   | rd     | bench        | re_opt                                                                               |     AIC |     BIC |   dAIC | singular   | eligible   |
-|:-----|:-------|:-------------|:-------------------------------------------------------------------------------------|--------:|--------:|-------:|:-----------|:-----------|
-| c030 | linear | domain_slope | (1|model:benchmark) + (1|model:scaffold) + (1|model:effort)                          | 18805.8 | 19013   |    0   | True       | False      |
-| c032 | linear | domain_slope | (1|model:benchmark) + (1|scaffold:benchmark) + (1|model:scaffold) + (1|model:effort) | 18805.8 | 19021   |    0   | True       | False      |
-| c016 | linear | none         | (1|model:benchmark) + (1|scaffold:benchmark) + (1|model:scaffold) + (1|model:effort) | 18808.1 | 18999.4 |    2.3 | True       | False      |
-| c014 | linear | none         | (1|model:benchmark) + (1|model:scaffold) + (1|model:effort)                          | 18808.2 | 18991.5 |    2.4 | True       | False      |
-| c062 | log    | domain_slope | (1|model:benchmark) + (1|model:scaffold) + (1|model:effort)                          | 18808.6 | 19015.7 |    2.8 | True       | False      |
-| c046 | log    | none         | (1|model:benchmark) + (1|model:scaffold) + (1|model:effort)                          | 18808.9 | 18992.2 |    3.1 | True       | False      |
-| c048 | log    | none         | (1|model:benchmark) + (1|scaffold:benchmark) + (1|model:scaffold) + (1|model:effort) | 18810.9 | 19002.1 |    5.1 | True       | False      |
-| c023 | linear | domain_slope | (1|model:benchmark) + (1|model:scaffold)                                             | 18812.7 | 19011.9 |    6.9 | True       | False      |
-| c064 | log    | domain_slope | (1|model:benchmark) + (1|scaffold:benchmark) + (1|model:scaffold) + (1|model:effort) | 18814.6 | 19029.7 |    8.8 | True       | False      |
-| c028 | linear | domain_slope | (1|model:benchmark) + (1|scaffold:benchmark) + (1|model:scaffold)                    | 18814.7 | 19021.9 |    8.9 | True       | False      |
-| c012 | linear | none         | (1|model:benchmark) + (1|scaffold:benchmark) + (1|model:scaffold)                    | 18814.8 | 18998.1 |    9   | True       | False      |
-| c007 | linear | none         | (1|model:benchmark) + (1|model:scaffold)                                             | 18815.1 | 18990.4 |    9.3 | True       | False      |
-| c055 | log    | domain_slope | (1|model:benchmark) + (1|model:scaffold)                                             | 18816.2 | 19015.4 |   10.4 | True       | False      |
-| c039 | log    | none         | (1|model:benchmark) + (1|model:scaffold)                                             | 18816.3 | 18991.6 |   10.5 | True       | False      |
-| c060 | log    | domain_slope | (1|model:benchmark) + (1|scaffold:benchmark) + (1|model:scaffold)                    | 18818.2 | 19025.4 |   12.4 | True       | False      |
-| c044 | log    | none         | (1|model:benchmark) + (1|scaffold:benchmark) + (1|model:scaffold)                    | 18818.3 | 19001.6 |   12.5 | True       | False      |
-| c027 | linear | domain_slope | (1|model:scaffold) + (1|model:effort)                                                | 18854   | 19053.2 |   48.2 | False      | True       |
-| c059 | log    | domain_slope | (1|model:scaffold) + (1|model:effort)                                                | 18860.2 | 19059.4 |   54.4 | True       | False      |
-| c031 | linear | domain_slope | (1|scaffold:benchmark) + (1|model:scaffold) + (1|model:effort)                       | 18860.7 | 19067.8 |   54.9 | True       | False      |
-| c020 | linear | domain_slope | (1|model:scaffold)                                                                   | 18861.7 | 19052.9 |   55.8 | True       | False      |
+| id   |   parent | rd     | bench        | re_opt                                                                               | zero                        |     AIC |     BIC |   dAIC | singular   | eligible   |
+|:-----|---------:|:-------|:-------------|:-------------------------------------------------------------------------------------|:----------------------------|--------:|--------:|-------:|:-----------|:-----------|
+| c028 |      nan | linear | domain_slope | (1|model:benchmark) + (1|scaffold:benchmark) + (1|model:scaffold)                    | model;scaffold              | 18730.4 | 18945.5 |    0   | True       | True       |
+| c023 |      nan | linear | domain_slope | (1|model:benchmark) + (1|model:scaffold)                                             | model                       | 18731.4 | 18938.6 |    1   | True       | True       |
+| c032 |      nan | linear | domain_slope | (1|model:benchmark) + (1|scaffold:benchmark) + (1|model:scaffold) + (1|model:effort) | model:effort;model;scaffold | 18732.4 | 18955.5 |    2   | True       | True       |
+| c030 |      nan | linear | domain_slope | (1|model:benchmark) + (1|model:scaffold) + (1|model:effort)                          | model:effort;model          | 18733.4 | 18948.6 |    3   | True       | True       |
+| c007 |      nan | linear | none         | (1|model:benchmark) + (1|model:scaffold)                                             | model                       | 18733.9 | 18917.2 |    3.5 | True       | True       |
+| c060 |      nan | log    | domain_slope | (1|model:benchmark) + (1|scaffold:benchmark) + (1|model:scaffold)                    | model;scaffold              | 18733.9 | 18949.1 |    3.5 | True       | True       |
+| c016 |      nan | linear | none         | (1|model:benchmark) + (1|scaffold:benchmark) + (1|model:scaffold) + (1|model:effort) | model:effort;model;scaffold | 18734.8 | 18934   |    4.4 | True       | True       |
+| c055 |      nan | log    | domain_slope | (1|model:benchmark) + (1|model:scaffold)                                             | model                       | 18734.9 | 18942.1 |    4.6 | True       | True       |
+| c039 |      nan | log    | none         | (1|model:benchmark) + (1|model:scaffold)                                             | model                       | 18735.2 | 18918.5 |    4.9 | True       | True       |
+| c012 |      nan | linear | none         | (1|model:benchmark) + (1|scaffold:benchmark) + (1|model:scaffold)                    | scaffold:benchmark;model    | 18735.9 | 18927.1 |    5.5 | True       | True       |
+| c014 |      nan | linear | none         | (1|model:benchmark) + (1|model:scaffold) + (1|model:effort)                          | model:effort;model          | 18735.9 | 18927.1 |    5.5 | True       | True       |
+| c020 |      nan | linear | domain_slope | (1|model:scaffold)                                                                   | model                       | 18736.1 | 18935.3 |    5.7 | True       | True       |
+| c048 |      nan | log    | none         | (1|model:benchmark) + (1|scaffold:benchmark) + (1|model:scaffold) + (1|model:effort) | model:effort;model;scaffold | 18736.2 | 18935.4 |    5.8 | True       | True       |
+| c062 |      nan | log    | domain_slope | (1|model:benchmark) + (1|model:scaffold) + (1|model:effort)                          | model:effort;model          | 18736.9 | 18952.1 |    6.6 | True       | True       |
+| c046 |      nan | log    | none         | (1|model:benchmark) + (1|model:scaffold) + (1|model:effort)                          | model:effort;model          | 18737.2 | 18928.5 |    6.9 | True       | True       |
+| c044 |      nan | log    | none         | (1|model:benchmark) + (1|scaffold:benchmark) + (1|model:scaffold)                    | scaffold:benchmark;model    | 18737.3 | 18928.5 |    6.9 | True       | True       |
+| c025 |      nan | linear | domain_slope | (1|scaffold:benchmark) + (1|model:scaffold)                                          | scaffold:benchmark;model    | 18738.1 | 18945.3 |    7.7 | True       | True       |
+| c027 |      nan | linear | domain_slope | (1|model:scaffold) + (1|model:effort)                                                | model:effort;model          | 18738.2 | 18945.3 |    7.8 | True       | True       |
+| c064 |      nan | log    | domain_slope | (1|model:benchmark) + (1|scaffold:benchmark) + (1|model:scaffold) + (1|model:effort) | model:effort;model          | 18739   | 18962.1 |    8.6 | True       | True       |
+| c018 |      nan | linear | domain_slope | (1|model:benchmark)                                                                  | model                       | 18740.1 | 18939.3 |    9.7 | True       | True       |

@@ -318,3 +318,7 @@ Written after the audit and before any PF-2 result was inspected. The PF-2 Part 
   * M4 therefore reduced to M4r (identical to M2), as in the developer's original E1b run.
   * D4 was **not** reduced. Its zero `(1|scaffold)` intercept (SD 1.5e-4) is on the script's list of core intercepts, which blocks the reduction, so D4 stays primary for the 1-D analog with its zero `dhat` slope.
   * PF-3 does not override E1b's own pre-registered rule. M4 and M4r are the same fit numerically, because the dropped slopes are at SD ≈ 5e-5.
+* **E1b outcome on the PF-3 base `c028`** (the gate is re-evaluated, as stated in the PF-2 outcome).
+  * The gate is still **not met**. The primary M4r raises held-out SWE log-loss in both holdouts: cell +0.058 [+0.022, +0.121], task +0.010 [+0.007, +0.014].
+  * The secondary M3 now improves only the cell holdout: run MAE −0.27 pp [−0.40, −0.17]. In the task holdout its run-MAE gain is gone (+0.00). The E1b outcome recorded above, "improved every holdout metric slightly", held on the `c027` base only.
+  * In-sample, the interaction blocks are no longer significant: M2 vs M1 p = 0.24, M3 vs M1 p = 0.10, D4 vs D1 p = 0.12.

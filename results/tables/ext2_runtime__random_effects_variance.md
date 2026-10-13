@@ -1,7 +1,8 @@
-| grp          | var1        |   var2 |   vcov |   sdcor |   share |
-|:-------------|:------------|-------:|-------:|--------:|--------:|
-| task         | (Intercept) |    nan |  0.478 |   0.691 |   0.135 |
-| model:effort | (Intercept) |    nan |  0.007 |   0.083 |   0.002 |
-| model        | (Intercept) |    nan |  0.012 |   0.108 |   0.003 |
-| scaffold     | (Intercept) |    nan |  2.213 |   1.487 |   0.626 |
-| Residual     | nan         |    nan |  0.828 |   0.91  |   0.234 |
+| grp             | var1        |   var2 |   vcov |   sdcor |   share |
+|:----------------|:------------|-------:|-------:|--------:|--------:|
+| task            | (Intercept) |    nan |  0.225 |   0.474 |   0.163 |
+| run             | (Intercept) |    nan |  0.081 |   0.285 |   0.059 |
+| model:benchmark | (Intercept) |    nan |  0.094 |   0.306 |   0.068 |
+| model           | (Intercept) |    nan |  0     |   0     |   0     |
+| scaffold        | (Intercept) |    nan |  0.626 |   0.791 |   0.455 |
+| Residual        | nan         |    nan |  0.351 |   0.593 |   0.255 |
