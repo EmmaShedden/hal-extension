@@ -1,5 +1,5 @@
 # Extension 2: runtime of successful traces (TMS-style lmer on log runtime), same predictor set and
-# candidate class as the success model; PF-2 selection (reduce zero components, lowest AIC among non-singular fits).
+# candidate class as the success model; PF-3 selection (heredity, zero components kept, lowest AIC among converged fits).
 # Outcome (AUDIT.md M2 fix): span_s = first LLM call start to last LLM call end, from HAL's per-call Weave logs
 # (scripts/extract_call_timing.py -> data/processed/task_timing.csv.gz). HAL's own total_time stops at the *start* of
 # the last call, so single-call tasks read ~0 s. Neither measure includes environment setup or evaluation.
@@ -22,7 +22,7 @@ cands <- validity_filter(enumerate_candidates("log(latency_s)"), d)
 cands <- cands[!duplicated(cands$formula), ]; cands$id <- sprintf("t%03d", seq_len(nrow(cands)))
 v <- cands[cands$valid, ]
 FR <- fit_and_reduce(setNames(v$formula, v$id), function(f) lmer(f, data = d, REML = FALSE),
-                     mapper = function(x, f) mclapply(x, f, mc.cores = min(ncores, length(x)), mc.preschedule = FALSE), save_dir = fdir)
+                     mapper = function(x, f) mclapply(x, f, mc.cores = min(ncores, length(x)), mc.preschedule = FALSE), save_dir = fdir, reduce = FALSE, allow_singular = TRUE)
 met <- FR$metrics
 fwrite(met, file.path(out, "candidate_metrics.csv"))
 cat("fits:", nrow(met), "; singular originals:", sum(met$singular[met$round == 0], na.rm = TRUE), "; eligible:", sum(met$eligible), "\n")

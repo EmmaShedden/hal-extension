@@ -27,13 +27,17 @@ lrt <- mclapply(tl, function(t) {
 }, mc.cores = min(ncores, length(tl)))
 fwrite(do.call(rbind, lrt), file.path(out, "lrt_fixed_terms.csv"))
 
-# drop-one LRT for each random term (PF-2 / AUDIT.md H1). The null is on the boundary (variance = 0), so the
-# chi2(1) p-value is halved (Self & Liang 1987).
+# drop-one LRT for each random term (PF-2 / AUDIT.md H1). Heredity (PF-3): a term is dropped together with every
+# random interaction that contains its factors, as for fixed-effect marginality. For a single dropped variance the
+# null is on the boundary, so the chi2(1) p-value is halved (Self & Liang 1987). For blocks it is the plain chi2 p.
 bars <- vapply(lme4::findbars(formula(m)), function(b) deparse(b[[3]]), "")
 rlrt <- mclapply(bars, function(g) {
-  m1 <- update(m, as.formula(sprintf(". ~ . - (1 | %s)", g)))
+  gv <- strsplit(g, ":", fixed = TRUE)[[1]]
+  drop <- bars[vapply(strsplit(bars, ":", fixed = TRUE), function(p) all(gv %in% p), TRUE)]
+  m1 <- update(m, as.formula(paste(". ~ .", paste(sprintf("- (1 | %s)", drop), collapse = " "))))
   a <- anova(m1, m)
-  data.frame(term = g, Chisq = a$Chisq[2], Df = a$Df[2], p_boundary = a$`Pr(>Chisq)`[2] / 2, dAIC = AIC(m1) - AIC(m))
+  data.frame(term = g, dropped = paste(drop, collapse = " + "), Chisq = a$Chisq[2], Df = a$Df[2],
+             p = if (a$Df[2] == 1) a$`Pr(>Chisq)`[2] / 2 else a$`Pr(>Chisq)`[2], dAIC = AIC(m1) - AIC(m))
 }, mc.cores = min(ncores, length(bars)))
 fwrite(do.call(rbind, rlrt), file.path(out, "lrt_random_terms.csv"))
 

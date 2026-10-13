@@ -53,6 +53,9 @@ validity_filter <- function(cands, d, fixed_factors = c("benchmark", "provider",
       reasons <- c(reasons, sprintf("%s == %s (same partition)", groups[a], groups[b]))
     for (g in groups) for (ff in fixed_factors) if (same_partition(parts[[g]], as.integer(d[[ff]])))
       reasons <- c(reasons, sprintf("%s == fixed %s", g, ff))
+    # Rule 5 (PF-3, heredity): every factor of a random interaction must be a fixed factor or its own random intercept
+    for (g in groups[grepl(":", groups, fixed = TRUE)]) for (v in strsplit(g, ":", fixed = TRUE)[[1]])
+      if (!v %in% c(fixed_factors, groups)) reasons <- c(reasons, sprintf("%s violates heredity (no main term for %s)", g, v))
     X <- model.matrix(lme4::nobars(as.formula(f)), d)
     rk <- qr(X)$rank
     if (rk < ncol(X)) reasons <- c(reasons, sprintf("fixed X rank %d < %d cols", rk, ncol(X)))
@@ -61,7 +64,7 @@ validity_filter <- function(cands, d, fixed_factors = c("benchmark", "provider",
   cbind(cands, do.call(rbind, res)[, c("valid", "reason")])
 }
 
-# ---- PF-2 selection rule (DESIGN.md; AUDIT.md H3) ----
+# ---- zero-variance definition (PF-2) and selection helper (PF-2, superseded for selection by PF-3; DESIGN.md) ----
 # A variance component is "zero" when its SD < ZERO_SD. A fit is singular when isSingular() or any SD < ZERO_SD,
 # so the same threshold decides both selection eligibility and which components are removed.
 ZERO_SD <- 1e-3
@@ -79,7 +82,8 @@ norm_formula <- function(f) paste(deparse(as.formula(f), width.cutoff = 500L), c
 # Returns list(metrics = data.frame, models = list) with one row per distinct formula fitted
 # (models are saved to save_dir/<id>.Rds instead of returned when save_dir is given).
 # ids: original names; reductions get "<parent>_r<k>". `mapper` is lapply or a parallel equivalent.
-fit_and_reduce <- function(forms, fit_fun, mapper = lapply, max_rounds = 5, save_dir = NULL) {
+# PF-3: called with reduce = FALSE and allow_singular = TRUE (heredity; zero components kept, keep-it-maximal).
+fit_and_reduce <- function(forms, fit_fun, mapper = lapply, max_rounds = 5, save_dir = NULL, reduce = TRUE, allow_singular = FALSE) {
   one <- function(id, f) {
     warns <- character(0); t0 <- Sys.time()
     m <- withCallingHandlers(tryCatch(fit_fun(as.formula(f)), error = function(e) e),
@@ -105,14 +109,14 @@ fit_and_reduce <- function(forms, fit_fun, mapper = lapply, max_rounds = 5, save
     for (i in seq_along(res)) {
       r <- res[[i]]$row; r$parent <- todo$parent[i]; r$round <- round
       rows[[length(rows) + 1]] <- r; models[[r$id]] <- res[[i]]$m; seen <- c(seen, r$formula)
-      if (isTRUE(r$singular) && nzchar(r$zero))
+      if (reduce && isTRUE(r$singular) && nzchar(r$zero))
         nxt[[length(nxt) + 1]] <- data.frame(id = paste0(r$id, "_r", round + 1), formula = drop_components(r$formula, strsplit(r$zero, ";")[[1]]),
                                              parent = r$id, stringsAsFactors = FALSE)
     }
     todo <- if (length(nxt)) do.call(rbind, nxt) else todo[0, ]
   }
   met <- do.call(rbind, rows)
-  met$eligible <- !is.na(met$AIC) & !met$conv_warning & !met$singular
+  met$eligible <- !is.na(met$AIC) & !met$conv_warning & (allow_singular | !met$singular)
   met <- met[order(met$AIC), ]
   list(metrics = met, models = models)
 }

@@ -1,5 +1,5 @@
 # Part 1a: enumerate candidate formulas, apply validity filter, fit all valid candidates in parallel,
-# reduce singular fits, select by AIC (DESIGN.md, rule PF-2). Usage: Rscript R/02_fit_candidates.R [n_cores]
+# select by AIC among converged, hereditary candidates; zero-variance components are kept (DESIGN.md PF-3). Usage: Rscript R/02_fit_candidates.R [n_cores]
 source("R/common.R"); source("R/candidates.R")
 suppressPackageStartupMessages(library(parallel))
 args <- commandArgs(TRUE); ncores <- if (length(args)) as.integer(args[1]) else 48
@@ -33,13 +33,12 @@ fwrite(cands, path("results/candidates.csv"))
 cat("candidates:", nrow(cands), "valid:", sum(cands$valid), "\n")
 print(table(cands$reason[!cands$valid]))
 
-# PF-2: fit, then refit singular fits without their zero (SD < 1e-3) components until none remain; select lowest AIC
-# among converged fits with no zero component, originals and reductions pooled.
+# PF-3: heredity is a validity rule; no reduction; singular fits (zero components, SD < 1e-3) stay eligible (keep it maximal).
 v <- cands[cands$valid, ]
 t0 <- Sys.time()
 FR <- fit_and_reduce(setNames(v$formula, v$id), function(f) glmer(f, data = d, family = binomial, control = CTRL),
                      mapper = function(x, f) mclapply(x, f, mc.cores = min(ncores, length(x)), mc.preschedule = FALSE),
-                     save_dir = path("fits/candidates"))
+                     save_dir = path("fits/candidates"), reduce = FALSE, allow_singular = TRUE)
 cat("fitting wall time (min):", round(as.numeric(difftime(Sys.time(), t0, units = "mins")), 1), "\n")
 met <- merge(FR$metrics, cands[, c("id", "rd", "bench", "re_opt")], by = "id", all.x = TRUE)
 met <- met[order(met$AIC), ]
