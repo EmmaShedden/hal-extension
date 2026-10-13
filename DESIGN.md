@@ -315,5 +315,6 @@ Written after the audit and before any PF-2 result was inspected. The PF-2 Part 
 * **E2.** Selects `t018` (hereditary; `(1|model)` zero), the same fit as PF-2's `t018_r1`.
 * **E1b, correction to the PF-3 note above.** E1b's own pre-registered PF-1 slope reduction **did** fire for M4 and D4.
   * lme4 names the second `model` grouping `model.1`, so the script's check for a zero core intercept never matches it.
-  * M4 therefore reduced to M4r (identical to M2), as in the developer's original E1b run. D4 reduced to D4r.
+  * M4 therefore reduced to M4r (identical to M2), as in the developer's original E1b run.
+  * D4 was **not** reduced. Its zero `(1|scaffold)` intercept (SD 1.5e-4) is on the script's list of core intercepts, which blocks the reduction, so D4 stays primary for the 1-D analog with its zero `dhat` slope.
   * PF-3 does not override E1b's own pre-registered rule. M4 and M4r are the same fit numerically, because the dropped slopes are at SD ≈ 5e-5.
