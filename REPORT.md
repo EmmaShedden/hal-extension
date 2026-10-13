@@ -21,7 +21,7 @@ Takeaways and the latent factors are in [`summary.md`](summary.md).
 
 | Item | Value |
 |---|---|
-| Source | HF `agent-evals/hal_traces`: 380 encrypted trace zips, 113 GB. They were streamed and decrypted with the public hal-harness password, keeping only config, per-task scores, latencies and usage (`scripts/extract_hal_traces.py`). |
+| Source | HF `agent-evals/hal_traces`: 380 encrypted trace zips, 113 GB. They were streamed and decrypted with the public hal-harness password, keeping only config, per-task scores, latencies and usage (`scripts/extract_hal_traces.py`). The 175 modelled paper zips were streamed a second time to summarise the per-call Weave logs into per-task LLM-activity timing for E2 (`scripts/extract_call_timing.py`). |
 | Paper runs | 186 runs, matched to zips from the paper's LaTeX appendix tables and the leaderboard links (`data/meta/hf_runs.csv`, `data/meta/README.md`). |
 | Modelled | **174 runs**: the 186 minus 12 AssistantBench runs (see below). They cover 172 cells, 8 benchmarks, 15 models, 10 scaffolds, 4 effort levels and 1,084 tasks, for **21,333 task-level binary outcomes**. |
 | Out-of-time test | 48 runs uploaded after the paper's HF snapshot (2025-10-08): new models (Claude Sonnet/Haiku/Opus 4.5, Gemini 3 Pro) and new scaffolds (Claude Code, TAU-bench Tool Calling). |
@@ -286,7 +286,7 @@ All values are in pp unless labelled otherwise.
 ## 5. Extensions
 
 ### E1. Agent Psychometrics task features (SWE-bench Verified Mini)
-* **Why it applies.** SWE-bench was the second-worst benchmark in Part 1 (run MAE 5.2 pp), and an unseen task can only be predicted from its features.
+* **Why it applies.** SWE-bench has the largest in-sample run error (2.5 pp) and the largest gain from modelling (§4b). An unseen task can only be predicted from its features.
 * **Features.** All inherited from the Agent Psychometrics release (`data/external/agent_psychometrics/`); nothing was annotated by hand:
   - PC1 of their 15 LLM-judged features (48 % of variance). Loadings are highest on debugging complexity, atypicality, logical reasoning and solution complexity.
   - Their published 1PL difficulty `b`, fit on 134 SWE-bench leaderboard agents.
@@ -294,11 +294,11 @@ All values are in pp unless labelled otherwise.
 
   | Model | Held-out-task Brier | Log-loss | 0/1 error | AUC | Run MAE (pp) |
   |---|---|---|---|---|---|
-  | Selected model | 0.191 | 0.573 | 32.1 % | 0.720 | 8.79 |
-  | + AP feature PC1 | 0.141 | 0.444 | 20.1 % | 0.855 | 6.52 |
-  | + AP difficulty `b` | **0.116** | **0.371** | **15.9 %** | **0.899** | 6.55 |
+  | Selected model | 0.189 | 0.560 | 31.3 % | 0.733 | 8.08 |
+  | + AP feature PC1 | 0.136 | 0.429 | 19.5 % | 0.866 | **4.51** |
+  | + AP difficulty `b` | **0.110** | **0.355** | **15.3 %** | **0.908** | 4.55 |
 
-* **In-sample.** PC1 coefficient −2.12 (SE 0.36), ΔAIC −36; `b` coefficient −2.69 (SE 0.44), ΔAIC −50. The overall task random-effect SD falls from 2.11 to 2.03.
+* **In-sample.** PC1 coefficient −2.18 (SE 0.36), ΔAIC −37; `b` coefficient −2.89 (SE 0.44), ΔAIC −52. The overall task random-effect SD falls from 2.16 to 2.11 (PC1) and 2.09 (`b`).
 * **Conclusion.** Inherited task features substantially improve prediction for *new tasks*, matching the Agent Psychometrics finding (their AUC 0.84 vs 0.72).
 * **What this does not show.** The features entered only as task-level *main effects*. For tasks already seen in training, a main effect mostly duplicates the task random intercept. `(1|task)` is also additive: every run ranks tasks the same way. Task features crossed with agent terms could capture run × task structure that `(1|task)` cannot. E1b tests this.
 
@@ -422,13 +422,15 @@ Added on request after E1 was reported, and pre-registered in DESIGN.md ("E1b") 
   - Outputs: `results/ext3_judge/`, `results/part2/judge_*`.
 
 ## 6. Limitations
-* **Selection on all the data.** The formula was chosen on the full paper data, so the Part 2 holdout reuses a design selected with the held-out cells present. The user specified this. The effect is small because only 64 candidates were compared.
-* **Model ability rests on few models.** With 15 models, `(1|model)` is not identifiable beyond the covariates. Ability for a new model therefore extrapolates provider + reasoning + release date, which gives 11.8 pp MAE out of time.
+* **Selection on all the data.** The formula was chosen on the full paper data, so the Part 2 holdout reuses a design selected with the held-out cells present. The user specified this. The effect is small because only 64 candidates (plus their reductions) were compared.
+* **Post-fit design change.** PF-2 changed the random structure after results were seen, in response to the statistical audit. It was logged in DESIGN.md before the PF-2 results were inspected, and the pre-registered `c027` results are kept in git history (§2).
+* **Model ability rests on few models.** With 15 models, `(1|model)` is estimated at zero once the covariates and model × benchmark / model × scaffold terms are present. Ability for a new model therefore extrapolates provider + reasoning + release date, which gives 10.7 pp MAE out of time.
 * **Missing benchmarks and labels.**
   * AssistantBench is excluded: its per-task partial-credit scores cannot be aligned to task ids.
   * For Extension 3, LLM-judge labels exist for TAU-bench only.
 * **Unmatched configurations.** Reasoning effort is assumed to mean the same thing across providers (prompt item 8). Claude runs with thinking off are coded `none`.
-* **Run-level dependence.** DHARMa shows mild run-level misfit (p = 0.024).
+* **Run-level dependence** is now modelled by `(1|run)`. No valid run-level goodness-of-fit test is available for this crossed design (§3, DHARMa), so it rests on the AIC and LRT evidence.
+* **Small-sample inference.** χ² p-values for model-level fixed effects (provider, release date) rest on 15 models and are optimistic.
 
 ## 7. Reproduction
 ```
@@ -439,11 +441,15 @@ HAL_REVISION=1bf4166d052cdd3445127e17c15139cbb5505ca5 HAL_ONLY=data/meta/paper_r
 python -I scripts/build_task_table.py data/processed/extracted_runs.csv data/processed/extracted_tasks.csv.gz data/raw/hal_slim data/raw/hal_slim_paperrev
 python -I scripts/build_analysis_table.py
 ./run_R.sh R/01_data_check.R
-./run_R.sh R/02_fit_candidates.R 64        # Part 1 selection        -> fits/candidates/*.Rds, fits/selected_model.Rds
-./run_R.sh R/02b_reduce_singular.R 50      # PF-1 sensitivity        -> fits/reduced/*.Rds
-./run_R.sh R/03_report_selected.R 16 main  # Part 1 quality of fit (also: ... 16 reduced)
-./run_R.sh R/04_holdout.R 60 main          # Part 2 (also: reduced, judge_both, judge_any, manual) -> fits/holdout/*
-./run_R.sh R/10_task_holdout.R 60 main     # Part 2b task-level holdout (also: 30 reduced) -> fits/holdout_task/*
+python -I scripts/extract_call_timing.py data/meta/timing_zips_main.txt data/raw/call_timing data/tmp_zips_timing 12
+HAL_REVISION=1bf4166d052cdd3445127e17c15139cbb5505ca5 \
+  python -I scripts/extract_call_timing.py data/meta/timing_zips_paperrev.txt data/raw/call_timing_paperrev data/tmp_zips_timing 8
+mkdir -p data/raw/call_timing_all && cp data/raw/call_timing*/*.csv.gz data/raw/call_timing_all/
+python -I scripts/extract_call_timing.py --merge data/raw/call_timing_all data/processed/task_timing.csv.gz   # E2 outcome (DC-1)
+./run_R.sh R/02_fit_candidates.R 70        # Part 1 selection (PF-2: fit + reduce) -> fits/candidates/*.Rds, fits/selected_model.Rds
+./run_R.sh R/03_report_selected.R 16 main  # Part 1 quality of fit
+./run_R.sh R/04_holdout.R 60 main          # Part 2 (also: judge_both, judge_any, manual) -> fits/holdout/*
+./run_R.sh R/10_task_holdout.R 60 main     # Part 2b task-level holdout -> fits/holdout_task/*
 ./run_R.sh R/05_post_paper.R               # out-of-time test
 ./run_R.sh R/06_runtime.R 64               # E2
 ./run_R.sh R/07_ap_features.R              # E1
@@ -452,6 +458,6 @@ python -I scripts/build_analysis_table.py
 ./run_R.sh R/09_latent_factors.R; python scripts/make_report_tables.py
 python scripts/make_figures.py; python scripts/make_task_holdout_figures.py
 ```
-* **Fitted models.** All are saved as `.Rds` under `fits/`: 64 candidates, 34 reduced refits (deduplicated), 300 cell-holdout refits, 120 task-holdout refits, the runtime and extension fits. The folder is gitignored because of its size, and the scripts regenerate it.
+* **Fitted models.** All are saved as `.Rds` under `fits/`: 64 candidates and 32 reductions, 240 cell-holdout refits (main + 3 judge variants), 60 task-holdout refits, the runtime and extension fits. `run_pf2.sh` reruns everything after Part 1 selection. The folder is gitignored because of its size, and the scripts regenerate it.
 * **Determinism.** Seeds are fixed (cell-holdout seeds 1–60, task-holdout seeds 1001–1060, DHARMa 42, CV 1).
 * **Threads.** `run_R.sh` forces single-threaded BLAS. Without it, OpenBLAS oversubscribed the server (see DESIGN.md).
