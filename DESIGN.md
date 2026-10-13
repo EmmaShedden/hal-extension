@@ -231,3 +231,31 @@ such interactions, so the interaction specification is ours. The feature encodin
 * The primary raised held-out SWE log-loss in both holdouts, so **the gate is not met**. The other benchmarks were not
   annotated, and Parts 1–2 are unchanged.
 * M3 (model slopes only) improved every holdout metric slightly. It is reported as a secondary result, not swapped in.
+
+## Post-fit design changes from the statistical audit (2026-10-12; AUDIT.md H1–H3, M2)
+Written after the audit and before any PF-2 result was inspected. The PF-2 Part 1 run had started but none of its output had been read. These changes respond to problems the audit found in the design. They were not chosen by looking at which variant predicts better.
+
+### PF-2: observation-cluster term, one zero-variance threshold, and reduction as part of selection
+*Problems.*
+* **H1.** No candidate contains a run-level random effect. Task outcomes within a run share run-specific conditions, and the run-aggregated DHARMa test flags misfit (p = 0.024). The audit's diagnostic fit `c027 + (1|run)` lowers AIC by 116.
+* **H3.** The primary rule calls a fit singular via `isSingular()`, whose tolerance is θ < 1e-4. PF-1 instead treats SD < 1e-3 as zero. The selected `c027` has a model SD of 5.5e-4: it counts as non-singular under one threshold and zero under the other.
+* **H2.** Because the selected model contained no `model:benchmark` term, the domain × release LRTs were tested without the model × benchmark variance that is their natural error term.
+
+*Changes.*
+1. **`(1|run)` joins the core random part**, giving `(1|task) + (1|run) + (1|model) + (1|scaffold)`. The validity rule "every level is a single run" exempts `run`, since that is the term's purpose. The candidate class is otherwise unchanged at 64 candidates.
+2. **One threshold.** A variance component is zero when its SD < 1e-3. A fit is singular when `isSingular()` is TRUE or any component is zero (`R/candidates.R: is_singular2`). The same rule is applied to holdout refits when singular fits are counted.
+3. **Reduction is part of the primary selection.** Every singular fit is refit without its zero components. This repeats for up to 5 rounds, until no zero component remains. Originals and reductions form one pool. The selected model is the lowest-AIC fit in the pool that converged and has no zero component (`R/02_fit_candidates.R`).
+   * This is PF-1's sensitivity procedure, now made primary and iterated.
+   * The separate `reduced` variant (`R/02b_reduce_singular.R`, `r032`) is retired.
+   * The pre-registered `c027` results stay in git history at commit `e4812fe`. REPORT.md compares them with the PF-2 results.
+4. **Inference (H2).** All p-values, LRTs and CIs in REPORT.md and summary.md come from the PF-2 selected model.
+   * If that model has no model × benchmark component, the domain × release test is also reported with `(1|model:benchmark)` added, and the more conservative result is the one interpreted.
+   * Predictions use the selected model as before.
+5. **Everything downstream reruns with the PF-2 model**, with the same seeds and grids: Part 1 report, Part 2 cell holdout, Part 2b task holdout, out-of-time test, E1, E1b, E3 refits and holdouts, and latent factors.
+   * E2 uses the same PF-2 selection rule on its own candidate set, which now also includes `(1|run)`.
+
+### DC-1: Extension 2 outcome (AUDIT.md M2)
+* **The problem.** `latency_s` was HAL's `results.latencies[task].total_time`. That is the time from the first LLM call's *start* to the last call's *start*, so single-call tasks read about 0 s. SAB Self-Debug had 79 successful traces at exactly 0 s and 109 more under 1 s.
+* **The new outcome, `span_s`.** It runs from the first LLM call's start to the last LLM call's end, by task, computed from HAL's per-call Weave logs (`raw_logging_results`). `scripts/extract_call_timing.py` re-streams the 175 modelled paper zips, using the paper-revision copies for the 15 SWE-bench files, and writes `data/processed/task_timing.csv.gz`. That file also holds the call count and summed call time.
+* **What it measures.** It is the span of the agent's LLM activity. It still excludes environment setup and evaluation, and it includes API queueing under HAL's concurrent task execution. REPORT.md describes it that way rather than as wall time.
+* **Unchanged.** The design otherwise stays the same: successful traces, a log outcome, the same predictors and the same candidate class.

@@ -6,3 +6,4 @@ fits/
 logs/
 __pycache__/
 *.Rds
+data/tmp_zips_timing/
