@@ -297,3 +297,23 @@ Written after the audit and before any PF-2 result was inspected. The PF-2 Part 
 * `c032` (all four optional terms) is the same fit again, plus a zero `(1|model:effort)`, at ΔAIC +2.0. That difference is purely the parameter penalty.
 * Everything downstream reruns with the PF-3 selection (`run_pf2.sh`).
 * E1b uses the selected formula as M0, so its zero `(1|model)` is kept. Its own PF-1 slope-reduction step therefore does not fire, which matches PF-3's rule that zero components are kept.
+
+### PF-3 outcome (recorded after the runs)
+* **Selection.** `c028`, AIC 18,730.4, as predicted. All 64 candidates are valid under the heredity rule and all are singular.
+  * `(1|model)` is zero in 60 of 64.
+  * `(1|scaffold)` is zero in 18 of the 32 that contain `scaffold:benchmark`.
+  * `(1|model:effort)` is zero in all 32 that contain it.
+  * *Correction:* the PF-2 outcome note above said these three are zero "wherever they appear", which overstated it for `model` and `scaffold`.
+* **Same fit as PF-2.** Estimates, SEs and predictions match `c028_r1`.
+  * Cell-holdout MAE is 7.10 / 7.07 / 8.36 pp, against 7.14 / 7.06 / 8.31.
+  * The task holdout and the out-of-time test match to within 0.05 pp.
+* **What PF-3 changed.** The drop-one fixed-effect LRTs changed, because their null models keep the hereditary `(1|model)` and `(1|scaffold)`:
+  * release × domain p = 0.009, against 0.038 under PF-2;
+  * generalist p = 0.019, against 0.002;
+  * effort p = 0.16, against 0.54.
+* **Unplanned fix.** `performance::r2_nakagawa` returns NA (and an inflated marginal R²) when a component is exactly zero. R² is now computed from Nakagawa's definition (`R/common.R: r2_nakagawa_def`). On the non-singular `c028_r1` it reproduces the package value, 0.219 / 0.702.
+* **E2.** Selects `t018` (hereditary; `(1|model)` zero), the same fit as PF-2's `t018_r1`.
+* **E1b, correction to the PF-3 note above.** E1b's own pre-registered PF-1 slope reduction **did** fire for M4 and D4.
+  * lme4 names the second `model` grouping `model.1`, so the script's check for a zero core intercept never matches it.
+  * M4 therefore reduced to M4r (identical to M2), as in the developer's original E1b run. D4 reduced to D4r.
+  * PF-3 does not override E1b's own pre-registered rule. M4 and M4r are the same fit numerically, because the dropped slopes are at SD ≈ 5e-5.
