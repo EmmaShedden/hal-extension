@@ -8,7 +8,7 @@ results be recovered by an IRT-style mixed-effects logistic regression fit on on
 * Fit on all 174 paper runs (21,333 task outcomes), the selected model has task-level AUC 0.91 and conditional R² 0.70.
   * In-sample run-accuracy MAE is **1.3 pp**. That is a loose floor, because the model has a run-level random effect that absorbs most of each run's deviation.
 * With 10–50 % of the combinations removed and the model refit, held-out run accuracy is predicted to
-  **7.1–8.3 pp MAE**. The naive baselines reach 8.9–10.8 pp. Held-out task-level AUC is 0.84–0.86.
+  **7.1–8.4 pp MAE**. The naive baselines reach 8.9–10.8 pp. Held-out task-level AUC is 0.84–0.86.
 * Holding out individual task scores instead (§4c), the refit fills in a run's full accuracy to **0.9 / 1.6 / 2.7 pp** with 10 / 25 / 50 % of its tasks missing. Reporting the accuracy on the observed tasks alone gives 1.1 / 1.9 / 3.3 pp, so the refit is 0.2–0.7 pp (about 20 %) better.
 * For runs added after the paper, MAE is **7.0 pp** for runs whose model is already known and **10.7 pp** for runs on brand-new models.
 
@@ -70,46 +70,60 @@ Full details are in `DESIGN.md`. The TMS/PT method summary is in `refs/METHODS_S
   * report with drop-one LRTs for fixed and random terms, plus DHARMa: ~10 min.
 
 ### Post-fit design changes (logged in DESIGN.md)
-**PF-1 (superseded by PF-2).**
+**PF-1 (superseded).**
 * 50 of the original 64 fits were singular, and in every one the zero component was the *core* `(1|model)` term.
 * The pre-registered rule kept the lowest-AIC non-singular fit, `c027`. A sensitivity analysis refit the singular fits without their zero components and selected `r032`.
 
-**PF-2, after the statistical audit ([`AUDIT.md`](AUDIT.md) H1–H3).** It fixes three problems:
-1. **No observation-cluster term.** No candidate had a run-level random effect, so task outcomes within a run were treated as conditionally independent. This made the fixed-effect SEs and LRTs anticonservative. `(1|run)` is now a core term.
-2. **Inconsistent singularity threshold.** The primary `c027` had a model SD of 5.5e-4. It was "non-singular" only under lme4's θ < 1e-4 tolerance, while PF-1's own reduction treated SD < 1e-3 as zero.
-   * The 1e-3 threshold now applies everywhere.
-   * The reduction step is part of the primary selection, and the separate sensitivity variant is retired.
-3. **The selected model had no `model:benchmark` term,** the natural error term for the release × domain slopes. Under PF-2 the selected model contains it.
+**PF-2, after the statistical audit ([`AUDIT.md`](AUDIT.md) H1–H3).**
+1. **Run-level random effect.** No candidate had one, so task outcomes within a run were treated as conditionally independent. This made the fixed-effect SEs and LRTs anticonservative. `(1|run)` is now a core term.
+2. **One zero-variance threshold.** The primary `c027` was "non-singular" only under lme4's θ < 1e-4 tolerance, while PF-1 treated SD < 1e-3 as zero. A single 1e-3 threshold now applies everywhere.
+3. **Model × benchmark term.** The selected `c027` lacked `model:benchmark`, the natural error term for the release × domain slopes.
 
-**Effect on the conclusions.** Predictions barely change (§4). The **inferential** claims change. The table compares the pre-registered `c027` (results at commit `e4812fe`) with the PF-2 model `c028_r1`:
+PF-2 removed zero components by iterative reduction and selected `c028_r1`.
 
-| Quantity | `c027` (pre-registered) | `c028_r1` (PF-2, current) |
-|---|---|---|
-| AIC | 18,854.0 | 18,726.4 |
-| release × domain LRT | χ²(3) = 25.6, p = 1e-5 | χ²(3) = 8.4, **p = 0.038** |
-| generalist scaffold LRT | χ²(1) = 2.9, p = 0.09 | χ²(1) = 9.7, **p = 0.002** |
-| benchmark LRT | χ²(7) = 136.6 | χ²(7) = 40.4 |
-| Cell-holdout run MAE, 10 / 25 / 50 % | 7.52 / 7.20 / 8.22 pp | 7.14 / 7.06 / 8.31 pp |
-| Task-holdout subset MAE | 10.2 / 7.0 / 5.9 pp | 9.7 / 6.4 / 5.3 pp |
-| Out-of-time MAE: known model / new model | 5.8 / 11.8 pp | 7.0 / 10.7 pp |
+**PF-3, a user decision after PF-2.**
+* **Heredity.** Random effects must respect heredity, the inheritance principle followed by PT's formulas: an interaction such as `(1|model:benchmark)` requires `model` as a fixed factor or as `(1|model)`. `c028_r1` had dropped `(1|model)` and `(1|scaffold)` while keeping their interactions, so it violates this.
+* **Keep it maximal.** Following Barr et al. (2013), zero-variance components are **kept, not reduced**, and singularity no longer disqualifies a fit. Their simulations found that "overfitting the data with a maximal model has only minimal consequences for Type I error and power"; DESIGN.md PF-3 quotes the passage and states its scope.
+* **Selection.** The lowest-AIC converged candidate is `c028`, the hereditary parent of `c028_r1`. It is numerically the same fit:
+  * the zero `(1|model)` and `(1|scaffold)` sit at SD ≈ 3e-5;
+  * fixed effects differ by at most 0.007 and fitted probabilities by at most 5e-4.
+* **What PF-3 changes is the drop-one LRTs.** Their null models now keep the hereditary `(1|model)` and `(1|scaffold)`, and these can absorb variance once a covariate is removed.
+
+**Effect on the conclusions.** Predictions barely change (§4). The inferential claims do. The pre-registered `c027` results are at commit `e4812fe`.
+
+| Quantity | `c027` (pre-registered) | `c028_r1` (PF-2) | `c028` (PF-3, current) |
+|---|---|---|---|
+| AIC | 18,854.0 | 18,726.4 | 18,730.4 |
+| release × domain LRT | χ²(3) = 25.6, p = 1e-5 | χ²(3) = 8.4, p = 0.038 | χ²(3) = 11.5, **p = 0.009** |
+| generalist scaffold LRT | χ²(1) = 2.9, p = 0.09 | χ²(1) = 9.7, p = 0.002 | χ²(1) = 5.5, **p = 0.019** |
+| benchmark LRT | χ²(7) = 136.6 | χ²(7) = 40.4 | χ²(7) = 40.4 |
+| Cell-holdout run MAE, 10 / 25 / 50 % | 7.52 / 7.20 / 8.22 pp | 7.14 / 7.06 / 8.31 pp | 7.10 / 7.07 / 8.36 pp |
+| Out-of-time MAE: known model / new model | 5.8 / 11.8 pp | 7.0 / 10.7 pp | 7.0 / 10.7 pp |
 
 ## 3. Part 1: full-data fit and quality of fit
 
-**Selected formula (`c028_r1`).** It is the reduction of candidate `c028`, from which the zero-variance `(1|model)` and `(1|scaffold)` were removed.
+**Selected formula (`c028`).**
 
 ```
 success ~ provider + reasoning_model + release_years_z + effort + generalist + benchmark
           + release_years_z:domain
-          + (1|task) + (1|run) + (1|model:benchmark) + (1|scaffold:benchmark) + (1|model:scaffold)
+          + (1|task) + (1|run) + (1|model) + (1|scaffold)
+          + (1|model:benchmark) + (1|scaffold:benchmark) + (1|model:scaffold)
 ```
 
-* All 64 original candidates are singular under the 1e-3 rule:
-  * `(1|model)`, `(1|scaffold)` and `(1|model:effort)` are zero in every candidate that contains them.
-  * Model ability is absorbed by the model-level covariates plus `model:benchmark` and `model:scaffold`.
+* All 64 candidates pass the validity filter, including the heredity rule.
+* All 64 are singular:
+  * `(1|model)` is zero in 60 of 64 candidates;
+  * `(1|scaffold)` is zero in 18 of the 32 that also contain `scaffold:benchmark`;
+  * `(1|model:effort)` is zero in all 32 that contain it.
+  * Model ability beyond the covariates is carried by `model:benchmark` and `model:scaffold`.
   * Model × effort variation is absorbed by `(1|run)`.
-* 29 of the 32 reduced formulas are eligible.
-* The runner-up `c016_r1` is the same model without the domain slopes, only 2.4 AIC behind.
-* The top 20 are in `results/tables/candidates_top20.md`, and all 96 fits are in `results/candidate_metrics.csv`.
+  * Under PF-3 these zero components are kept, and all 64 are eligible.
+* Runners-up:
+  * `c023` (ΔAIC +1.0) drops `scaffold:benchmark`. Its `(1|scaffold)` then takes that variance.
+  * `c032` (ΔAIC +2.0) is `c028` plus a zero `(1|model:effort)`: the same fit, and the 2.0 is the parameter penalty.
+  * The best candidate without domain slopes (`c007`) is 3.5 AIC behind.
+* All 64 fits are in `results/candidate_metrics.csv`, and the top 20 in `results/tables/candidates_top20.md`.
 
 **Quality of fit**
 
@@ -119,42 +133,51 @@ success ~ provider + reasoning_model + release_years_z + effort + generalist + b
 | Task log-loss | 0.353 | 0.633 |
 | Task 0/1 error at 0.5 | 16.3 % | 32.4 % |
 | Task AUC | 0.910 | 0.646 |
-| Run-accuracy MAE (pp) | **1.28** | 12.39 |
-| Run accuracy, corr(pred, obs) | 0.995 | 0.711 |
+| Run-accuracy MAE (pp) | **1.28** | 12.40 |
+| Run accuracy, corr(pred, obs) | 0.995 | 0.710 |
 | Nakagawa R², marginal / conditional | 0.219 / 0.702 | |
 
 * **The conditional run-level fit is close to perfect by construction.** Each run has its own fitted effect, so the in-sample run MAE (1.3 pp) measures little; use the holdouts (§4) to judge interpolation.
   * By benchmark (MAE / max, pp): CORE 1.8 / 6.5, GAIA 0.8 / 3.4, Mind2Web 0.2 / 0.5, SWE 2.5 / 6.7, SciCode 0.9 / 3.0, SAB 0.9 / 2.1, TAU 2.1 / 4.5, USACO 0.5 / 1.5 (`results/part1/run_level_fit.csv`).
+* **R² is computed from Nakagawa's definition** (`R/common.R: r2_nakagawa_def`, π²/3 residual). `performance::r2_nakagawa` returns NA when a variance component is exactly zero.
 * **DHARMa simulated residuals.** Task-level uniformity p = 0.06, dispersion 1.00 (p = 0.64). For 0/1 outcomes the task-level dispersion test is not informative.
   * The run-aggregated tests are reported in `results/part1/dharma_tests.csv` (uniformity p = 2e-6, dispersion 1.03, p = 0.51), but **they are not interpretable for this crossed design**:
-    * DHARMa's default simulation redraws the task effects that all runs share, so the simulated run totals are too spread. The observed residuals then pile up near 0.5 (94 of 174 runs fall in 0.4–0.6).
+    * DHARMa's default simulation redraws the task effects that all runs share, so the simulated run totals are too spread. The observed residuals pile up near 0.5 (94 of 174 runs fall in 0.4–0.6).
     * Simulating conditional on the fitted effects is circular, since those effects were fit to the same runs, and the residuals come out strongly under-dispersed.
   * The pre-PF-2 report read the run-level p = 0.024 as mild misfit, which was not justified (AUDIT.md H1). Evidence on run-level dependence comes from the random-term LRTs below.
 * **Variance components** (latent scale; π²/3 residual):
+  * A term is tested by dropping it **together with every interaction that contains its factors** (heredity), e.g. `model` with `model:benchmark` and `model:scaffold`.
+  * Single-variance tests use the boundary-corrected p (halved). Block tests use the plain χ² p, which is conservative.
 
-  | Term | SD | Share | Drop-one LRT χ²(1) | p (boundary-corrected) |
-  |---|---|---|---|---|
-  | task | 2.16 | 53.9 % | 5,821 | < 1e-300 |
-  | model × scaffold | 0.44 | 2.2 % | 9.9 | 8e-4 |
-  | run | 0.43 | 2.1 % | 84.1 | 2e-20 |
-  | model × benchmark | 0.40 | 1.9 % | 7.0 | 0.004 |
-  | scaffold × benchmark | 0.39 | 1.8 % | 22.7 | 9e-7 |
+  | Term | SD | Share | Dropped in the LRT | χ² (df) | p |
+  |---|---|---|---|---|---|
+  | task | 2.16 | 53.9 % | task | 5,821 (1) | < 1e-300 |
+  | model × scaffold | 0.44 | 2.2 % | itself | 13.7 (1) | 1e-4 |
+  | run | 0.43 | 2.1 % | itself | 86.3 (1) | 8e-21 |
+  | model × benchmark | 0.40 | 1.9 % | itself | 9.7 (1) | 9e-4 |
+  | scaffold × benchmark | 0.39 | 1.8 % | itself | 3.0 (1) | 0.04 |
+  | model | ≈ 0 (4e-5) | 0 % | model + model × benchmark + model × scaffold | 23.1 (3) | 4e-5 |
+  | scaffold | ≈ 0 (3e-5) | 0 % | scaffold + scaffold × benchmark + model × scaffold | 33.2 (3) | 3e-7 |
 
-  * Task difficulty dominates. Every other component is clearly supported (`results/part1/lrt_random_terms.csv`).
-* **Drop-one likelihood-ratio tests** for the fixed effects (TMS-style). A main effect is tested together with the interactions that contain it:
+  * Task difficulty dominates.
+  * Model-specific and scaffold-specific variation exists as blocks (p = 4e-5 and 3e-7), but none of it is a constant model or scaffold offset beyond the covariates. It is all benchmark- or pairing-specific.
+  * `results/part1/lrt_random_terms.csv`.
+* **Drop-one likelihood-ratio tests** for the fixed effects (TMS-style). A main effect is tested together with the interactions that contain it. The null models keep the full hereditary random structure:
 
   | Term | χ² | df | p | ΔAIC when dropped |
   |---|---|---|---|---|
   | benchmark | 40.4 | 7 | 1e-6 | +26.4 |
-  | provider | 15.6 | 3 | 0.001 | +9.6 |
-  | generalist scaffold | 9.7 | 1 | 0.002 | +7.7 |
-  | release date (+ domain slopes) | 10.9 | 4 | 0.028 | +2.9 |
-  | release × domain | 8.4 | 3 | 0.038 | +2.4 |
-  | effort | 2.2 | 3 | 0.54 | −3.8 |
+  | provider | 17.4 | 3 | 6e-4 | +11.4 |
+  | release date (+ domain slopes) | 14.0 | 4 | 0.007 | +6.0 |
+  | release × domain | 11.5 | 3 | 0.009 | +5.5 |
+  | generalist scaffold | 5.5 | 1 | 0.019 | +3.5 |
+  | effort | 5.2 | 3 | 0.16 | −0.8 |
   | reasoning model | 0.1 | 1 | 0.72 | −1.9 |
 
-  * Estimates are in `results/part1/fixed_effects.csv`, and the interpretation in `summary.md`.
-  * With only 15 models, the χ² reference distributions for model-level terms (provider, release) are optimistic. Treat p-values near 0.05 as weak evidence.
+  * Wald tests from the same fit (`results/part1/fixed_effects.csv`): generalist p = 6e-4, web slope p = 0.005, customer-service slope p = 0.09, science slope p = 0.05.
+  * The generalist LRT is weaker than its Wald test because the flag marks a single scaffold. When the flag is dropped, that scaffold's own `(1|scaffold)` intercept can take up the difference. The LRT is the more appropriate test.
+  * With only 15 models, the χ² reference distributions for model-level terms (provider, release) are optimistic, so treat p-values near 0.01–0.05 as modest evidence.
+  * The interpretation is in `summary.md`.
 
 ## 4. Part 2: holdout
 
@@ -166,19 +189,19 @@ success ~ provider + reasoning_model + release_years_z + effort + generalist + b
   - the training mean accuracy of the same benchmark;
   - an additive logit model (benchmark + model) fit to training cell accuracies.
 
-**Averages over the 20 repetitions (primary design `c028_r1`; ± is the SD across repetitions)**
+**Averages over the 20 repetitions (primary design `c028`; ± is the SD across repetitions)**
 
 | Held out | Refit run MAE (pp) | Full-model run MAE | Benchmark-mean MAE | Additive MAE | Refit task Brier | Refit 0/1 error | Refit AUC |
 |---|---|---|---|---|---|---|---|
-| 10 % (17 cells) | **7.14** ± 1.96 | 1.48 | 10.81 | 9.62 | 0.141 | 20.9 % | 0.857 |
-| 25 % (43 cells) | **7.06** ± 1.05 | 1.26 | 10.35 | 8.93 | 0.140 | 20.5 % | 0.858 |
-| 50 % (86 cells) | **8.31** ± 1.03 | 1.30 | 10.74 | 9.66 | 0.150 | 21.9 % | 0.839 |
+| 10 % (17 cells) | **7.10** ± 1.97 | 1.48 | 10.81 | 9.62 | 0.141 | 20.8 % | 0.857 |
+| 25 % (43 cells) | **7.07** ± 1.05 | 1.26 | 10.35 | 8.93 | 0.140 | 20.5 % | 0.857 |
+| 50 % (86 cells) | **8.36** ± 1.08 | 1.30 | 10.74 | 9.66 | 0.150 | 22.0 % | 0.838 |
 
 * The **per-holdout-set** error rates the prompt asked for (each refit next to the full-data baseline) are in
   `results/tables/holdout_per_set_main.md` (60 rows) and `results/part2/main/holdout_metrics.csv`.
   Per-run predictions are in `results/part2/main/holdout_per_run.csv`.
-* The pre-registered `c027` design gave 7.52 / 7.20 / 8.22 pp and the retired PF-1 design `r032` gave 7.28 / 7.11 / 8.03 pp, with nearly identical Brier and AUC (commit `e4812fe`). Changing the random structure barely changes interpolation accuracy.
-* Refits were singular in 1, 1 and 13 of the 20 repetitions at 10 / 25 / 50 %, under the PF-2 rule.
+* Earlier designs gave nearly identical results, with nearly identical Brier and AUC: the pre-registered `c027` 7.52 / 7.20 / 8.22 pp and the retired PF-1 design `r032` 7.28 / 7.11 / 8.03 pp (commit `e4812fe`), and PF-2's `c028_r1` 7.14 / 7.06 / 8.31 pp. Changing the random structure barely changes interpolation accuracy.
+* All refits are singular, as expected: the hereditary `(1|model)` stays at zero (PF-3).
 * **Reading the results:**
   - Dropping half the combinations costs only about 1 pp of run-level accuracy error compared with dropping 10 %.
   - The refit is consistently better than both naive baselines, by 1.3–3.7 pp on run accuracy and on every task-level metric.
@@ -244,12 +267,12 @@ For reference, HAL's own paired repeat runs differ by up to about 4.5 pp (e.g. C
 ## 4c. Part 2b: task-level holdout (added on request; design in DESIGN.md)
 **Setup.**
 * The holdout unit is now a single task score: one task × one run, i.e. one model × scaffold × benchmark × effort combination on one task. Section 4 held out whole combinations instead.
-* 10 / 25 / 50 % of the 21,333 rows are held out at random (20 repetitions each, seeds 1001–1060), and the selected formula `c028_r1` is refit on the rest.
+* 10 / 25 / 50 % of the 21,333 rows are held out at random (20 repetitions each, seeds 1001–1060), and the selected formula `c028` is refit on the rest.
 * Every run and task keeps most of its observations, so this tests *filling in* missing task scores of partly observed runs, not predicting unseen agents.
-* Wall time: 5.4 min. None of the 60 refits is singular. Under the pre-registered `c027` design, 49 of 60 were.
+* Every refit keeps the zero hereditary `(1|model)`, so all are singular by design (PF-3). Results match PF-2's `c028_r1` to within 0.01 pp.
 * The held-out row's own run effect is estimated from that run's training rows, which is where the run term helps most.
 
-**Results** (`c028_r1`; `results/part2_task/main/`):
+**Results** (`c028`; `results/part2_task/main/`):
 
 | Held out | Held-out tasks per run | Subset MAE: GLMM refit | Subset MAE: run's own accuracy | Subset MAE: additive run+task logit | Noise floor | Full-run MAE: observed + GLMM-filled | Full-run MAE: subsample only | Cell holdout (§4) | Task Brier / AUC |
 |---|---|---|---|---|---|---|---|---|---|
@@ -270,7 +293,7 @@ All values are in pp unless labelled otherwise.
 1. **Most of the held-out-subset error is sampling noise.** With 12 held-out tasks per run, even the true probabilities would miss the observed subset accuracy by about 9.2 pp. Removing the floor in quadrature (a rough approximation) leaves a systematic error of about **3–3.5 pp at every fraction** (3.1 / 3.0 / 3.5). So losing up to half the rows barely degrades the model.
 2. **Filling in a run is far easier than predicting it outright.**
    * A run whose remaining tasks are observed and the rest filled in by the GLMM has full-benchmark accuracy within 0.9 / 1.6 / 2.7 pp.
-   * Predicting a whole run, as in the cell holdout, gives 7.1–8.3 pp.
+   * Predicting a whole run, as in the cell holdout, gives 7.1–8.4 pp.
    * So the run's own observed tasks carry most of the information about that run.
 3. **The GLMM's advantage over subsampling is real but moderate.**
    * Simply running a random subset of tasks and reporting that accuracy gives 1.1 / 1.9 / 3.3 pp. The GLMM saves 0.2–0.7 pp, about 20 %.
@@ -294,11 +317,11 @@ All values are in pp unless labelled otherwise.
 
   | Model | Held-out-task Brier | Log-loss | 0/1 error | AUC | Run MAE (pp) |
   |---|---|---|---|---|---|
-  | Selected model | 0.189 | 0.560 | 31.3 % | 0.733 | 8.08 |
-  | + AP feature PC1 | 0.136 | 0.429 | 19.5 % | 0.866 | **4.51** |
-  | + AP difficulty `b` | **0.110** | **0.355** | **15.3 %** | **0.908** | 4.55 |
+  | Selected model | 0.189 | 0.561 | 31.4 % | 0.733 | 8.00 |
+  | + AP feature PC1 | 0.136 | 0.429 | 19.3 % | 0.866 | 4.45 |
+  | + AP difficulty `b` | **0.110** | **0.355** | **15.3 %** | **0.909** | **4.45** |
 
-* **In-sample.** PC1 coefficient −2.18 (SE 0.36), ΔAIC −37; `b` coefficient −2.89 (SE 0.44), ΔAIC −52. The overall task random-effect SD falls from 2.16 to 2.11 (PC1) and 2.09 (`b`).
+* **In-sample.** PC1 coefficient −2.19 (SE 0.36), ΔAIC −34; `b` coefficient −2.89 (SE 0.46), ΔAIC −49. The overall task random-effect SD falls from 2.16 to 2.11 (PC1) and 2.09 (`b`).
 * **Conclusion.** Inherited task features substantially improve prediction for *new tasks*, matching the Agent Psychometrics finding (their AUC 0.84 vs 0.72).
 * **What this does not show.** The features entered only as task-level *main effects*. For tasks already seen in training, a main effect mostly duplicates the task random intercept. `(1|task)` is also additive: every run ranks tasks the same way. Task features crossed with agent terms could capture run × task structure that `(1|task)` cannot. E1b tests this.
 
