@@ -1,0 +1,12 @@
+term,skill_coef_d1,loading_sign
+release,0.221073215190739,1
+high,-0.042886196458395,1
+low,0.128528774025825,1
+none,-0.0205064499397412,1
+familyAnthropic reasoning,0.959090452075077,1
+familyDeepSeek non-reasoning,-2.09599614426451,1
+familyDeepSeek reasoning,-3.20158555746107,1
+familyGoogle non-reasoning,-2.69797824818783,1
+familyGoogle reasoning,-0.442464965848759,1
+familyOpenAI non-reasoning,-0.00494329125722562,1
+familyOpenAI reasoning,0.144767268375929,1

@@ -1,0 +1,27 @@
+benchmark,model,grp,sdcor
+GAIA,additive,task,1.4302266390717
+GAIA,additive,model,0.741209088006074
+GAIA,additive,scaffold,0.257968171976203
+CORE-Bench Hard,additive,task,2.08706332819829
+CORE-Bench Hard,additive,model,0.95182734317834
+CORE-Bench Hard,additive,scaffold,0.253610029971409
+Online Mind2Web,additive,task,1.81857202149795
+Online Mind2Web,additive,model,0.304668733654483
+Online Mind2Web,additive,scaffold,0.0403935326839326
+SciCode,additive,task,7.76533064452185
+SciCode,additive,model,1.18775122443685
+SciCode,additive,scaffold,0
+ScienceAgentBench,additive,task,2.23228366292846
+ScienceAgentBench,additive,model,0.611019979533872
+ScienceAgentBench,additive,scaffold,0.685107905645655
+SWE-bench Verified Mini,additive,task,2.58830914917383
+SWE-bench Verified Mini,additive,model,1.50191770807963
+SWE-bench Verified Mini,additive,scaffold,1.31317135613966
+TAU-bench Airline,additive,task,1.23847985815642
+TAU-bench Airline,additive,model,0.78858190256931
+USACO,additive,task,2.85185529549026
+USACO,additive,model,1.12429048573871
+USACO,additive,scaffold,0.92961634724354
+pooled,additive,task,2.1031448215485
+pooled,additive,model,0.661751335225189
+pooled,additive,scaffold,1.69887238485849

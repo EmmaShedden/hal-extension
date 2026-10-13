@@ -1,0 +1,9 @@
+stat,value
+spearman_theta_1pl_2pl,0.984107046155487
+spearman_b_1pl_2pl,0.97505641680134
+sd_agent_1pl,1.2414048403796
+sd_task_1pl,2.28541580974084
+sd_model_faithful,0.693035662987231
+sd_task_faithful,1.24109660992459
+faithful_runs_kept,109
+faithful_tasks_dropped_constant,298

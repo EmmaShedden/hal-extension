@@ -1,0 +1,3 @@
+method,brier,logloss,err01,auc,n,run_mae_pp,run_rmse_pp,run_cor,n_params,cells,anchor,params_at_bound
+"ECI sigmoid(alpha_c (C_r - D_c)), rows = model x effort, columns = scaffold x benchmark",0.2001931640724,0.581404602208289,0.315286176346505,0.66682160491929,21333,5.12567522485443,7.15420268600447,0.907964777978082,50,172,CORE-Agent|CORE-Bench Hard,0
+"ECI faithful (max scaffold per model x benchmark, rows with > 3 benchmarks; metrics on those maxima only)",,,,,93,5.79885417432014,7.8857405229063,0.87722282527662,27,93,CORE-Bench Hard,0

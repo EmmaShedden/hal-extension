@@ -32,14 +32,15 @@ fits <- mclapply(specs, function(s) {
 }, mc.cores = length(specs))
 saveRDS(list(fits = fits, specs = specs, epochs = EPOCHS), RM("05_collab_filtering_cpp", "fits.Rds"))
 
-met <- rbindlist(lapply(names(fits), function(k) {
-  ct[, pred := pmin(pmax(fits[[k]]$fitted * rowmax, 0), 1)]               # back to accuracy; clipped to [0, 1]
-  cbind(fit_metrics(d, expand_cell_pred(d, ct), k), n_params = fits[[k]]$n_params, epochs = EPOCHS,
-        train_mse_normalised = mean((fits[[k]]$fitted - ct$y)^2), seconds = fits[[k]]$seconds)
+# (loop variable is fk: ct has columns k and n)
+met <- rbindlist(lapply(names(fits), function(fk) {
+  ct$pred <- pmin(pmax(fits[[fk]]$fitted * ct$rowmax, 0), 1)               # back to accuracy; clipped to [0, 1]
+  cbind(fit_metrics(d, expand_cell_pred(d, ct), fk), n_params = fits[[fk]]$n_params, epochs = EPOCHS,
+        train_mse_normalised = mean((fits[[fk]]$fitted - ct$y)^2), seconds = fits[[fk]]$seconds)
 }))
-bb <- rbindlist(lapply(names(fits), function(k) {
-  ct[, pred := pmin(pmax(fits[[k]]$fitted * rowmax, 0), 1)]
-  cbind(method = k, run_mae_by_benchmark(d, expand_cell_pred(d, ct)))
+bb <- rbindlist(lapply(names(fits), function(fk) {
+  ct$pred <- pmin(pmax(fits[[fk]]$fitted * ct$rowmax, 0), 1)
+  cbind(method = fk, run_mae_by_benchmark(d, expand_cell_pred(d, ct)))
 }))
 cells <- ct[, .(llm, column, acc, rowmax)]
 for (k in names(fits)) cells[[paste0("pred_", k)]] <- pmin(pmax(fits[[k]]$fitted * ct$rowmax, 0), 1)

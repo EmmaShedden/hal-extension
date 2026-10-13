@@ -1,0 +1,173 @@
+llm,column,acc,pred
+deepseek-r1|default,Browser-Use|Online Mind2Web,0.253333333333333,0.258501961376496
+deepseek-v3|none,Browser-Use|Online Mind2Web,0.323333333333333,0.337101982188243
+claude-3.7-sonnet|none,Browser-Use|Online Mind2Web,0.383333333333333,0.406437753163649
+claude-3.7-sonnet|high,Browser-Use|Online Mind2Web,0.393333333333333,0.375347877324634
+claude-sonnet-4|none,Browser-Use|Online Mind2Web,0.4,0.398235778799682
+claude-sonnet-4|high,Browser-Use|Online Mind2Web,0.393333333333333,0.393429175647853
+gemini-2.0-flash|none,Browser-Use|Online Mind2Web,0.29,0.289783337428733
+gpt-4.1|none,Browser-Use|Online Mind2Web,0.363333333333333,0.300382096485694
+gpt-5|default,Browser-Use|Online Mind2Web,0.32,0.33191831236978
+o3|default,Browser-Use|Online Mind2Web,0.29,0.258862683398547
+o4-mini|high,Browser-Use|Online Mind2Web,0.2,0.214909102737457
+o4-mini|low,Browser-Use|Online Mind2Web,0.183333333333333,0.213488946529906
+gpt-4.1|none,CORE-Agent|CORE-Bench Hard,0.333333333333333,0.230619846843213
+deepseek-v3|none,CORE-Agent|CORE-Bench Hard,0.177777777777778,0.170696479002686
+gemini-2.0-flash|none,CORE-Agent|CORE-Bench Hard,0.111111111111111,0.14250271069726
+claude-3.7-sonnet|none,CORE-Agent|CORE-Bench Hard,0.355555555555556,0.351868774302003
+gemini-2.5-pro-preview|default,CORE-Agent|CORE-Bench Hard,0.222222222222222,0.223100392789699
+deepseek-r1|default,CORE-Agent|CORE-Bench Hard,0.0666666666666667,0.0951897461684926
+o4-mini|low,CORE-Agent|CORE-Bench Hard,0.177777777777778,0.205831665705049
+o4-mini|high,CORE-Agent|CORE-Bench Hard,0.266666666666667,0.218849002877751
+o3|default,CORE-Agent|CORE-Bench Hard,0.244444444444444,0.222930209875529
+claude-3.7-sonnet|high,CORE-Agent|CORE-Bench Hard,0.244444444444444,0.348466088411025
+gpt-oss-120b|default,CORE-Agent|CORE-Bench Hard,0.111111111111111,0.120992313757977
+claude-opus-4.1|none,CORE-Agent|CORE-Bench Hard,0.511111111111111,0.432663912476675
+gpt-oss-120b|high,CORE-Agent|CORE-Bench Hard,0.111111111111111,0.120992313757977
+claude-opus-4.1|high,CORE-Agent|CORE-Bench Hard,0.422222222222222,0.37358800108532
+gpt-5|default,CORE-Agent|CORE-Bench Hard,0.266666666666667,0.252184873495343
+claude-sonnet-4|none,CORE-Agent|CORE-Bench Hard,0.288888888888889,0.28974033399504
+claude-sonnet-4|high,CORE-Agent|CORE-Bench Hard,0.333333333333333,0.32743855473308
+deepseek-v3.1|none,CORE-Agent|CORE-Bench Hard,0.2,0.202246861379702
+gpt-oss-120b|default,HAL Generalist Agent|CORE-Bench Hard,0.0888888888888889,0.0843527863470219
+claude-opus-4.1|none,HAL Generalist Agent|CORE-Bench Hard,0.355555555555556,0.359609727774106
+gpt-oss-120b|high,HAL Generalist Agent|CORE-Bench Hard,0.0888888888888889,0.0843527863470219
+claude-opus-4.1|high,HAL Generalist Agent|CORE-Bench Hard,0.333333333333333,0.277446074664351
+deepseek-r1-0528|default,HAL Generalist Agent|CORE-Bench Hard,0.0888888888888889,0.0772259087358719
+deepseek-r1|default,HAL Generalist Agent|CORE-Bench Hard,0.0222222222222222,0.0246022914907147
+deepseek-v3|none,HAL Generalist Agent|CORE-Bench Hard,0.0888888888888889,0.0734235898808073
+gemini-2.0-flash|none,HAL Generalist Agent|CORE-Bench Hard,0.0444444444444444,0.0661900666347981
+gpt-4.1|none,HAL Generalist Agent|CORE-Bench Hard,0.222222222222222,0.181410815919457
+gpt-5|default,HAL Generalist Agent|CORE-Bench Hard,0.111111111111111,0.155684921463522
+o3|default,HAL Generalist Agent|CORE-Bench Hard,0.222222222222222,0.199352205657087
+o4-mini|high,HAL Generalist Agent|CORE-Bench Hard,0.355555555555556,0.248093463723208
+o4-mini|low,HAL Generalist Agent|CORE-Bench Hard,0.155555555555556,0.226720836911486
+claude-3.7-sonnet|none,HAL Generalist Agent|CORE-Bench Hard,0.311111111111111,0.364432790396233
+claude-3.7-sonnet|high,HAL Generalist Agent|CORE-Bench Hard,0.377777777777778,0.375311356779347
+claude-3.7-sonnet|none,HAL Generalist Agent|GAIA,0.563636363636364,0.573291692663875
+claude-3.7-sonnet|high,HAL Generalist Agent|GAIA,0.642424242424243,0.603683399500712
+claude-opus-4|none,HAL Generalist Agent|GAIA,0.303030303030303,0.378426074035007
+claude-opus-4|high,HAL Generalist Agent|GAIA,0.648484848484848,0.639528615398789
+deepseek-r1|default,HAL Generalist Agent|GAIA,0.303030303030303,0.256393197431246
+deepseek-v3|none,HAL Generalist Agent|GAIA,0.363636363636364,0.359309278739358
+gemini-2.0-flash|none,HAL Generalist Agent|GAIA,0.327272727272727,0.335436079636519
+gpt-4.1|none,HAL Generalist Agent|GAIA,0.496969696969697,0.506967119739071
+o4-mini|high,HAL Generalist Agent|GAIA,0.545454545454545,0.576045989788916
+o4-mini|low,HAL Generalist Agent|GAIA,0.581818181818182,0.549597616796823
+claude-3.7-sonnet|none,HAL Generalist Agent|ScienceAgentBench,0.107843137254902,0.112546391474183
+claude-3.7-sonnet|high,HAL Generalist Agent|ScienceAgentBench,0.176470588235294,0.153827842395222
+deepseek-v3|none,HAL Generalist Agent|ScienceAgentBench,0.00980392156862745,0.0114491947713782
+gpt-4.1|none,HAL Generalist Agent|ScienceAgentBench,0.0686274509803922,0.0689980371622993
+o3|default,HAL Generalist Agent|ScienceAgentBench,0.0980392156862745,0.11226220695497
+o4-mini|high,HAL Generalist Agent|ScienceAgentBench,0.215686274509804,0.211906492542179
+o4-mini|low,HAL Generalist Agent|ScienceAgentBench,0.196078431372549,0.177100081843384
+claude-3.7-sonnet|none,HAL Generalist Agent|SWE-bench Verified Mini,0.26,0.2571703402291
+deepseek-r1|default,HAL Generalist Agent|SWE-bench Verified Mini,0.06,0.013475958221942
+deepseek-v3|none,HAL Generalist Agent|SWE-bench Verified Mini,0.1,0.0591248942718785
+gemini-2.0-flash|none,HAL Generalist Agent|SWE-bench Verified Mini,0.02,0.0283690596085214
+gpt-4.1|none,HAL Generalist Agent|SWE-bench Verified Mini,0.02,0.0595712183453856
+o4-mini|high,HAL Generalist Agent|SWE-bench Verified Mini,0.02,0.0212061473203868
+o4-mini|low,HAL Generalist Agent|SWE-bench Verified Mini,0.06,0.0192687950614908
+claude-3.7-sonnet|high,HAL Generalist Agent|SWE-bench Verified Mini,0.24,0.198991965999375
+claude-opus-4.1|high,HAL Generalist Agent|SWE-bench Verified Mini,0.46,0.391792132709165
+claude-opus-4.1|none,HAL Generalist Agent|SWE-bench Verified Mini,0.42,0.550284065871674
+claude-opus-4|high,HAL Generalist Agent|SWE-bench Verified Mini,0.3,0.287955200623314
+claude-opus-4|none,HAL Generalist Agent|SWE-bench Verified Mini,0.34,0.361549162993072
+gpt-5|default,HAL Generalist Agent|SWE-bench Verified Mini,0.12,0.10118820563409
+o3|default,HAL Generalist Agent|SWE-bench Verified Mini,0,0.0334671147392861
+claude-3.7-sonnet|none,HAL Generalist Agent|TAU-bench Airline,0.56,0.438438930885178
+claude-3.7-sonnet|high,HAL Generalist Agent|TAU-bench Airline,0.44,0.406553714488552
+deepseek-r1|default,HAL Generalist Agent|TAU-bench Airline,0.1,0.104036783102766
+deepseek-v3|none,HAL Generalist Agent|TAU-bench Airline,0.18,0.208904557180274
+gemini-2.0-flash|none,HAL Generalist Agent|TAU-bench Airline,0.22,0.169078510725583
+gpt-4.1|none,HAL Generalist Agent|TAU-bench Airline,0.16,0.247532352095883
+o3|default,HAL Generalist Agent|TAU-bench Airline,0.2,0.213357237863019
+o4-mini|high,HAL Generalist Agent|TAU-bench Airline,0.18,0.197162753798441
+o4-mini|low,HAL Generalist Agent|TAU-bench Airline,0.22,0.189947308384611
+claude-opus-4|none,HAL Generalist Agent|TAU-bench Airline,0.44,0.393084418252107
+gpt-5|default,HAL Generalist Agent|TAU-bench Airline,0.3,0.260780723997206
+claude-opus-4.1|high,HAL Generalist Agent|TAU-bench Airline,0.32,0.455437636232137
+claude-opus-4|high,HAL Generalist Agent|TAU-bench Airline,0.44,0.443223350880663
+claude-opus-4.1|none,HAL Generalist Agent|TAU-bench Airline,0.54,0.534327296631934
+gpt-4.1|none,HAL Generalist Agent|USACO,0.254071661237785,0.254736136578547
+claude-3.7-sonnet|none,HF Open Deep Research|GAIA,0.36969696969697,0.296655166601325
+claude-3.7-sonnet|high,HF Open Deep Research|GAIA,0.357575757575758,0.382196844606068
+claude-opus-4.1|none,HF Open Deep Research|GAIA,0.284848484848485,0.347273218704282
+claude-opus-4.1|high,HF Open Deep Research|GAIA,0.254545454545455,0.345738722082364
+claude-opus-4|none,HF Open Deep Research|GAIA,0.575757575757576,0.54725099374886
+deepseek-r1|default,HF Open Deep Research|GAIA,0.248484848484849,0.23421994189373
+deepseek-v3|none,HF Open Deep Research|GAIA,0.284848484848485,0.232801868682843
+gemini-2.0-flash|none,HF Open Deep Research|GAIA,0.193939393939394,0.192759369839456
+gpt-4.1|none,HF Open Deep Research|GAIA,0.503030303030303,0.398548305733974
+gpt-5|default,HF Open Deep Research|GAIA,0.628048780487805,0.580773493767273
+o3|default,HF Open Deep Research|GAIA,0.327272727272727,0.472744187848489
+o4-mini|high,HF Open Deep Research|GAIA,0.557575757575758,0.542230115041107
+o4-mini|low,HF Open Deep Research|GAIA,0.478787878787879,0.490219023078039
+claude-3.7-sonnet|none,SAB Self-Debug|ScienceAgentBench,0.225490196078431,0.224026355537351
+claude-3.7-sonnet|high,SAB Self-Debug|ScienceAgentBench,0.303921568627451,0.256893555964221
+claude-opus-4.1|none,SAB Self-Debug|ScienceAgentBench,0.274509803921569,0.263064978053831
+claude-opus-4.1|high,SAB Self-Debug|ScienceAgentBench,0.264705882352941,0.258866645468068
+deepseek-r1|default,SAB Self-Debug|ScienceAgentBench,0.235294117647059,0.182003340022389
+deepseek-v3|none,SAB Self-Debug|ScienceAgentBench,0.156862745098039,0.190332978167049
+gemini-2.0-flash|none,SAB Self-Debug|ScienceAgentBench,0.127450980392157,0.169575073061991
+gpt-5|default,SAB Self-Debug|ScienceAgentBench,0.303921568627451,0.329780438742874
+gpt-4.1|none,SAB Self-Debug|ScienceAgentBench,0.245098039215686,0.254636440223977
+o3|default,SAB Self-Debug|ScienceAgentBench,0.333333333333333,0.283131795600594
+o4-mini|high,SAB Self-Debug|ScienceAgentBench,0.274509803921569,0.300962265509234
+o4-mini|low,SAB Self-Debug|ScienceAgentBench,0.274509803921569,0.27888113528121
+claude-opus-4.1|high,Scicode Tool Calling Agent|SciCode,0.0692307692307692,0.0449706526444992
+claude-3.7-sonnet|none,Scicode Tool Calling Agent|SciCode,0.0307692307692308,0.0338806666492265
+claude-3.7-sonnet|high,Scicode Tool Calling Agent|SciCode,0.0461538461538462,0.0476071259046705
+claude-opus-4.1|none,Scicode Tool Calling Agent|SciCode,0.0769230769230769,0.0531891300118019
+deepseek-v3|none,Scicode Tool Calling Agent|SciCode,0,0.0118490892540141
+deepseek-r1-0528|default,Scicode Tool Calling Agent|SciCode,0,0.00689271700536622
+gemini-2.0-flash|none,Scicode Tool Calling Agent|SciCode,0.0153846153846154,0.00870828411118552
+gpt-4.1|none,Scicode Tool Calling Agent|SciCode,0.0153846153846154,0.0329899392121487
+gpt-5|default,Scicode Tool Calling Agent|SciCode,0.0615384615384615,0.0593394120609631
+o3|default,Scicode Tool Calling Agent|SciCode,0.0923076923076923,0.0449899608593896
+o4-mini|high,Scicode Tool Calling Agent|SciCode,0.0461538461538462,0.0551708308911279
+o4-mini|low,Scicode Tool Calling Agent|SciCode,0.0461538461538462,0.0436846826318244
+claude-3.7-sonnet|none,Scicode Zero Shot Agent|SciCode,0,0.00932192318478652
+claude-3.7-sonnet|high,Scicode Zero Shot Agent|SciCode,0.0307692307692308,0.0216953248745771
+deepseek-r1-0528|default,Scicode Zero Shot Agent|SciCode,0,0.00480302000273258
+deepseek-v3|none,Scicode Zero Shot Agent|SciCode,0.0307692307692308,0.0275122175477119
+gemini-2.0-flash|none,Scicode Zero Shot Agent|SciCode,0.0153846153846154,0.0117529353833079
+gpt-4.1|none,Scicode Zero Shot Agent|SciCode,0.0615384615384615,0.0529654709326847
+o3|default,Scicode Zero Shot Agent|SciCode,0.0461538461538462,0.08273177595908
+o4-mini|high,Scicode Zero Shot Agent|SciCode,0.0615384615384615,0.0795155236707063
+o4-mini|low,Scicode Zero Shot Agent|SciCode,0.0923076923076923,0.0512402438919267
+claude-3.7-sonnet|none,SeeAct|Online Mind2Web,0.283333333333333,0.279047784851761
+claude-3.7-sonnet|high,SeeAct|Online Mind2Web,0.303333333333333,0.306157865936116
+claude-sonnet-4|none,SeeAct|Online Mind2Web,0.366666666666667,0.365074116014229
+claude-sonnet-4|high,SeeAct|Online Mind2Web,0.366666666666667,0.365107133757127
+gemini-2.0-flash|none,SeeAct|Online Mind2Web,0.266666666666667,0.270126081613118
+gpt-4.1|none,SeeAct|Online Mind2Web,0.303333333333333,0.328052680089204
+gpt-5|default,SeeAct|Online Mind2Web,0.423333333333333,0.421342205155987
+o3|default,SeeAct|Online Mind2Web,0.39,0.343876712796857
+o4-mini|high,SeeAct|Online Mind2Web,0.32,0.338177392788865
+o4-mini|low,SeeAct|Online Mind2Web,0.316666666666667,0.320656166884189
+claude-3.7-sonnet|none,SWE-Agent|SWE-bench Verified Mini,0.5,0.548291931690725
+claude-3.7-sonnet|high,SWE-Agent|SWE-bench Verified Mini,0.54,0.612417572294311
+gemini-2.0-flash|none,SWE-Agent|SWE-bench Verified Mini,0.24,0.0915550512978851
+claude-opus-4|none,SWE-Agent|SWE-bench Verified Mini,0.5,0.408817794824008
+gpt-4.1|none,SWE-Agent|SWE-bench Verified Mini,0.44,0.369054757094275
+o4-mini|low,SWE-Agent|SWE-bench Verified Mini,0.54,0.448140857314067
+o4-mini|high,SWE-Agent|SWE-bench Verified Mini,0.5,0.512438390149993
+deepseek-r1|default,SWE-Agent|SWE-bench Verified Mini,0,0.0411924081480864
+deepseek-v3|none,SWE-Agent|SWE-bench Verified Mini,0.24,0.124433808750976
+claude-opus-4.1|high,SWE-Agent|SWE-bench Verified Mini,0.54,0.539397062949384
+claude-opus-4.1|none,SWE-Agent|SWE-bench Verified Mini,0.54,0.638286188520333
+gpt-5|default,SWE-Agent|SWE-bench Verified Mini,0.46,0.45858824484407
+o3|default,SWE-Agent|SWE-bench Verified Mini,0.46,0.431962540738095
+claude-3.7-sonnet|none,USACO Episodic + Semantic|USACO,0.293159609120521,0.280941591779916
+claude-3.7-sonnet|high,USACO Episodic + Semantic|USACO,0.267100977198697,0.355984997827451
+claude-opus-4.1|none,USACO Episodic + Semantic|USACO,0.482084690553746,0.463180631004791
+claude-opus-4.1|high,USACO Episodic + Semantic|USACO,0.514657980456026,0.476579270728502
+deepseek-r1|default,USACO Episodic + Semantic|USACO,0.381107491856678,0.420057731473168
+deepseek-v3|none,USACO Episodic + Semantic|USACO,0.390879478827362,0.359638347309343
+gemini-2.0-flash|none,USACO Episodic + Semantic|USACO,0.270358306188925,0.270249503684018
+gpt-4.1|none,USACO Episodic + Semantic|USACO,0.449511400651466,0.42869248480002
+gpt-5|default,USACO Episodic + Semantic|USACO,0.697068403908795,0.690314146816651
+o3|default,USACO Episodic + Semantic|USACO,0.462540716612378,0.472591323577662
+o4-mini|high,USACO Episodic + Semantic|USACO,0.579804560260586,0.456323515042709
+o4-mini|low,USACO Episodic + Semantic|USACO,0.309446254071661,0.405233670960725

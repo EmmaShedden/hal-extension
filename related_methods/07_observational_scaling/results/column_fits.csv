@@ -1,0 +1,29 @@
+capability,column,cells,k,w0,w,floor
+PC1-3 of external benchmarks,Browser-Use|Online Mind2Web,12,3,-0.719573599248169,-0.169;2.315;-3.791,0
+PC1-3 of external benchmarks,CORE-Agent|CORE-Bench Hard,18,3,-2.08563669677834,-1.289;4.61;-7.823,0.129156168129472
+PC1-3 of external benchmarks,HAL Generalist Agent|CORE-Bench Hard,15,3,-86.5297570799823,-17.816;683.282;-168.323,0.135353534403923
+PC1-3 of external benchmarks,HAL Generalist Agent|GAIA,10,3,-0.708351258275159,-2.087;2.602;0.865,0.2
+PC1-3 of external benchmarks,HAL Generalist Agent|ScienceAgentBench,7,1,-2.00390250394195,-1.259,0
+PC1-3 of external benchmarks,HAL Generalist Agent|SWE-bench Verified Mini,14,3,-6.44649604964705,-2.739;42.024;-15.383,0.0364415938929726
+PC1-3 of external benchmarks,HAL Generalist Agent|TAU-bench Airline,14,3,-4.0065942308718,-1.459;27.162;-7.617,0.149128637026621
+PC1-3 of external benchmarks,HF Open Deep Research|GAIA,13,3,-0.964271570566336,-1.315;-5.723;-0.993,0.2
+PC1-3 of external benchmarks,SAB Self-Debug|ScienceAgentBench,12,3,-1.12830436401979,-0.756;-0.123;0.053,0
+PC1-3 of external benchmarks,Scicode Tool Calling Agent|SciCode,12,3,-3.23028083036516,-1.978;-1.641;-3.887,0
+PC1-3 of external benchmarks,Scicode Zero Shot Agent|SciCode,9,1,-5.1857782310743,-4.441,0.0276190856989139
+PC1-3 of external benchmarks,SeeAct|Online Mind2Web,10,3,-1.74774310324818,-1.514;-0.195;-2.49,0.2
+PC1-3 of external benchmarks,SWE-Agent|SWE-bench Verified Mini,13,3,-0.348365398339105,-1.191;0.142;-1.683,0
+PC1-3 of external benchmarks,USACO Episodic + Semantic|USACO,12,3,-0.756310108376448,-1.314;-3.23;-3.081,0.2
+ECI (z-scored),Browser-Use|Online Mind2Web,12,1,-0.772174075226728,-0.078,0
+ECI (z-scored),CORE-Agent|CORE-Bench Hard,18,1,-1.13731585444822,0.231,0
+ECI (z-scored),HAL Generalist Agent|CORE-Bench Hard,15,1,-1.46456327984597,0.264,0
+ECI (z-scored),HAL Generalist Agent|GAIA,10,1,-0.0104049324377363,0.32,0
+ECI (z-scored),HAL Generalist Agent|ScienceAgentBench,7,1,-2.00636195846311,0.429,0
+ECI (z-scored),HAL Generalist Agent|SWE-bench Verified Mini,14,1,-1.58643041806957,0.148,0
+ECI (z-scored),HAL Generalist Agent|TAU-bench Airline,14,1,-0.833175449467662,0.143,0
+ECI (z-scored),HF Open Deep Research|GAIA,13,1,-1.32645675535089,0.546,0.2
+ECI (z-scored),SAB Self-Debug|ScienceAgentBench,12,1,-1.12680947009444,0.232,0
+ECI (z-scored),Scicode Tool Calling Agent|SciCode,12,1,-3.29147084779852,0.481,0
+ECI (z-scored),Scicode Zero Shot Agent|SciCode,9,1,-4.95833228466882,1.638,0.0232565887376139
+ECI (z-scored),SeeAct|Online Mind2Web,10,1,-1.73311464862517,0.354,0.2
+ECI (z-scored),SWE-Agent|SWE-bench Verified Mini,13,1,-0.358102672816714,0.37,0
+ECI (z-scored),USACO Episodic + Semantic|USACO,12,1,-1.11039211956724,0.561,0.2

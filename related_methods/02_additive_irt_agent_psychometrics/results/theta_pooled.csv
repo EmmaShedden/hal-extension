@@ -1,0 +1,26 @@
+component,level,theta
+model,gpt-5,0.938430127181648
+model,claude-opus-4,0.745269317268086
+model,claude-sonnet-4,0.649850530334845
+model,claude-opus-4.1,0.604228137122194
+model,claude-3.7-sonnet,0.269967491785506
+model,gpt-4.1,0.262360550230339
+model,o4-mini,0.258009350180064
+model,o3,0.25720536380327
+model,gemini-2.5-pro-preview,-0.0216237292917894
+model,deepseek-v3.1,-0.149238711679768
+model,deepseek-v3,-0.279986764393152
+model,deepseek-r1,-0.569453686591622
+model,gemini-2.0-flash,-0.576089733961843
+model,gpt-oss-120b,-0.958964712476379
+model,deepseek-r1-0528,-1.05879774271637
+scaffold,SWE-Agent,2.10714903702491
+scaffold,USACO Episodic + Semantic,1.50240189963055
+scaffold,SAB Self-Debug,1.21232331835129
+scaffold,SeeAct,0.698332096636355
+scaffold,Browser-Use,0.692070707924932
+scaffold,CORE-Agent,0.645451719475314
+scaffold,HAL Generalist Agent,0.404151229845493
+scaffold,HF Open Deep Research,-0.0374422740265809
+scaffold,Scicode Zero Shot Agent,-2.37112840698558
+scaffold,Scicode Tool Calling Agent,-2.40706518667824

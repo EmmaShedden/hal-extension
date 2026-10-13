@@ -1,0 +1,2 @@
+method,brier,logloss,err01,auc,n,run_mae_pp,run_rmse_pp,run_cor,n_params,cells,cell_mae_pp
+"BenchPress Logit Bias-ALS (rank 2, lambda 0.1), reconstruction",0.195171145688948,0.568842660620917,0.30150471101111,0.690984032050805,21333,3.11346282682746,4.56703829049997,0.964026576482833,109,172,3.11897797825098

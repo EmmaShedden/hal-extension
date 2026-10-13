@@ -1,0 +1,25 @@
+method,benchmark,run_mae_pp,max_err_pp,runs
+"AP additive, per benchmark",GAIA,4.91770549130944,22.9248763464526,23
+"AP additive, per benchmark",CORE-Bench Hard,3.2651282651535,14.107655510984,34
+"AP additive, per benchmark",Online Mind2Web,3.71252059176119,7.26985773016387,22
+"AP additive, per benchmark",SciCode,1.35191232571715,3.38985895763079,22
+"AP additive, per benchmark",ScienceAgentBench,2.98374813450117,5.40191213861227,19
+"AP additive, per benchmark",SWE-bench Verified Mini,6.12584801810873,11.8586585920233,27
+"AP additive, per benchmark",TAU-bench Airline,3.51600170005563,12.42366776092,14
+"AP additive, per benchmark",USACO,2.66286850135476,13.5391380658042,13
+"AP per-agent, per benchmark",GAIA,0.627240935586098,1.1928101527706,23
+"AP per-agent, per benchmark",CORE-Bench Hard,1.56489993699296,3.97851063054269,34
+"AP per-agent, per benchmark",Online Mind2Web,0.554588795081454,1.57181565272045,22
+"AP per-agent, per benchmark",SciCode,0.827005119640421,1.69805598577231,22
+"AP per-agent, per benchmark",ScienceAgentBench,0.794674662357095,2.42579997696882,19
+"AP per-agent, per benchmark",SWE-bench Verified Mini,0.68410911087917,1.40449762581187,27
+"AP per-agent, per benchmark",TAU-bench Airline,1.82618208780547,3.573321827437,14
+"AP per-agent, per benchmark",USACO,0.207117094646383,0.57423401772263,13
+"AP additive, pooled",GAIA,8.70863268817391,25.6200236337178,23
+"AP additive, pooled",CORE-Bench Hard,6.25104449579153,20.9555354705928,34
+"AP additive, pooled",Online Mind2Web,4.69566168291416,13.8202847597703,22
+"AP additive, pooled",SciCode,1.68406195580646,4.72978507866236,22
+"AP additive, pooled",ScienceAgentBench,4.62015434826979,10.4435396425782,19
+"AP additive, pooled",SWE-bench Verified Mini,10.0509679103735,29.9898386834836,27
+"AP additive, pooled",TAU-bench Airline,10.2559500322488,26.1668990895312,14
+"AP additive, pooled",USACO,7.6982812948899,16.8209507379405,13

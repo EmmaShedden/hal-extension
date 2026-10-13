@@ -158,4 +158,7 @@ difference is noted. Every fit is deterministic given the seeds stated.
 | Log Analysis, AgentRewardBench, SABER, Reliability, CORE-Bench saturation, Beyond Metrics, Contamination (DIF), AI Agents That Matter, BrowserGym | About measurement validity or new evaluations, not fitting a predictive model. Log Analysis' judge labels are already used in E3. |
 
 ## Post-fit changes
-None yet.
+* **None to the design.** On the first run, scripts 03, 05 and 06 fitted their models and then crashed in the reporting code:
+  * 05 and 06: loop variables `k` / `n` collided with the cell table's columns inside data.table's `[`.
+  * 03: `rbind` on data.frames does not take `fill`.
+* The reporting code was fixed and the three scripts rerun. The fits are deterministic (fixed seeds) and their code was unchanged.

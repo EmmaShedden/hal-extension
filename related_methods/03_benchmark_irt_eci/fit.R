@@ -50,7 +50,7 @@ met2 <- data.table(method = "ECI faithful (max scaffold per model x benchmark, r
 saveRDS(list(primary = f, faithful = f2), RM("03_benchmark_irt_eci", "fits.Rds"))
 cap <- merge(data.table(llm = f$rows, C = f$P$C), data.table(llm = f2$rows, C_faithful = f2$P$C), by = "llm", all.x = TRUE)[order(-C)]
 colp <- data.table(column = f$cols, D = f$P$D, alpha = f$P$al)
-write_outputs(out, rbind(met, met2, fill = TRUE), bb,
+write_outputs(out, rbindlist(list(met, met2), fill = TRUE), bb,
               list(capability = cap, column_params = colp, faithful_benchmark_params = data.table(benchmark = f2$cols, D = f2$P$D, alpha = f2$P$al),
                    faithful_cells = mx[, .(llm, benchmark, column, acc, pred)]))
-print(rbind(met, met2, fill = TRUE), digits = 3); print(cap, digits = 3); print(colp, digits = 3)
+print(rbindlist(list(met, met2), fill = TRUE), digits = 3); print(cap, digits = 3); print(colp, digits = 3)

@@ -50,11 +50,12 @@ names(fits) <- c("d3", "d1")
 saveRDS(list(fits = fits, grid = grid, rows = rows, X = X, D = Dm, cols = levels(ct$column)), RM("06_skill_scaling_sloth", "fits.Rds"))
 
 npar <- function(k) (ncol(X) + ncol(Dm) + nc) * k + nc
-met <- rbindlist(lapply(names(fits), function(n) { ct[, pred := fits[[n]]$fitted]
-  cbind(fit_metrics(d, expand_cell_pred(d, ct), sprintf("Sloth-adapted, %d skill(s), covariates only (no per-model parameters)", fits[[n]]$k)),
-        n_params = npar(fits[[n]]$k), lr = fits[[n]]$lr, epochs = fits[[n]]$epochs) }))
-bb <- rbindlist(lapply(names(fits), function(n) { ct[, pred := fits[[n]]$fitted]
-  cbind(method = paste("Sloth", n), run_mae_by_benchmark(d, expand_cell_pred(d, ct))) }))
+# (loop variable is fk: ct has columns k and n)
+met <- rbindlist(lapply(names(fits), function(fk) { ct$pred <- fits[[fk]]$fitted
+  cbind(fit_metrics(d, expand_cell_pred(d, ct), sprintf("Sloth-adapted, %d skill(s), covariates only (no per-model parameters)", fits[[fk]]$k)),
+        n_params = npar(fits[[fk]]$k), lr = fits[[fk]]$lr, epochs = fits[[fk]]$epochs) }))
+bb <- rbindlist(lapply(names(fits), function(fk) { ct$pred <- fits[[fk]]$fitted
+  cbind(method = paste("Sloth", fk), run_mae_by_benchmark(d, expand_cell_pred(d, ct))) }))
 eff <- data.table(term = c(colnames(X), colnames(Dm)), rbind(fits$d1$P$WX, fits$d1$P$WD))   # 1-skill coefficients (sign set by Lambda)
 setnames(eff, "V1", "skill_coef_d1")
 eff[, loading_sign := sign(mean(fits$d1$P$L))]
