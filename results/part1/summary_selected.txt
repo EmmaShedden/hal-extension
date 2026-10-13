@@ -2,49 +2,55 @@ Generalized linear mixed model fit by maximum likelihood (Laplace
   Approximation) [glmerMod]
  Family: binomial  ( logit )
 Formula: success ~ provider + reasoning_model + release_years_z + effort +  
-    generalist + benchmark + (1 | task) + (1 | run) + (1 | model:benchmark) +  
-    (1 | scaffold:benchmark) + (1 | model:scaffold) + release_years_z:domain
+    generalist + benchmark + domain:release_years_z + (1 | task) +  
+    (1 | run) + (1 | model) + (1 | scaffold) + (1 | model:benchmark) +  
+    (1 | scaffold:benchmark) + (1 | model:scaffold)
    Data: d
 Control: CTRL
 
       AIC       BIC    logLik -2*log(L)  df.resid 
-  18726.4   18925.6   -9338.2   18676.4     21308 
+  18730.4   18945.5   -9338.2   18676.4     21306 
 
 Scaled residuals: 
     Min      1Q  Median      3Q     Max 
--5.6739 -0.4488 -0.1764  0.3965 15.9022 
+-5.6740 -0.4488 -0.1764  0.3965 15.9036 
 
 Random effects:
- Groups             Name        Variance Std.Dev.
- task               (Intercept) 4.6472   2.1557  
- run                (Intercept) 0.1822   0.4268  
- model:scaffold     (Intercept) 0.1901   0.4360  
- model:benchmark    (Intercept) 0.1612   0.4015  
- scaffold:benchmark (Intercept) 0.1526   0.3907  
+ Groups             Name        Variance  Std.Dev. 
+ task               (Intercept) 4.647e+00 2.156e+00
+ run                (Intercept) 1.821e-01 4.268e-01
+ model:scaffold     (Intercept) 1.904e-01 4.364e-01
+ model:benchmark    (Intercept) 1.610e-01 4.013e-01
+ scaffold:benchmark (Intercept) 1.526e-01 3.906e-01
+ model              (Intercept) 1.321e-09 3.634e-05
+ scaffold           (Intercept) 9.807e-10 3.132e-05
 Number of obs: 21333, groups:  
-task, 1084; run, 174; model:scaffold, 95; model:benchmark, 80; scaffold:benchmark, 15
+task, 1084; run, 174; model:scaffold, 95; model:benchmark, 80; scaffold:benchmark, 15; model, 15; scaffold, 10
 
 Fixed effects:
                                        Estimate Std. Error z value Pr(>|z|)    
-(Intercept)                             0.33911    0.46081   0.736 0.461799    
-providerAnthropic                       0.21520    0.28363   0.759 0.448003    
-providerGoogle                         -1.10672    0.34885  -3.172 0.001512 ** 
-providerDeepSeek                       -1.01609    0.29504  -3.444 0.000573 ***
-reasoning_modelTRUE                    -0.12345    0.33916  -0.364 0.715881    
-release_years_z                         1.02726    0.33552   3.062 0.002201 ** 
-effortdefault                          -0.04492    0.30194  -0.149 0.881726    
-effortlow                              -0.21924    0.24559  -0.893 0.372020    
-efforthigh                              0.07185    0.13844   0.519 0.603780    
-generalistTRUE                         -1.10304    0.32392  -3.405 0.000661 ***
-benchmarkCORE-Bench Hard               -1.88738    0.61036  -3.092 0.001986 ** 
-benchmarkOnline Mind2Web               -1.29702    0.54692  -2.371 0.017717 *  
-benchmarkSciCode                       -5.84315    0.67846  -8.612  < 2e-16 ***
-benchmarkScienceAgentBench             -2.29217    0.57604  -3.979 6.92e-05 ***
-benchmarkSWE-bench Verified Mini       -1.59886    0.60924  -2.624 0.008682 ** 
-benchmarkTAU-bench Airline             -0.48093    0.68543  -0.702 0.482903    
-benchmarkUSACO                         -0.51833    0.57575  -0.900 0.367983    
-release_years_z:domaincustomer_service -0.91723    0.54679  -1.677 0.093450 .  
-release_years_z:domainscience          -0.77501    0.40551  -1.911 0.055977 .  
-release_years_z:domainweb              -1.22816    0.43795  -2.804 0.005042 ** 
+(Intercept)                             0.34093    0.45328   0.752 0.451975    
+providerAnthropic                       0.21872    0.28275   0.774 0.439213    
+providerGoogle                         -1.10671    0.34716  -3.188 0.001433 ** 
+providerDeepSeek                       -1.01759    0.29271  -3.476 0.000508 ***
+reasoning_modelTRUE                    -0.12745    0.33734  -0.378 0.705574    
+release_years_z                         1.02496    0.33380   3.071 0.002136 ** 
+effortdefault                          -0.03760    0.30000  -0.125 0.900269    
+effortlow                              -0.21794    0.24335  -0.896 0.370494    
+efforthigh                              0.07286    0.13729   0.531 0.595624    
+generalistTRUE                         -1.10305    0.32222  -3.423 0.000619 ***
+benchmarkCORE-Bench Hard               -1.88844    0.60251  -3.134 0.001723 ** 
+benchmarkOnline Mind2Web               -1.29997    0.54268  -2.395 0.016599 *  
+benchmarkSciCode                       -5.84495    0.69034  -8.467  < 2e-16 ***
+benchmarkScienceAgentBench             -2.29401    0.56544  -4.057 4.97e-05 ***
+benchmarkSWE-bench Verified Mini       -1.60287    0.59634  -2.688 0.007191 ** 
+benchmarkTAU-bench Airline             -0.48575    0.67626  -0.718 0.472578    
+benchmarkUSACO                         -0.52316    0.56781  -0.921 0.356863    
+release_years_z:domaincustomer_service -0.91489    0.53622  -1.706 0.087976 .  
+release_years_z:domainscience          -0.77258    0.40187  -1.922 0.054546 .  
+release_years_z:domainweb              -1.22741    0.43516  -2.821 0.004794 ** 
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+optimizer (nloptwrap) convergence code: 0 (OK)
+boundary (singular) fit: see help('isSingular')
+

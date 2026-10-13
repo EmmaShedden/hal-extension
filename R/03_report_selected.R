@@ -52,8 +52,7 @@ for (g in names(re)) {
 }
 
 # R2 (Nakagawa)
-r2 <- tryCatch(performance::r2_nakagawa(m), error = function(e) NULL)
-if (!is.null(r2)) fwrite(data.frame(R2_marginal = r2$R2_marginal, R2_conditional = r2$R2_conditional), file.path(out, "r2.csv"))
+fwrite(r2_nakagawa_def(m), file.path(out, "r2.csv"))
 
 # in-sample predictive metrics: conditional (all REs) and marginal (fixed only)
 d$p <- predict(m, type = "response")

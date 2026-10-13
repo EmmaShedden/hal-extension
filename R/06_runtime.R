@@ -37,7 +37,7 @@ sink(file.path(out, "summary_selected.txt")); print(summary(m)); sink()
 fe <- data.frame(term = names(fixef(m)), est = fixef(m), se = sqrt(diag(as.matrix(vcov(m)))))
 fe$ratio <- exp(fe$est); fwrite(fe, file.path(out, "fixed_effects.csv"))
 vc <- as.data.frame(VarCorr(m)); vc$share <- vc$vcov / sum(vc$vcov); fwrite(vc, file.path(out, "random_effects_variance.csv"))
-r2 <- performance::r2_nakagawa(m); fwrite(data.frame(R2_marginal = r2$R2_marginal, R2_conditional = r2$R2_conditional), file.path(out, "r2.csv"))
+fwrite(r2_nakagawa_def(m), file.path(out, "r2.csv"))
 # holdout (same cell design as Part 2, 20 reps x 3 fractions): log-runtime RMSE of held-out successful traces
 f <- formula(m); cells <- levels(d$cell)
 grid <- expand.grid(rep = 1:20, frac = c(0.10, 0.25, 0.50)); grid$seed <- seq_len(nrow(grid))

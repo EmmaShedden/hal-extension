@@ -51,3 +51,14 @@ load_analysis_data <- function(splits = c("paper"), scaling = NULL) {
   for (v in c("model", "scaffold", "task", "cell", "run")) d[[v]] <- factor(d[[v]])
   list(d = d, scaling = scaling)
 }
+
+# Nakagawa & Schielzeth (2013) / Nakagawa et al. (2017) R2 on the latent scale, computed from its definition:
+# marginal = var(X b) / (var(X b) + sum of RE variances + residual), conditional = (var(X b) + sum RE) / (same).
+# Residual = pi^2/3 for binomial-logit (theoretical), sigma^2 for lmer. Used instead of performance::r2_nakagawa,
+# which returns NA (and an inflated marginal value) when a variance component is exactly zero, as under PF-3.
+r2_nakagawa_def <- function(m) {
+  vf <- var(as.vector(getME(m, "X") %*% fixef(m)))
+  vc <- as.data.frame(VarCorr(m)); vr <- sum(vc$vcov[vc$grp != "Residual" & is.na(vc$var2)])
+  ve <- if (isGLMM(m)) pi^2 / 3 else sigma(m)^2
+  data.frame(R2_marginal = vf / (vf + vr + ve), R2_conditional = (vf + vr) / (vf + vr + ve))
+}
