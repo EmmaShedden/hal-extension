@@ -56,7 +56,7 @@ programmatically for all runs.
 | benchmark | `benchmark` | fixed, 8 levels (too few levels for a random effect, per the TMS rule) | benchmark difficulty |
 | task | `task` (benchmark:task_id) | random intercept (IRT difficulty β) | IRT |
 
-* **Excluded on purpose**: model **size / training compute** (unknown for 12 of 15 paper models, which are closed weights; Agent Psychometrics
+* **Excluded on purpose**: model **size / training compute** (size unknown for 10 of 15 paper models, all closed weights; Epoch compute missing for 8; Agent Psychometrics
   excluded compute for the same reason, and CPP's zero-fill of missing values would inject false information);
   **benchmark domain** (with only 8 benchmarks each benchmark is its own domain, apart from coding: SWE, USACO, SciCode, SAB. Domain is a coarsening of the
   `benchmark` fixed effect and so is collinear with it. It enters only as an alternative to `benchmark` in the candidate set below);
