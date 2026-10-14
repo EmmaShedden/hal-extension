@@ -322,3 +322,48 @@ Written after the audit and before any PF-2 result was inspected. The PF-2 Part 
   * The gate is still **not met**. The primary M4r raises held-out SWE log-loss in both holdouts: cell +0.058 [+0.022, +0.121], task +0.010 [+0.007, +0.014].
   * The secondary M3 now improves only the cell holdout: run MAE −0.27 pp [−0.40, −0.17]. In the task holdout its run-MAE gain is gone (+0.00). The E1b outcome recorded above, "improved every holdout metric slightly", held on the `c027` base only.
   * In-sample, the interaction blocks are no longer significant: M2 vs M1 p = 0.24, M3 vs M1 p = 0.10, D4 vs D1 p = 0.12.
+
+## Added analysis (2026-10-14, requested after Parts 1–2b and the related-methods comparison): holdout-fraction curve (Part 2c)
+Requested by the user after all Part 2 results were seen. It is specified here before any of its fits are run. The formula (`c028`),
+the cell definition, the prediction rule and the metrics are Part 2's, unchanged.
+* **Grid.** Cell-holdout fractions 5 / 10 / 20 / 25 / 40 / 50 / 60 / 75 / 80 / 90 % of the 172 cells.
+  * **Repetitions** grow as the fraction shrinks, because with few held-out cells the per-split MAE is noisy: the Part 2
+    SD across splits is 1.97 pp at 10 % (17 cells) and ~1.1 pp at 25–50 %. Target: SE of the mean MAE ≈ 0.25 pp at every fraction.
+    | Fraction | 5 % | 10 % | 20 % | 25 % | 40 % | 50 % | 60 % | 75 % | 80 % | 90 % |
+    |---|---|---|---|---|---|---|---|---|---|---|
+    | Repetitions | 120 | 60 | 30 | 30 | 20 | 20 | 20 | 20 | 20 | 20 |
+  * **Top-up rule (fixed now).** If a fraction's SE after the run exceeds 0.35 pp, its repetitions are doubled once with
+    further seeds. Nothing else is adapted.
+  * **Seeds.** The 60 Part 2 splits (10 / 25 / 50 %, reps 1–20, seeds 1–60) are re-drawn with their original seeds, so
+    they reproduce Part 2 exactly (checked). All other splits use seeds 3001, 3002, … in grid order.
+* **Fixed-effect level coverage (new; matters only at high fractions).** A GLMM cannot predict a held-out cell whose
+  benchmark, provider or effort level is absent from training, and neither can the benchmark-mean baseline. A held-out set is therefore
+  redrawn, continuing the same RNG stream, until the training cells contain every level of `benchmark`, `provider`,
+  `effort`, `reasoning_model` and `generalist`. The first draw is kept whenever it passes, so the Part 2 seeds are unaffected.
+  The number of redraws is recorded. At high fractions, this conditions the splits on full level coverage, and the report says so.
+* **Predictors compared on the same held-out cells** (run-accuracy MAE, pp; task Brier / log-loss / 0/1 error / AUC as in Part 2):
+  * the GLMM refit (as Part 2);
+  * the full-data model, in-sample (as Part 2);
+  * the training benchmark mean, and the additive logit model (benchmark + model), as in Part 2;
+  * **grand mean** (new): the mean training cell accuracy over all benchmarks;
+  * **same model, same benchmark** (new): the mean accuracy of training cells with the held-out cell's model and benchmark
+    (other scaffolds or efforts). Where there is none, it falls back to the additive baseline, and the share of fallbacks is recorded.
+* **Run-to-run noise floor** (fraction-independent reference lines).
+  * *Empirical.* Only 2 of the 172 cells have two runs. Their |acc₁ − acc₂| is reported, but 2 pairs are too few for a reference line.
+  * *Model-based (the plotted floor).* This is the expected MAE of an oracle that knows every parameter of the full-data model except the run's own
+    `(1|run)` draw. For each of the 174 runs: η = the full-model linear predictor without the run term; u ~ N(0, σ̂_run²);
+    y_t ~ Bernoulli(plogis(η_t + u)). The oracle predicts E[accuracy], and the floor is E|mean y − E[accuracy]|, by 4,000 draws per run, averaged over runs.
+  * *Binomial-only component.* The same with u fixed at the run's BLUP (task-level coin flips only), reported alongside.
+  * Both ignore uncertainty in the estimated parameters.
+* **Summary and figure.** For each fraction and predictor: mean MAE over splits, SD, SE and a t-based 95 % CI of the mean.
+  The figure plots MAE against holdout % with 95 % CI error bars for every predictor, and shows the full-data model and the noise floor as references.
+* **Amendment after the pipeline test (2026-10-14, before the full run).** The script was first tested on 4 splits (5 / 10 / 20 / 90 %), then on
+  24 splits at 75 / 80 / 90 % (seeds 3241–3248, 3261–3268, 3281–3288). The tests were run to check the code, but their results were seen.
+  * One 90 % refit errored ("Downdated VtV is not positive definite"). With about 17 training cells, PIRLS can fail.
+    Dropping such splits would bias the high-fraction means toward easy splits. A **fixed fallback chain** was therefore added:
+    the default `CTRL` (nloptwrap), then `glmerControl(optimizer = "bobyqa")`, then `nAGQ = 0`. The method used and any errors
+    are recorded per split. A split that fails all three is reported as failed, and is not redrawn.
+  * In the second test, 2 of the 8 splits at 90 % needed bobyqa; none at 75 / 80 % did.
+  * The test outputs are discarded, and the full run refits those seeds.
+  * Nothing else changed: the grid, the repetitions, the top-up rule, the baselines and the floor are as specified above.
+    The 90 % test MAEs were large and variable (12–50 pp). The top-up rule is left as written (double once) and not tuned to this.
