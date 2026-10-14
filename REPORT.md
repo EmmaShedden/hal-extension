@@ -314,6 +314,62 @@ All values are in pp unless labelled otherwise.
    * It is only level on **TAU-bench** (11.0 vs 11.1). Under `c027` it was worse on TAU-bench (13.5 vs 11.1) and USACO (5.3 vs 5.0).
    * TAU-bench remains the hardest benchmark to fill in, and its broken tasks (E3) add noise.
 
+## 4d. Part 2c: cell-holdout error vs holdout fraction (added on request; design in DESIGN.md)
+**Setup.** This is Section 4's cell holdout, extended to 10 fractions: 5 / 10 / 20 / 25 / 40 / 50 / 60 / 75 / 80 / 90 % of the 172 cells.
+* The formula (`c028`), cell definition, prediction rule and metrics are unchanged.
+* **Repetitions** scale with 1 / fraction, so that every mean has an SE of about 0.25 pp:
+  * 120 at 5 %, 60 at 10 %, 30 at 20 and 25 %, 20 from 40 % up.
+  * The pre-registered top-up rule (SE > 0.35 pp doubles the repetitions once) fired at 60, 80 and 90 %, so each of those has 40.
+  * 420 refits in all. The 60 Part 2 splits (seeds 1–60) are re-drawn and reproduce Section 4 exactly; the rest use seeds 3001–3360.
+* **Two rules that matter only at high fractions** (DESIGN.md Part 2c):
+  * A held-out set is redrawn until the training cells cover every level of benchmark, provider, effort, reasoning and generalist. This took 0.1 / 0.2 / 4.1 redraws on average at 75 / 80 / 90 %, and none below that.
+  * A refit that errors falls back to bobyqa, then to `nAGQ = 0`. Only 14 of the 40 splits at 90 % needed this; all of them succeeded with bobyqa, and none failed outright.
+* **Two baselines were added to Part 2's.**
+  * The grand mean of training cell accuracies.
+  * The mean of training cells with the same model on the same benchmark (other scaffolds or efforts). When there is none, it falls back to the additive model: for 11 % of held-out cells at 5 %, rising to 84 % at 90 %.
+* **Run-to-run noise floor.** Only 2 of the 172 cells were run twice. Their two runs differ by 4.4 pp (DeepSeek-R1 on CORE-Bench) and 1.5 pp (Claude Opus 4.1 on SciCode). Two pairs are too few for a reference line, so the plotted floor is model-based:
+  * It is the MAE of an oracle that knows every full-data parameter except the run's own `(1|run)` draw (SD 0.43 logits), with Bernoulli task outcomes.
+  * The floor is **4.9 pp**. Of this, **2.8 pp** is task-level coin flips alone, with the run effect known.
+  * By benchmark it ranges from 1.7 pp (SciCode) to 6.9 pp (TAU-bench).
+  * It ignores parameter uncertainty, so it is a floor for this model class rather than a hard bound.
+
+**Results** (run-accuracy MAE in pp, mean over splits [95 % CI of the mean]; `results/tables/holdout_curve.md`, `results/part2_curve/`):
+
+| Held out | Splits | GLMM refit | Additive (benchmark + model) | Benchmark mean | Same model × benchmark | Grand mean | Full-data, in-sample |
+|---|---|---|---|---|---|---|---|
+| 5 % (9 cells) | 120 | **6.55** [6.21, 6.88] | 9.32 | 10.36 | 9.65 | 14.19 | 1.28 |
+| 10 % (17) | 60 | **6.67** [6.25, 7.08] | 9.21 | 10.53 | 9.81 | 13.96 | 1.34 |
+| 20 % (34) | 30 | **6.92** [6.65, 7.18] | 9.08 | 10.37 | 9.79 | 14.11 | 1.21 |
+| 25 % (43) | 30 | **7.23** [6.78, 7.67] | 9.28 | 10.60 | 9.76 | 13.68 | 1.28 |
+| 40 % (69) | 20 | **7.61** [7.27, 7.95] | 9.86 | 10.83 | 9.90 | 14.04 | 1.31 |
+| 50 % (86) | 20 | **8.36** [7.86, 8.87] | 9.66 | 10.74 | 9.92 | 13.83 | 1.30 |
+| 60 % (103) | 40 | **9.39** [8.91, 9.87] | 10.54 | 10.95 | 10.68 | 14.17 | 1.28 |
+| 75 % (129) | 20 | 11.81 [11.10, 12.52] | 11.64 | **11.13** | 11.87 | 14.32 | 1.28 |
+| 80 % (138) | 40 | 13.90 [12.85, 14.95] | 12.88 | **11.43** | 12.83 | 14.37 | 1.28 |
+| 90 % (155) | 40 | 30.18 [26.92, 33.45] | 15.78 | **12.63** | 15.77 | 14.41 | 1.28 |
+
+The 10 / 25 / 50 % rows contain Section 4's 20 splits each, plus 40 / 10 / 0 new ones. That is why 10 % reads 6.67 here against 7.10 in Section 4, and 25 % reads 7.23 against 7.07. Both differences are within Section 4's CIs, and 50 % is identical.
+
+![Cell-holdout error vs holdout fraction](results/figures/holdout_curve_mae.png)
+
+**Interpretation.**
+1. **The GLMM degrades smoothly up to about 60 % held out**, from 6.6 pp at 5 % to 9.4 pp at 60 %. It beats every baseline up to 60 %, with non-overlapping CIs (at 60 %: 9.4 [8.9, 9.9] vs 10.5 [10.1, 11.0] for the best baseline).
+2. **At low fractions it is within about 1.7 pp of the run-to-run noise floor** (6.6 vs 4.9 pp). Removing the floor in quadrature (a rough approximation, as in §4c) leaves about 4.3 pp of systematic error at 5 %, rising to about 6.8 pp at 50 %. More training cells help, but most of the remaining error at 5 % is the run's own unpredictable effect plus task coin flips.
+3. **The GLMM's advantage disappears at 70–75 % and reverses beyond.**
+   * At 75 % it is level with the naive baselines.
+   * At 80 % it is worse than the benchmark mean (13.9 vs 11.4 pp).
+   * At 90 % it fails badly (30.2 pp; it beats the benchmark mean in 1 of 40 splits).
+   * The fixed part has 20 coefficients, and at 90 % only 17 training cells remain. The model-level slopes (provider, release date and its domain interaction, effort) are then barely identified and extrapolate wildly.
+   * The fits that needed the bobyqa fallback are the worst (median 35 pp, against 25 pp for the default fits).
+   * Below about 40 cells the selected formula is too rich; a smaller formula would be needed in that regime. This regime is far from Part 2's design question, and no smaller formula was fitted.
+4. **The baselines barely depend on the fraction until 60 %**, because they estimate only a handful of means. Only the benchmark mean stays robust at 90 % (12.6 pp).
+   * "Same model, same benchmark" is no better than the additive model at any fraction. Other scaffolds or efforts of the same model on the same benchmark carry little beyond the model's average.
+   * The grand mean (about 14 pp) shows how much the benchmark alone explains.
+5. **The full-data model (1.3 pp) sits below even the binomial-only floor**, because it is evaluated in-sample: it has seen the held-out runs, including their own run effects. It is a loose lower reference, not an achievable target.
+6. **Caveats.**
+   * At ≥ 75 % the splits are conditioned on full level coverage, so they are slightly easier than unconditioned random splits.
+   * At 80 and 90 % the SE stays above the 0.35 pp target even after the one top-up (0.52 and 1.61 pp). The rule allowed only one doubling.
+
 ## 5. Extensions
 
 ### E1. Agent Psychometrics task features (SWE-bench Verified Mini)
@@ -480,14 +536,15 @@ python -I scripts/extract_call_timing.py --merge data/raw/call_timing_all data/p
 ./run_R.sh R/03_report_selected.R 16 main  # Part 1 quality of fit
 ./run_R.sh R/04_holdout.R 60 main          # Part 2 (also: judge_both, judge_any, manual) -> fits/holdout/*
 ./run_R.sh R/10_task_holdout.R 60 main     # Part 2b task-level holdout -> fits/holdout_task/*
+./run_R.sh R/12_holdout_curve.R 64; ./run_R.sh R/12_holdout_curve.R 60 "0.6:20,0.8:20,0.9:20"   # Part 2c (+ pre-registered SE top-up) -> fits/holdout_curve/*
 ./run_R.sh R/05_post_paper.R               # out-of-time test
 ./run_R.sh R/06_runtime.R 64               # E2
 ./run_R.sh R/07_ap_features.R              # E1
 ./run_R.sh R/11_ap_interactions.R full; for k in cell task summary; do ./run_R.sh R/11_ap_interactions.R $k 46; done   # E1b
 ./run_R.sh R/08_judge_refit.R              # E3 (then 04_holdout.R with judge_* variants)
 ./run_R.sh R/09_latent_factors.R; python scripts/make_report_tables.py
-python scripts/make_figures.py; python scripts/make_task_holdout_figures.py
+python scripts/make_figures.py; python scripts/make_task_holdout_figures.py; python -I scripts/make_holdout_curve_figure.py
 ```
-* **Fitted models.** All are saved as `.Rds` under `fits/`: 64 candidates, 240 cell-holdout refits (main + 3 judge variants), 60 task-holdout refits, the runtime and extension fits. `run_pf2.sh` reruns everything after Part 1 selection. The folder is gitignored because of its size, and the scripts regenerate it.
-* **Determinism.** Seeds are fixed (cell-holdout seeds 1–60, task-holdout seeds 1001–1060, DHARMa 42, CV 1).
+* **Fitted models.** All are saved as `.Rds` under `fits/`: 64 candidates, 240 cell-holdout refits (main + 3 judge variants), 60 task-holdout refits, 420 holdout-curve refits, the runtime and extension fits. `run_pf2.sh` reruns everything after Part 1 selection. The folder is gitignored because of its size, and the scripts regenerate it.
+* **Determinism.** Seeds are fixed (cell-holdout seeds 1–60, task-holdout seeds 1001–1060, holdout-curve seeds 1–60 and 3001–3360, noise floor 4242, DHARMa 42, CV 1).
 * **Threads.** `run_R.sh` forces single-threaded BLAS. Without it, OpenBLAS oversubscribed the server (see DESIGN.md).

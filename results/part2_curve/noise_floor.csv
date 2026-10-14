@@ -1,0 +1,4 @@
+quantity,mae_pp,n,sigma_run
+floor_run_plus_binomial,4.89585130973107,174,0.426752505757378
+floor_binomial_only,2.79784055677031,174,0.426752505757378
+replicate_pairs_mean_abs_diff,2.99145299145299,2,0.426752505757378

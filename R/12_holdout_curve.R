@@ -104,8 +104,8 @@ R <- R[!bad]
 cat("holdout wall time (min):", round(as.numeric(difftime(Sys.time(), t0, units = "mins")), 1), "\n")
 res <- rbindlist(lapply(R, `[[`, "res")); pr <- rbindlist(lapply(R, `[[`, "per_run"))
 if (nzchar(topup)) { res <- rbind(fread(file.path(outdir, "holdout_metrics.csv")), res, fill = TRUE)
-                     pr <- rbind(fread(file.path(outdir, "holdout_per_run.csv")), pr, fill = TRUE) }
-fwrite(res, file.path(outdir, "holdout_metrics.csv")); fwrite(pr, file.path(outdir, "holdout_per_run.csv"))
+                     pr <- rbind(fread(file.path(outdir, "holdout_per_run.csv.gz")), pr, fill = TRUE) }
+fwrite(res, file.path(outdir, "holdout_metrics.csv")); fwrite(pr, file.path(outdir, "holdout_per_run.csv.gz"))
 
 summ <- res[, .(run_mae_pp = mean(run_mae_pp), run_mae_sd = sd(run_mae_pp), run_mae_se = sd(run_mae_pp) / sqrt(.N),
                 brier = mean(brier), err01 = mean(err01), logloss = mean(logloss), auc = mean(auc, na.rm = TRUE),

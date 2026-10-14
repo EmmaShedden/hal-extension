@@ -367,3 +367,10 @@ the cell definition, the prediction rule and the metrics are Part 2's, unchanged
   * The test outputs are discarded, and the full run refits those seeds.
   * Nothing else changed: the grid, the repetitions, the top-up rule, the baselines and the floor are as specified above.
     The 90 % test MAEs were large and variable (12–50 pp). The top-up rule is left as written (double once) and not tuned to this.
+* *Part 2c outcome (recorded after the runs).*
+  * 360 splits, then the top-up rule fired at 60 / 80 / 90 % (SE 0.351 / 0.93 / 2.76 pp), adding 20 splits each (seeds 3301–3360). That makes 420 splits, with no failed splits.
+  * After the one top-up, the SE is still above 0.35 pp at 80 % (0.52) and 90 % (1.61). The rule allows only one doubling, so nothing more was added.
+  * The fallback fit was needed in 14 of the 40 splits at 90 % (all bobyqa) and nowhere else.
+  * The 60 Part 2 splits reproduce Section 4 exactly (max difference 5e-14 pp).
+  * The noise floor is 4.90 pp (run effect + binomial) and 2.80 pp binomial only, with σ̂_run = 0.427. The two replicate pairs differ by 4.4 and 1.5 pp.
+  * The GLMM refit beats every baseline up to 60 %, is level at 75 %, and is worse than the benchmark mean at 80 / 90 %. The results are in REPORT.md §4d.

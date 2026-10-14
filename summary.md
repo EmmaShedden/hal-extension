@@ -12,6 +12,9 @@ Full results and methods are in [`REPORT.md`](REPORT.md), and the design log is 
    * It predicts the accuracy of the dropped runs to **7–8 pp mean absolute error**, against 9–11 pp for the naive baselines.
    * Error barely grows between 10 % and 50 % held out (7.1 → 8.4 pp). Even with half of HAL's combinations never run, the rest would have been predicted with about 8 pp MAE.
    * That is good enough to rank clearly separated agents, but not to settle close leaderboard positions. HAL's own run-to-run spread on repeated runs is several pp, and the model estimates a run-specific effect (SD 0.43 logits) that cannot be known without running the configuration.
+   * **Error vs fraction held out (5–90 %; REPORT.md §4d).** MAE rises smoothly from 6.6 pp at 5 % to 9.4 pp at 60 %, beating every naive baseline throughout.
+     * It is level with the baselines at 75 %. Beyond that it breaks down: at 90 % only 17 training cells remain for 20 fixed coefficients, and MAE reaches 30 pp.
+     * A model-based run-to-run noise floor is 4.9 pp, so at small holdouts the refit is within about 1.7 pp of what any predictor could reach.
    * **For scale:** HAL run accuracies range from 0 % to 70 % (SD 17 pp), and a run typically sits 10.2 pp from its benchmark's average. The refit removes about a quarter of that.
    * The gain is concentrated on SWE-bench, CORE-Bench, ScienceAgentBench, SciCode and TAU-bench, with 20–46 % less error than guessing the benchmark mean.
    * On GAIA, USACO and Online Mind2Web it is no better than that guess. See REPORT.md §4b and `results/figures/`.
