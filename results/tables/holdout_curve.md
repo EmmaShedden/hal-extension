@@ -1,4 +1,4 @@
-| Held out | Cells | Splits | GLMM refit | Additive | Benchmark mean | Same model × benchmark | Grand mean | Full-data (in-sample) | Refit Brier | Refit AUC | Fallback fits | Mean redraws |
+| Held out | Cells | Splits | GLMER model refit | Additive | Benchmark mean | Same model × benchmark | Grand mean | Full-data (in-sample) | Refit Brier | Refit AUC | Fallback fits | Mean redraws |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 5 % | 9 | 120 | 6.55 [6.21, 6.88] | 9.32 [8.84, 9.80] | 10.36 [9.91, 10.82] | 9.65 [9.14, 10.15] | 14.19 [13.65, 14.74] | 1.28 [1.21, 1.36] | 0.137 | 0.866 | 0 | 0.0 |
 | 10 % | 17 | 60 | 6.67 [6.25, 7.08] | 9.21 [8.70, 9.71] | 10.53 [10.08, 10.99] | 9.81 [9.20, 10.41] | 13.96 [13.45, 14.48] | 1.34 [1.25, 1.43] | 0.139 | 0.859 | 0 | 0.0 |
