@@ -56,7 +56,7 @@ Full details are in `DESIGN.md`. The TMS/PT method summary is in `refs/METHODS_S
   | Benchmark | domain (coding / science / web / customer service), entered only as a release-date slope | — |
 
   Core random intercepts are task (IRT difficulty), run (the observation cluster, added by PF-2), model (ability) and scaffold (Agent Psychometrics' additive scaffold ability).
-* **Model size and training compute were excluded.** They are unknown for 12 of the 15 models, all closed-weight. Agent Psychometrics excluded compute for the same reason, and CPP's zero-fill of missing values would inject false information.
+* **Model size and training compute were excluded.** Size is unknown for 10 of the 15 models, all closed-weight, and Epoch training compute is missing for 8. Agent Psychometrics excluded compute for the same reason, and CPP's zero-fill of missing values would inject false information.
 * **Candidate class.** Much smaller than TMS's 819 formulas: **64 candidates**.
   * Two release-date transforms: linear or log.
   * With or without domain-specific release slopes.
@@ -282,7 +282,7 @@ For reference, HAL's own paired repeat runs differ by up to about 4.5 pp (e.g. C
 
 **Results** (`c028`; `results/part2_task/main/`):
 
-| Held out | Held-out tasks per run | Subset MAE: GLMM refit | Subset MAE: run's own accuracy | Subset MAE: additive run+task logit | Noise floor | Full-run MAE: observed + GLMM-filled | Full-run MAE: subsample only | Cell holdout (§4) | Task Brier / AUC |
+| Held out | Held-out tasks per run | Subset MAE: GLMER model refit | Subset MAE: run's own accuracy | Subset MAE: additive run+task logit | Noise floor | Full-run MAE: observed + GLMER-model-filled | Full-run MAE: subsample only | Cell holdout (§4) | Task Brier / AUC |
 |---|---|---|---|---|---|---|---|---|---|
 | 10 % | 12 | **9.7** | 12.1 | 10.2 | 9.2 | **0.91** | 1.13 | 7.1 | 0.130 / 0.876 |
 | 25 % | 31 | **6.4** | 7.8 | 7.0 | 5.7 | **1.57** | 1.91 | 7.1 | 0.130 / 0.876 |
@@ -300,17 +300,17 @@ All values are in pp unless labelled otherwise.
 **Interpretation.**
 1. **Most of the held-out-subset error is sampling noise.** With 12 held-out tasks per run, even the true probabilities would miss the observed subset accuracy by about 9.2 pp. Removing the floor in quadrature (a rough approximation) leaves a systematic error of about **3–3.5 pp at every fraction** (3.1 / 3.0 / 3.5). So losing up to half the rows barely degrades the model.
 2. **Filling in a run is far easier than predicting it outright.**
-   * A run whose remaining tasks are observed and the rest filled in by the GLMM has full-benchmark accuracy within 0.9 / 1.6 / 2.7 pp.
+   * A run whose remaining tasks are observed and the rest filled in by the GLMER model has full-benchmark accuracy within 0.9 / 1.6 / 2.7 pp.
    * Predicting a whole run, as in the cell holdout, gives 7.1–8.4 pp.
    * So the run's own observed tasks carry most of the information about that run.
-3. **The GLMM's advantage over subsampling is real but moderate.**
-   * Simply running a random subset of tasks and reporting that accuracy gives 1.1 / 1.9 / 3.3 pp. The GLMM saves 0.2–0.7 pp, about 20 %.
+3. **The GLMER model's advantage over subsampling is real but moderate.**
+   * Simply running a random subset of tasks and reporting that accuracy gives 1.1 / 1.9 / 3.3 pp. The GLMER model saves 0.2–0.7 pp, about 20 %.
    * A covariate-free additive logit (run accuracy + task solve rate) gives 0.96 / 1.72 / 3.06 pp, and 10.2 / 7.0 / 6.1 pp on the held-out subset.
-     * The GLMM now beats it at every fraction, on subset MAE, full-run MAE, Brier (0.130–0.135 vs 0.132–0.140) and log-loss.
+     * The GLMER model now beats it at every fraction, on subset MAE, full-run MAE, Brier (0.130–0.135 vs 0.132–0.140) and log-loss.
      * Under the pre-registered `c027`, which had no run effect, the two were tied. The gain comes from partially pooled run effects combined with the rest of the structure.
 4. **Task-level discrimination is the same as in the cell holdout** (AUC 0.87–0.88 vs 0.84–0.86; Brier 0.13 vs 0.14–0.15). Task difficulty dominates individual outcomes, and in both settings the task is seen in training.
 5. **The gain varies by benchmark** (25 % holdout, subset MAE; `per_benchmark.md`).
-   * The GLMM now beats subsampling on every benchmark. The gain is largest on CORE-Bench (8.3 vs 10.9 pp), SWE-bench (8.4 vs 10.4), Online Mind2Web (4.1 vs 5.2), USACO (4.0 vs 5.0) and SciCode (3.0 vs 3.9).
+   * The GLMER model now beats subsampling on every benchmark. The gain is largest on CORE-Bench (8.3 vs 10.9 pp), SWE-bench (8.4 vs 10.4), Online Mind2Web (4.1 vs 5.2), USACO (4.0 vs 5.0) and SciCode (3.0 vs 3.9).
    * It is only level on **TAU-bench** (11.0 vs 11.1). Under `c027` it was worse on TAU-bench (13.5 vs 11.1) and USACO (5.3 vs 5.0).
    * TAU-bench remains the hardest benchmark to fill in, and its broken tasks (E3) add noise.
 
@@ -335,7 +335,7 @@ All values are in pp unless labelled otherwise.
 
 **Results** (run-accuracy MAE in pp, mean over splits [95 % CI of the mean]; `results/tables/holdout_curve.md`, `results/part2_curve/`):
 
-| Held out | Splits | GLMM refit | Additive (benchmark + model) | Benchmark mean | Same model × benchmark | Grand mean | Full-data, in-sample |
+| Held out | Splits | GLMER model refit | Additive (benchmark + model) | Benchmark mean | Same model × benchmark | Grand mean | Full-data, in-sample |
 |---|---|---|---|---|---|---|---|
 | 5 % (9 cells) | 120 | **6.55** [6.21, 6.88] | 9.32 | 10.36 | 9.65 | 14.19 | 1.28 |
 | 10 % (17) | 60 | **6.67** [6.25, 7.08] | 9.21 | 10.53 | 9.81 | 13.96 | 1.34 |
@@ -353,9 +353,9 @@ The 10 / 25 / 50 % rows contain Section 4's 20 splits each, plus 40 / 10 / 0 new
 ![Cell-holdout error vs holdout fraction](results/figures/holdout_curve_mae.png)
 
 **Interpretation.**
-1. **The GLMM degrades smoothly up to about 60 % held out**, from 6.6 pp at 5 % to 9.4 pp at 60 %. It beats every baseline up to 60 %, with non-overlapping CIs (at 60 %: 9.4 [8.9, 9.9] vs 10.5 [10.1, 11.0] for the best baseline).
+1. **The GLMER model degrades smoothly up to about 60 % held out**, from 6.6 pp at 5 % to 9.4 pp at 60 %. It beats every baseline up to 60 %, with non-overlapping CIs (at 60 %: 9.4 [8.9, 9.9] vs 10.5 [10.1, 11.0] for the best baseline).
 2. **At low fractions it is within about 1.7 pp of the run-to-run noise floor** (6.6 vs 4.9 pp). Removing the floor in quadrature (a rough approximation, as in §4c) leaves about 4.3 pp of systematic error at 5 %, rising to about 6.8 pp at 50 %. More training cells help, but most of the remaining error at 5 % is the run's own unpredictable effect plus task coin flips.
-3. **The GLMM's advantage disappears at 70–75 % and reverses beyond.**
+3. **The GLMER model's advantage disappears at 70–75 % and reverses beyond.**
    * At 75 % it is level with the naive baselines.
    * At 80 % it is worse than the benchmark mean (13.9 vs 11.4 pp).
    * At 90 % it fails badly (30.2 pp; it beats the benchmark mean in 1 of 40 splits).
